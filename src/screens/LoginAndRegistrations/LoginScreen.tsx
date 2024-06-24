@@ -72,18 +72,23 @@ export const LoginForm = ({
           label={'Email'}
           name={'email'}
           value={formData.email}
+          inputStyles={{backgroundColor: '#F5F8FA'}}
           onChangeText={e => {
             setFormData(s => ({
               ...s,
               email: e,
             }));
           }}
+          placeholder="example@gmail.com"
         />
+
         <TextField
           label={'Password'}
           name={'password'}
+          variant={'filled'}
           value={formData.password}
           type={show ? 'text' : 'password'}
+          inputStyles={{backgroundColor: '#F5F8FA'}}
           onChangeText={e => {
             setFormData(s => ({
               ...s,

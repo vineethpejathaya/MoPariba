@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Box,
@@ -6,11 +7,13 @@ import {
   FlatList,
   Image,
   Text,
+  Theme,
   VStack,
-  theme,
+  useTheme,
 } from 'native-base';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import {ShoppingBagIcon} from '../../assets/icons/Icons';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
@@ -75,13 +78,40 @@ type Props = {
   navigation: CategoryScreenNavigationProp;
 };
 const CategoryPage = ({navigation}: Props) => {
+  const theme = useTheme();
+  const productStyles = createStyles(theme);
   return (
     <>
       <ScreenHeader title={'Vegetables'} />
       <ScreenContent>
         <FlatList
           data={data}
-          renderItem={ProductCard}
+          renderItem={({item}) => (
+            <Box style={productStyles.container}>
+              <TouchableOpacity onPress={() => navigation.navigate('Product')}>
+                <Image
+                  source={item?.image}
+                  alt={item?.name}
+                  resizeMode="contain"
+                  height={150}
+                />
+                <VStack
+                  space={1}
+                  style={{paddingBottom: 3}}
+                  alignItems={'center'}>
+                  <Text variant="body2" style={productStyles.prize}>
+                    {item.price}
+                  </Text>
+                  <Text variant="title1">{item.name}</Text>
+                  <Text variant="body2" style={productStyles.weight}>
+                    {item.weight}
+                  </Text>
+                </VStack>
+              </TouchableOpacity>
+              <Divider />
+              <CartButton />
+            </Box>
+          )}
           numColumns={2}
           columnWrapperStyle={{gap: 10, paddingHorizontal: 12}}
           contentContainerStyle={{gap: 10, paddingBottom: 16}}
@@ -105,30 +135,8 @@ interface Product {
   discount?: number;
 }
 function ProductCard({item}: any) {
-  const productStyles = createStyles();
-  return (
-    <>
-      <Box style={productStyles.container}>
-        <Image
-          source={item?.image}
-          alt={item?.name}
-          resizeMode="contain"
-          height={150}
-        />
-        <VStack space={1} style={{paddingBottom: 3}} alignItems={'center'}>
-          <Text variant="body2" style={productStyles.prize}>
-            {item.price}
-          </Text>
-          <Text variant="title1">{item.name}</Text>
-          <Text variant="body2" style={{color: theme.colors.gray[700]}}>
-            {item.weight}
-          </Text>
-        </VStack>
-        <Divider />
-        <CartButton />
-      </Box>
-    </>
-  );
+  const navigation = useNavigation();
+  return <></>;
 }
 
 function CartButton() {
@@ -138,20 +146,20 @@ function CartButton() {
         onPress={() => {}}
         _text={{color: 'black'}}
         style={{padding: 0, width: '100%'}}
-        variant="ghost">
+        variant="ghost"
+        leftIcon={<ShoppingBagIcon />}>
         Add to cart
       </Button>
     </>
   );
 }
 
-function createStyles() {
+function createStyles(theme: Theme) {
   const styles = StyleSheet.create({
     container: {
       width: '50%',
       borderWidth: 1,
       borderColor: theme.colors.gray[200],
-      borderRadius: 10,
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
@@ -188,9 +196,13 @@ function createStyles() {
       objectFit: 'contain',
     },
     prize: {
+      fontSize: 12,
       color: theme.colors.primary[700],
     },
-
+    weight: {
+      fontSize: 12,
+      color: theme.colors.gray[700],
+    },
     addToCartBtn: {
       color: 'black',
     },

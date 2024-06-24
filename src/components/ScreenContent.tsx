@@ -1,11 +1,22 @@
 import {Box, theme} from 'native-base';
 import {InterfaceBoxProps} from 'native-base/lib/typescript/components/primitives/Box';
-import {StyleSheet} from 'react-native';
+import {StyleProp, StyleSheet, ViewStyle} from 'react-native';
 
-function ScreenContent(props: InterfaceBoxProps) {
+export type ScreenContentProps = {
+  containerStyles?: StyleProp<ViewStyle>;
+} & InterfaceBoxProps;
+
+function ScreenContent({containerStyles, ...rest}: ScreenContentProps) {
+  const defaultStyles: ViewStyle = {
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    backgroundColor: theme.colors.white,
+  };
+
+  const combinedStyles = StyleSheet.flatten([defaultStyles, containerStyles]);
   return (
-    <Box {...props} style={Styles.container}>
-      {props.children}
+    <Box {...rest} style={combinedStyles}>
+      {rest.children}
     </Box>
   );
 }

@@ -11,4 +11,5 @@ export type RootStackParamList = {
   Category: undefined;
   Profile: undefined;
   Search: undefined;
+  Product: undefined;
 };

@@ -1,7 +1,7 @@
-import {Box, IBoxProps, Input, theme} from 'native-base';
+import {Box, IBoxProps, Input, useTheme} from 'native-base';
 import {InterfaceInputProps} from 'native-base/lib/typescript/components/primitives/Input/types';
 import {InterfaceTextProps} from 'native-base/lib/typescript/components/primitives/Text/types';
-import {StyleProp, TextStyle} from 'react-native';
+import {StyleProp, StyleSheet, TextStyle, ViewStyle} from 'react-native';
 import FieldLabel from './FormLabel';
 
 export type ITextFieldProps = {
@@ -10,6 +10,7 @@ export type ITextFieldProps = {
   name: string;
   labelProps?: InterfaceTextProps;
   labelStyles?: StyleProp<TextStyle>;
+  inputStyles?: StyleProp<ViewStyle>;
 } & InterfaceInputProps;
 
 export default function TextField({
@@ -21,8 +22,15 @@ export default function TextField({
   containerProps,
   labelProps,
   labelStyles,
+  inputStyles,
   ...rest
 }: ITextFieldProps) {
+  const theme = useTheme();
+  const defaultStyles: ViewStyle = {
+    backgroundColor: theme.colors.gray[200],
+    borderRadius: 10,
+  };
+  const combinedStyles = StyleSheet.flatten([defaultStyles, inputStyles]);
   return (
     <Box width="100%" {...containerProps}>
       <FieldLabel
@@ -33,15 +41,12 @@ export default function TextField({
         {...labelProps}
       />
       <Input
+        variant={'filled'}
         id={name}
         value={value}
         onChangeText={onChangeText}
         {...rest}
-        style={{
-          backgroundColor: theme.colors.gray[200],
-          borderColor: theme.colors.white,
-          borderRadius: 10,
-        }}
+        style={combinedStyles}
       />
     </Box>
   );

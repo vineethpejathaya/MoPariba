@@ -4,12 +4,11 @@ import {
   Box,
   Center,
   FlatList,
-  Heading,
-  IconButton,
   Text,
   VStack,
+  useTheme,
 } from 'native-base';
-import {TouchableOpacity} from 'react-native';
+import {Dimensions, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   CreditCardIcon,
@@ -21,6 +20,7 @@ import {
   SignOutIcon,
   TransactionIcon,
 } from '../../assets/icons/Icons';
+import CustomIconButton from '../../components/Buttons/IconButton';
 import {RootStackParamList} from '../../navigations/types';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
@@ -83,31 +83,40 @@ const navigationItems = [
 ];
 
 function ProfileScreen({navigation}: Props) {
+  const theme = useTheme();
   const handleNavigation = (screen: any) => {
     navigation.navigate(screen);
   };
   return (
     <>
-      <Center mt={10}>
-        <Avatar
-          size="2xl"
-          source={require('../../assets/images/pngs/ProfileImage.png')}>
-          <IconButton
-            icon={<Icon name="photo-camera" size={20} color="#fff" />}
-            borderRadius="full"
-            position="absolute"
-            bottom={0}
-            right={0}
-            size="sm"
-            bg="green.500"
+      <Center style={{height: Dimensions.get('window').height * 0.2}}>
+        <Box
+          style={{
+            position: 'absolute',
+            bottom: -Dimensions.get('window').height * 0.2 * 0.5,
+            zIndex: 1,
+          }}>
+          <Avatar
+            size="2xl"
+            source={require('../../assets/images/pngs/ProfileImage.png')}
           />
-        </Avatar>
-        <Heading mt={3}>Olivia Austin</Heading>
-        <Text color="gray.500">oliviaaustin@gmail.com</Text>
+          <CustomIconButton
+            iconName="photo-camera"
+            size={14}
+            BtnStyles={{
+              position: 'relative',
+              bottom: 30,
+              right: -80,
+            }}
+          />
+        </Box>
       </Center>
-
-      <Box flex={1} px={10} bg="gray.100">
-        <VStack marginTop={20}>
+      <Box flex={1} px={10} style={{backgroundColor: theme.colors.gray[300]}}>
+        <VStack mt={20} space={2}>
+          <VStack alignItems={'center'}>
+            <Text variant={'title1'}>Olivia Austin</Text>
+            <Text variant={'label1'}>oliviaaustin@gmail.com</Text>
+          </VStack>
           <FlatList
             data={navigationItems}
             keyExtractor={item => item.label}

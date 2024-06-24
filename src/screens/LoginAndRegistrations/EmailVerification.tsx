@@ -56,6 +56,7 @@ const EmailVerificationScreen: React.FC<Props> = ({navigation}: Props) => {
                 onChangeText={text => handleChange(text, index)}
                 onKeyPress={e => handleKeyPress(e, index)}
                 maxLength={1}
+                variant={'filled'}
                 keyboardType="numeric"
                 textAlign="center"
                 w={16}

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button, Text, Theme, useTheme} from 'native-base';
 import {useRef, useState} from 'react';
 import {Dimensions, Image, StyleSheet, View} from 'react-native';
@@ -32,11 +33,13 @@ const OnboardingScreen = ({navigation}: any) => {
   ];
 
   const handleSkip = () => {
+    AsyncStorage.setItem('isInitialLaunch', 'false');
     navigation.navigate('Login');
   };
 
   const handleNext = () => {
     if (currentIndex === slides.length - 1) {
+      AsyncStorage.setItem('isInitialLaunch', 'false');
       navigation.navigate('Login');
     } else {
       swiperRef.current.scrollBy(1);

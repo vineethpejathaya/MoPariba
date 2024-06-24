@@ -24,6 +24,7 @@ const theme = extendTheme({
     },
     orange: {
       100: '#E8AD41',
+      200: '#FFC107',
       700: '#FE585A',
     },
     white: '#FFFFFF',
@@ -220,7 +221,7 @@ const theme = extendTheme({
     },
     Input: {
       baseStyle: {
-        borderColor: 'none',
+        borderColor: '#F4F5F9',
         borderWidth: 0,
         borderRadius: 'md',
         _focus: {
@@ -242,7 +243,7 @@ const theme = extendTheme({
           },
         },
         filled: {
-          bg: 'gray.100',
+          bg: '#F4F5F9',
           borderColor: 'gray.300',
           _focus: {
             bg: 'gray.200',
