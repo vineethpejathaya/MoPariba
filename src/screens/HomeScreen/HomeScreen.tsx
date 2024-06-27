@@ -188,15 +188,15 @@ export const GroceryShopList = () => {
             <Text>Fruit, Vegetable</Text>
             <HStack mt={2}>
               <HStack alignItems="center" mr={4}>
-                <Icon name="star" color="orange.500" />
+                {/* <Icon name="star" color="orange.500" /> */}
                 <Text ml={1}>4.7</Text>
               </HStack>
               <HStack alignItems="center" mr={4}>
-                <Icon name="truck" color="orange.500" />
+                {/* <Icon name="truck" color="orange.500" /> */}
                 <Text ml={1}>Free</Text>
               </HStack>
               <HStack alignItems="center">
-                <Icon name="clock-o" color="orange.500" />
+                {/* <Icon name="clock-o" color="orange.500" /> */}
                 <Text ml={1}>20 min</Text>
               </HStack>
             </HStack>

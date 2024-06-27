@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Avatar,
@@ -81,6 +82,9 @@ const navigationItems = [
     icon: 'exit-to-app',
     svgIcon: <SignOutIcon />,
     label: 'Sign out',
+    onPress: () => {
+      AsyncStorage.setItem('userToken', '');
+    },
     navigateTo: 'Login',
   },
 ];
@@ -128,7 +132,10 @@ function ProfileScreen({navigation}: Props) {
                 icon={item.icon}
                 svgIcon={item?.svgIcon}
                 label={item.label}
-                onPress={() => handleNavigation(item.navigateTo)}
+                onPress={() => {
+                  item.onPress && item.onPress();
+                  handleNavigation(item.navigateTo);
+                }}
               />
             )}
           />

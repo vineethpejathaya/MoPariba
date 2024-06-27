@@ -23,44 +23,38 @@ const Stack = createStackNavigator<RootStackParamList>();
 function AppNavigator() {
   const [isInitialLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const checkForInitialLaunch = async () => {
-    try {
-      const data = await AsyncStorage.getItem('isInitialLaunch');
+  const [initialPage, setInitialPage] = useState<
+    keyof RootStackParamList | null
+  >(null);
 
-      if (data === null) {
+  const checkForInitialPage = async () => {
+    try {
+      const isInitialLaunch = await AsyncStorage.getItem('isInitialLaunch');
+      const userToken = await AsyncStorage.getItem('userToken');
+
+      if (isInitialLaunch === null) {
         await AsyncStorage.setItem('isInitialLaunch', 'false');
-        setIsFirstLaunch(true);
+        setInitialPage('Onboarding');
       } else {
-        setIsFirstLaunch(false);
+        if (userToken === null) {
+          setInitialPage('Login');
+        } else {
+          setInitialPage('Home');
+        }
       }
     } catch (error) {
       console.error('Failed to load the initial launch state', error);
     }
   };
 
-  const checkForUserToken = async () => {
-    try {
-      const data = await AsyncStorage.getItem('userToken');
-      if (data === null) {
-        setIsLoggedIn(false);
-      } else {
-        setIsLoggedIn(true);
-      }
-    } catch (error) {
-      console.error('Failed to check the user token', error);
-    }
-  };
-
   useEffect(() => {
     const initialize = async () => {
-      await checkForInitialLaunch();
-      await checkForUserToken();
+      await checkForInitialPage();
     };
-
     initialize();
   }, []);
 
-  if (isInitialLaunch === null) {
+  if (initialPage === null) {
     return null;
   }
 
@@ -70,9 +64,7 @@ function AppNavigator() {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{headerShown: false}}
-            initialRouteName={
-              isInitialLaunch ? 'Onboarding' : isLoggedIn ? 'Home' : 'Login'
-            }>
+            initialRouteName={initialPage}>
             <Stack.Screen name={'Login'} component={LoginScreen} />
             <Stack.Screen name={'Onboarding'} component={OnboardingScreen} />
             <Stack.Screen
