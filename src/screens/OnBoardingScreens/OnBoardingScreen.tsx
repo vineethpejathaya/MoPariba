@@ -89,7 +89,7 @@ export const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     body: {
       fontSize: 15,
-      color: theme.colors.gray[900],
+      color: 'gray.500',
       lineHeight: 22.5,
     },
     slide: {

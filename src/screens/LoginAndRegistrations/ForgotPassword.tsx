@@ -18,6 +18,7 @@ const ForgotPasswordScreen: React.FC<Props> = ({navigation}) => {
   const [formData, setFormData] = useState({
     email: '',
   });
+
   return (
     <LoginScreenTemplate
       title={'Forgot Password'}

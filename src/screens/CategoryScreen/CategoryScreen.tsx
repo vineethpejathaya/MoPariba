@@ -1,5 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RouteProp, useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+
 import {
   Box,
   Button,
@@ -13,7 +14,8 @@ import {
 } from 'native-base';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import {ShoppingBagIcon} from '../../assets/icons/Icons';
+import {FilterIcon, ShoppingBagIcon} from '../../assets/icons/Icons';
+import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
@@ -69,20 +71,35 @@ const data = [
   },
 ];
 
-type CategoryScreenNavigationProp = NativeStackNavigationProp<
+type CategoryScreenRouteProp = RouteProp<RootStackParamList, 'Category'>;
+type CategoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   'Category'
 >;
 
-type Props = {
+export type CategoryScreenProps = {
+  route: CategoryScreenRouteProp;
   navigation: CategoryScreenNavigationProp;
 };
-const CategoryPage = ({navigation}: Props) => {
+
+const CategoryPage = ({route, navigation}: CategoryScreenProps) => {
+  const {name} = route.params;
+
   const theme = useTheme();
   const productStyles = createStyles(theme);
   return (
     <>
-      <ScreenHeader title={'Vegetables'} />
+      <ScreenHeader
+        title={name}
+        actions={[
+          <CustomIconButton
+            SvgIcon={<FilterIcon />}
+            BtnStyles={{backgroundColor: 'white'}}
+            iconSize={25}
+            onPress={() => {}}
+          />,
+        ]}
+      />
       <ScreenContent>
         <FlatList
           data={data}

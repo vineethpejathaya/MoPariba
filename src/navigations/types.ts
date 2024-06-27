@@ -1,15 +1,17 @@
 export type RootStackParamList = {
   Splash: undefined;
-  Onboarding1: undefined;
-  Onboarding2: undefined;
-  Onboarding3: undefined;
+  Onboarding: undefined;
   Login: undefined;
   ForgotPassword: undefined;
   SignUp: undefined;
   EmailVerification: undefined;
   Home: undefined;
-  Category: undefined;
+  Category: {
+    name: string;
+  };
   Profile: undefined;
   Search: undefined;
   Product: undefined;
+  MyAddress: undefined;
+  Reviews: undefined;
 };

@@ -1,6 +1,11 @@
-import {Avatar, Box, HStack, Icon, Text, VStack} from 'native-base';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {Avatar, Divider, HStack, Text, VStack, theme} from 'native-base';
 import React from 'react';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+import CustomIconButton from '../../components/Buttons/IconButton';
+import ScreenHeader from '../../components/ScreenHeader';
+import StarRating from '../../components/StarRating';
+import {RootStackParamList} from '../../navigations/types';
 
 const reviews = [
   {
@@ -37,39 +42,65 @@ const reviews = [
   },
 ];
 
-const ReviewItem = ({name, avatar, rating, review}: any) => (
-  <Box borderBottomWidth="1" borderColor="coolGray.200" py="4">
-    <HStack space={3} justifyContent="space-between">
-      <Avatar size="48px" source={{uri: avatar}} />
-      <VStack>
-        <Text bold>{name}</Text>
-        <HStack space={1} alignItems="center">
-          <Text>{rating}</Text>
-          <Icon name="star" size="sm" color="yellow.400" />
-          <Icon name="star" size="sm" color="yellow.400" />
-          <Icon name="star" size="sm" color="yellow.400" />
-          <Icon name="star" size="sm" color="yellow.400" />
-          <Icon name="star-half" size="sm" color="yellow.400" />
-        </HStack>
-        <Text>{review}</Text>
-      </VStack>
-    </HStack>
-  </Box>
-);
+type ReviewsScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Reviews'
+>;
 
-const ReviewsScreen = () => (
-  <SafeAreaView style={{flex: 1}}>
-    <Box flex={1} p="4">
-      <Text fontSize="xl" bold mb="4">
-        Reviews
-      </Text>
-      <ScrollView>
-        {reviews.map(review => (
-          <ReviewItem key={review.id} {...review} />
-        ))}
-      </ScrollView>
-    </Box>
-  </SafeAreaView>
+type Props = {
+  navigation: ReviewsScreenNavigationProp;
+};
+
+const ReviewsScreen = ({navigation}: Props) => (
+  <>
+    <ScreenHeader
+      title={'Reviews'}
+      actions={[
+        <CustomIconButton
+          iconName={'plus'}
+          BtnStyles={{backgroundColor: 'white'}}
+          iconSize={25}
+          onPress={() => {}}
+        />,
+      ]}
+    />
+
+    <VStack space={3} alignItems={'center'} flex={1} mt={4}>
+      {reviews.map((review, index: number) => (
+        <ReviewItem key={index} {...review} />
+      ))}
+    </VStack>
+  </>
 );
 
 export default ReviewsScreen;
+
+const ReviewItem = ({name, avatar, rating, review}: any) => {
+  return (
+    <VStack style={ReviewCard.card}>
+      <HStack space={3} alignItems={'center'}>
+        <Avatar size="48px" source={{uri: avatar}} />
+        <VStack>
+          <Text variant={'title1'}>{name}</Text>
+          <Text variant={'body2'}>32 minutes ago</Text>
+        </VStack>
+      </HStack>
+      <Divider orientation="horizontal" />
+      <VStack>
+        <StarRating rating={4.5} maxRating={5} />
+        <Text>{review}</Text>
+      </VStack>
+    </VStack>
+  );
+};
+
+const ReviewCard = StyleSheet.create({
+  card: {
+    gap: 10,
+    width: Dimensions.get('window').width * 0.9,
+    borderRadius: 10,
+    borderBlockColor: 'black',
+    backgroundColor: theme.colors.white,
+    padding: 15,
+  },
+});

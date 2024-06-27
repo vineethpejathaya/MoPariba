@@ -4,6 +4,8 @@ import {
   Box,
   Center,
   FlatList,
+  HStack,
+  IconButton,
   Text,
   VStack,
   useTheme,
@@ -13,6 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   CreditCardIcon,
   FavoriteIcon,
+  HomeIcon,
   LocationIcon,
   NotificationGreenIcon,
   OrderIcon,
@@ -78,7 +81,7 @@ const navigationItems = [
     icon: 'exit-to-app',
     svgIcon: <SignOutIcon />,
     label: 'Sign out',
-    navigateTo: 'SignOutScreen',
+    navigateTo: 'Login',
   },
 ];
 
@@ -131,6 +134,7 @@ function ProfileScreen({navigation}: Props) {
           />
         </VStack>
       </Box>
+      <BottomTabs navigation={navigation} />
     </>
   );
 }
@@ -165,5 +169,21 @@ const NavigationItem = ({
         />
       </Box>
     </TouchableOpacity>
+  );
+};
+
+const BottomTabs = ({navigation}: any) => {
+  return (
+    <Box
+      style={{elevation: 1, backgroundColor: 'white', padding: 4}}
+      justifyContent="center"
+      alignItems="center">
+      <HStack>
+        <IconButton
+          icon={<HomeIcon />}
+          onPress={() => navigation.navigate('Home')}
+        />
+      </HStack>
+    </Box>
   );
 };

@@ -2,20 +2,25 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Button,
   Center,
+  Divider,
   HStack,
+  IconButton,
+  Image,
   Text,
   Theme,
   VStack,
   useTheme,
 } from 'native-base';
 import React from 'react';
-import {Dimensions, Image, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {ShoppingBagIcon} from '../../assets/icons/Icons';
 import FavoriteCheckbox from '../../components/FavoriteCheckBox';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import StarRating from '../../components/StarRating';
 import {RootStackParamList} from '../../navigations/types';
+
 type ProductScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Product'
@@ -31,7 +36,7 @@ function ProductScreen({navigation}: Props) {
     <>
       <ScreenHeader />
       <ScreenContent>
-        <Center>
+        <Center style={{height: Dimensions.get('window').height * 0.4}}>
           <Image
             source={require('../../assets/images/pngs/lime.png')}
             alt="Organic Lemons"
@@ -43,9 +48,10 @@ function ProductScreen({navigation}: Props) {
         <VStack
           space={2}
           px={5}
-          style={{height: Dimensions.get('window').height * 0.5}}>
+          style={{height: Dimensions.get('window').height * 0.6}}
+          alignItems={'stretch'}>
           <HStack alignItems={'flex-start'} justifyContent={'space-between'}>
-            <ProductBrief />
+            <ProductBrief navigation={navigation} />
             <FavoriteCheckbox />
           </HStack>
           <Text variant={'body1'} style={styles.text}>
@@ -57,12 +63,29 @@ function ProductScreen({navigation}: Props) {
           </Text>
 
           <VStack space={2} alignItems="center" justifyContent="space-between">
-            <HStack space={2} alignItems="center">
-              <Button variant="ghost">-</Button>
-              <Text>3</Text>
-              <Button variant="ghost">+</Button>
+            <HStack style={styles.quantityContainer}>
+              <Text style={[styles.text, {fontSize: 16}]} variant={'body1'}>
+                Quantity
+              </Text>
+              <HStack space={2} alignItems="center">
+                <IconButton
+                  icon={
+                    <FontAwesomeIcon name={'minus'} size={18} color={'green'} />
+                  }
+                  onPress={() => {}}
+                />
+                <Divider orientation="vertical" />
+                <Text variant={'subheader1'}>3</Text>
+                <IconButton
+                  icon={
+                    <FontAwesomeIcon name={'plus'} size={18} color={'green'} />
+                  }
+                  onPress={() => {}}
+                />
+                <Divider orientation="vertical" />
+              </HStack>
             </HStack>
-            <Button flex={1} rightIcon={<ShoppingBagIcon />}>
+            <Button style={styles.btn} rightIcon={<ShoppingBagIcon />}>
               Add to cart
             </Button>
           </VStack>
@@ -74,7 +97,7 @@ function ProductScreen({navigation}: Props) {
 
 export default ProductScreen;
 
-export const ProductBrief = () => {
+export const ProductBrief = ({navigation}: any) => {
   const theme = useTheme();
   const styles = createStyle(theme);
   return (
@@ -93,7 +116,8 @@ export const ProductBrief = () => {
             variant={'link'}
             _text={{
               color: theme.colors.gray[900],
-            }}>
+            }}
+            onPress={() => navigation.navigate('Reviews')}>
             (89 reviews)
           </Button>
         </HStack>
@@ -107,9 +131,23 @@ export const createStyle = (theme: Theme) => {
     prize: {
       color: theme.colors.primary[500],
       fontSize: 18,
+      lineHeight: 30,
     },
     text: {
-      color: theme.colors.gray[900],
+      color: 'gray.500',
+    },
+
+    quantityContainer: {
+      width: '100%',
+      padding: 5,
+      backgroundColor: theme.colors.white,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    btn: {
+      fontSize: 18,
+      height: 60,
+      width: '100%',
     },
   });
 

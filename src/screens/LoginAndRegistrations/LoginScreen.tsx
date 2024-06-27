@@ -1,3 +1,5 @@
+import {useMutation} from '@apollo/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Button,
@@ -9,12 +11,17 @@ import {
   Text,
   VStack,
   theme,
+  useToast,
 } from 'native-base';
 import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
+import ToastAlert from '../../components/ToastAlert';
 import {RootStackParamList} from '../../navigations/types';
+import {handleLoginValidation} from '../../services/Form Validations/ValidationMethos';
+import {LOGIN_MUTATION} from '../../services/GGL-Queries/loginAndRegistartion';
 import LoginScreenTemplate from './components/ScreenTemplate';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
@@ -58,13 +65,60 @@ export const LoginForm = ({
 }: {
   navigation: LoginScreenNavigationProp;
 }) => {
-  const [isLoading] = useState(false);
+  const toast = useToast();
   const [show, setShow] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    checked: false,
+    rememberMe: false,
   });
+  const [generateCustomerToken, {data, loading, error}] = useMutation(
+    LOGIN_MUTATION,
+    {
+      onCompleted: res => {
+        AsyncStorage.setItem(
+          'userToken',
+          res?.generateCustomerToken?.token ?? '',
+        );
+        navigation.navigate('Home');
+      },
+      onError: err => {
+        toast.show({title: err.message, color: 'red.400'});
+      },
+    },
+  );
+
+  const handleLogin = () => {
+    const {isInValid, errorMessage} = handleLoginValidation(formData);
+
+    if (isInValid) {
+      toast.show({
+        render: ({id}) => {
+          return (
+            <ToastAlert
+              id={id}
+              variant={'left-accent'}
+              title={'Login form validation failed'}
+              description={errorMessage}
+              status={'error'}
+              isClosable={true}
+            />
+          );
+        },
+        placement: 'top-right',
+      });
+      return;
+    }
+
+    generateCustomerToken({
+      variables: {
+        email: formData.email,
+        password: formData.password,
+      },
+    });
+  };
+
   return (
     <>
       <VStack space={7} w="100%">
@@ -97,7 +151,7 @@ export const LoginForm = ({
           }}
           InputRightElement={
             <Pressable onPress={() => setShow(!show)}>
-              <Icon
+              <MaterialIcon
                 style={{marginRight: 5}}
                 name={show ? 'visibility' : 'visibility-off'}
                 size={25}
@@ -111,7 +165,7 @@ export const LoginForm = ({
         <HStack
           direction={'row'}
           style={{alignItems: 'center', justifyContent: 'space-between'}}>
-          <Checkbox value={'rememberMe'} isChecked={formData.checked}>
+          <Checkbox value={'rememberMe'} isChecked={formData.rememberMe}>
             Remember me
           </Checkbox>
           <Button
@@ -124,7 +178,13 @@ export const LoginForm = ({
           </Button>
         </HStack>
 
-        <Button onPress={() => navigation.navigate('Home')}>Log In</Button>
+        <Button
+          isLoading={loading}
+          spinnerPlacement="end"
+          isLoadingText="Submitting"
+          onPress={handleLogin}>
+          Log In
+        </Button>
       </VStack>
     </>
   );
@@ -138,15 +198,15 @@ export const SocialMediaList = () => {
 
         <Stack direction={'row'} space={4}>
           <IconButton
-            icon={<Icon name="facebook" size={35} color="white" />}
+            icon={<FontAwesomeIcon name="facebook" size={35} color="white" />}
             style={[iconStyle.style, {backgroundColor: '#395998'}]}
           />
           <IconButton
-            icon={<Icon name="twitter" size={35} color="white" />}
+            icon={<FontAwesomeIcon name="twitter" size={35} color="white" />}
             style={[iconStyle.style, {backgroundColor: '#169CE8'}]}
           />
           <IconButton
-            icon={<Icon name="apple" size={35} color="white" />}
+            icon={<FontAwesomeIcon name="apple" size={35} color="white" />}
             style={[iconStyle.style, {backgroundColor: '#1B1F2F'}]}
           />
         </Stack>

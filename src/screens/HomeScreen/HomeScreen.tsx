@@ -1,16 +1,21 @@
+import {useQuery} from '@apollo/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Box,
   Button,
+  Center,
   FlatList,
   HStack,
   Image,
   Input,
   theme as NativeTheme,
+  Spinner,
   Text,
   VStack,
   useTheme,
 } from 'native-base';
+import {useEffect, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
@@ -18,28 +23,9 @@ import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
+import {GET_CATEGORIES} from '../../services/GGL-Queries/Home';
 
-const categories = [
-  {
-    id: '1',
-    name: 'Veggie',
-    price: '$70',
-    image: require('../../assets/images/pngs/pineapple-pieces.png'),
-  },
-  {
-    id: '2',
-    name: 'Fruits',
-    price: '$50',
-    image: require('../../assets/images/pngs/pomegranate-11.png'),
-  },
-  {
-    id: '2',
-    name: 'Veggie',
-    price: '$50',
-    image: require('../../assets/images/pngs/green-fresh-broccoli.png'),
-  },
-  // add more categories as needed
-];
+const altImage = require('../../assets/images/pngs/altImage.png');
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -52,6 +38,31 @@ type Props = {
 
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
+  const [categories, setCategories] = useState([]);
+  const {loading, error, data} = useQuery(GET_CATEGORIES, {
+    variables: {parentId: ['2'], pageSize: 10, currentPage: 1},
+    onCompleted: res => {
+      console.log(res, 'result');
+      setCategories(res.categories.items);
+    },
+  });
+
+  const checkForUserToken = async () => {
+    const data = await AsyncStorage.getItem('userToken');
+    console.log(data, 'userToken');
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      await checkForUserToken();
+    };
+
+    initialize();
+  }, []);
+
+  if (loading) {
+    <Spinner />;
+  }
   return (
     <>
       <ScreenHeader
@@ -99,7 +110,7 @@ function HomeScreen({navigation}: Props) {
               placeholder="Search dishes, restaurants"
             />
           </Box>
-          <CategoryList navigation={navigation} />
+          <CategoryList navigation={navigation} categories={categories} />
           <GroceryShopList />
         </VStack>
       </ScreenContent>
@@ -109,7 +120,7 @@ function HomeScreen({navigation}: Props) {
 
 export default HomeScreen;
 
-export const CategoryList = ({navigation}: any) => {
+export const CategoryList = ({navigation, categories}: any) => {
   const theme = useTheme();
 
   return (
@@ -127,27 +138,29 @@ export const CategoryList = ({navigation}: any) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         data={categories}
-        renderItem={({item}) => (
-          <TouchableOpacity onPress={() => navigation.navigate('Category')}>
-            <Box style={CategoryStyles.container}>
-              <Image
-                style={CategoryStyles.image}
-                source={item.image}
-                alt={item?.name}
-                resizeMode="contain"
-                height={140}
-                width={122}
-              />
+        renderItem={({item}: any) => (
+          <Box style={CategoryStyles.container}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('Category', {name: item.name})
+              }>
+              <Center>
+                <Box style={CategoryStyles.image}>
+                  <Image
+                    source={item?.image ?? altImage}
+                    alt={item?.name}
+                    resizeMode="contain"
+                  />
+                </Box>
 
-              <Text variant={'subheader2'}>{item.name}</Text>
-              <HStack space={3}>
-                <Text>Starting</Text>
-                <Text>{item.price}</Text>
-              </HStack>
-            </Box>
-          </TouchableOpacity>
+                <Text variant={'subheader2'} style={CategoryStyles.title}>
+                  {item.name}
+                </Text>
+              </Center>
+            </TouchableOpacity>
+          </Box>
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={(item: any) => item.uid}
         mt={4}
       />
     </>
@@ -203,17 +216,23 @@ export const GroceryShopList = () => {
 export const CategoryStyles = StyleSheet.create({
   container: {
     backgroundColor: NativeTheme.colors.white,
-    padding: 4,
+    padding: 5,
     margin: 4,
+    height: 144,
     borderRadius: 10,
     width: 147,
-    justifyContent: 'center',
-    alignItems: 'center',
     elevation: 1,
+    alignItems: 'center',
   },
+
   image: {
+    backgroundColor: NativeTheme.colors.white,
     borderRadius: 10,
     objectFit: 'contain',
     zIndex: 1,
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 16,
   },
 });
