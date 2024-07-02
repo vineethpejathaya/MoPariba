@@ -3,21 +3,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Box,
-  Center,
   FlatList,
   HStack,
   Image,
   Input,
-  theme as NativeTheme,
   Text,
   VStack,
   useTheme,
 } from 'native-base';
 import {useState} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
+import CategoryCard from '../../components/CategoryCard';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
@@ -43,7 +41,7 @@ type Props = {
 
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
-  const [categories, setCategories] = useState<CategoryItem[] | null>(null);
+  const [categories, setCategories] = useState<CategoryItem[] | []>([]);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
     GET_HOME_SCREEN_DATA,
@@ -93,7 +91,7 @@ function HomeScreen({navigation}: Props) {
         ]}
       />
       <ScreenContent flex={1}>
-        <VStack px={4} alignItems={'stretch'}>
+        <VStack px={4} justifyContent={'space-between'}>
           <Box>
             <Text
               mb={4}
@@ -121,7 +119,9 @@ function HomeScreen({navigation}: Props) {
               placeholder="Search dishes, restaurants"
             />
           </Box>
-          <CategoryList navigation={navigation} categories={categories} />
+          {categories?.length > 0 && (
+            <CategoryList navigation={navigation} categories={categories} />
+          )}
           <GroceryShopList />
         </VStack>
       </ScreenContent>
@@ -138,46 +138,31 @@ export const CategoryList = ({
   navigation: any;
   categories: CategoryItem[] | null;
 }) => {
-  const theme = useTheme();
-
   return (
     <>
-      <TitleActions
-        title="All Categories"
-        btnText="See all"
-        onPress={() => {
-          navigation.navigate('Category');
-        }}
-      />
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={categories}
-        renderItem={({item}: any) => (
-          <Box style={CategoryStyles.container}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('Category', {name: item.name})
-              }>
-              <Center>
-                <Box style={CategoryStyles.image}>
-                  <Image
-                    source={item?.image ?? altImage}
-                    alt={item?.name}
-                    resizeMode="contain"
-                  />
-                </Box>
-
-                <Text variant={'subheader2'} style={CategoryStyles.title}>
-                  {item.name}
-                </Text>
-              </Center>
-            </TouchableOpacity>
-          </Box>
-        )}
-        keyExtractor={(item: any) => item.uid}
-        mt={4}
-      />
+      <Box>
+        <TitleActions
+          title="All Categories"
+          btnText="See all"
+          onPress={() => {
+            navigation.navigate('Category');
+          }}
+        />
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={categories}
+          renderItem={({item}: any) => (
+            <CategoryCard
+              title={item.name}
+              price={item.price}
+              imageUrl={item.image}
+            />
+          )}
+          keyExtractor={(item: any) => item.uid}
+          mt={4}
+        />
+      </Box>
     </>
   );
 };
@@ -223,27 +208,3 @@ export const GroceryShopList = () => {
     </>
   );
 };
-
-export const CategoryStyles = StyleSheet.create({
-  container: {
-    backgroundColor: NativeTheme.colors.white,
-    padding: 5,
-    margin: 4,
-    height: 144,
-    borderRadius: 10,
-    width: 147,
-    elevation: 1,
-    alignItems: 'center',
-  },
-
-  image: {
-    backgroundColor: NativeTheme.colors.white,
-    borderRadius: 10,
-    objectFit: 'contain',
-    zIndex: 1,
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: 16,
-  },
-});
