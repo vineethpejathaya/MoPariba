@@ -1,6 +1,6 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Text} from 'native-base';
-import {RootStackParamList} from '../../navigations/types';
+import {RootStackParamList} from '../../../../navigations/types';
 
 type MyAddressScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,

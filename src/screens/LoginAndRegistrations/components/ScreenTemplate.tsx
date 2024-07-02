@@ -55,7 +55,7 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     paddingHorizontal: 20,
-    height: Dimensions.get('window').height * 0.3,
+    height: Dimensions.get('window').height * 0.25,
   },
   backgroundImage: {
     resizeMode: 'contain',
@@ -70,7 +70,7 @@ export const Styles = StyleSheet.create({
   },
 
   footer: {
-    height: Dimensions.get('window').height * 0.7,
+    height: Dimensions.get('window').height * 0.75,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',

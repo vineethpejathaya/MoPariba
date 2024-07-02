@@ -116,7 +116,7 @@ export const SignUpForm = ({
 
   return (
     <>
-      <VStack space={7} w="100%">
+      <VStack space={5} w="100%">
         <TextField
           label={'First Name'}
           name={'firstName'}
@@ -175,7 +175,7 @@ export const SignUpForm = ({
             <Pressable
               onPress={() => setShow(s => ({...s, password: !show.password}))}>
               <Icon
-                style={{marginRight: 10}}
+                style={{marginRight: 15}}
                 name={show.password ? 'visibility' : 'visibility-off'}
                 size={25}
                 color="muted.500"
@@ -203,7 +203,7 @@ export const SignUpForm = ({
                 setShow(s => ({...s, confirmPassword: !show.confirmPassword}))
               }>
               <Icon
-                style={{marginRight: 10}}
+                style={{marginRight: 15}}
                 name={show.confirmPassword ? 'visibility' : 'visibility-off'}
                 size={25}
                 color="muted.500"

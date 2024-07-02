@@ -8,8 +8,10 @@ import {
   Image,
   Input,
   Text,
+  Theme,
   VStack,
   theme,
+  useTheme,
 } from 'native-base';
 import React from 'react';
 import {SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
@@ -49,7 +51,7 @@ function SearchScreen({navigation}: Props) {
         ]}
         actions={[
           <CustomIconButton
-            SvgIcon={<NotificationIcon />}
+            svgIcon={<NotificationIcon />}
             BtnStyles={{backgroundColor: '#181C2E'}}
             iconSize={25}
             onPress={() => {
@@ -62,6 +64,7 @@ function SearchScreen({navigation}: Props) {
         <SafeAreaView style={{flex: 1}}>
           <VStack space={5} justifyContent={'space-between'} px={5}>
             <Input
+              variant={'outline'}
               InputLeftElement={
                 <Icon name="search" size={25} style={{padding: 10}} />
               }
@@ -81,19 +84,15 @@ export default SearchScreen;
 
 export const RecentSearch = () => {
   const recentKeywords = ['Fruite', 'Grocery', 'Veggies', 'Snacks'];
+  const theme = useTheme();
+  const styles = createRecentSearchStyles(theme);
   return (
     <>
       <VStack space={2}>
         <Text variant={'header2'}>Recent Keywords</Text>
         <HStack space={2} mb={4} flexWrap="wrap">
           {recentKeywords.map((keyword, index) => (
-            <Badge
-              key={index}
-              variant="outline"
-              colorScheme="gray"
-              borderRadius="10"
-              px="4"
-              py="2">
+            <Badge key={index} style={styles.container} variant="outline">
               {keyword}
             </Badge>
           ))}
@@ -172,8 +171,8 @@ export const PopularOffers = ({navigation}: any) => {
           horizontal
           data={popularOffers}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-              <Box style={CategoryStyles?.container}>
+            <Box style={CategoryStyles?.container}>
+              <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                 <Image
                   style={CategoryStyles?.image}
                   source={item.image}
@@ -187,8 +186,8 @@ export const PopularOffers = ({navigation}: any) => {
                 <HStack space={3}>
                   <Text>{item.discount}</Text>
                 </HStack>
-              </Box>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </Box>
           )}
           keyExtractor={(item, index) => index.toString()}
           showsHorizontalScrollIndicator={false}
@@ -196,6 +195,21 @@ export const PopularOffers = ({navigation}: any) => {
       </VStack>
     </>
   );
+};
+
+const createRecentSearchStyles = (theme: Theme) => {
+  const RecentSearchStyles = StyleSheet.create({
+    container: {
+      height: 46,
+      width: 89,
+      color: theme.colors.gray[500],
+      borderRadius: 15,
+      borderColor: theme.colors.gray[500],
+      padding: 5,
+      fontSize: 16,
+    },
+  });
+  return RecentSearchStyles;
 };
 
 export const CategoryStyles = StyleSheet.create({

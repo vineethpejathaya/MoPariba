@@ -11,8 +11,8 @@ import {
   VStack,
   useTheme,
 } from 'native-base';
-import {Dimensions, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useEffect, useState} from 'react';
+import {Dimensions} from 'react-native';
 import {
   CreditCardIcon,
   FavoriteIcon,
@@ -25,7 +25,9 @@ import {
   TransactionIcon,
 } from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
+import NavigationItem from '../../components/NavigationItem';
 import {RootStackParamList} from '../../navigations/types';
+import {Customer} from '../../services/interfaces/Home';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -76,7 +78,7 @@ const navigationItems = [
     icon: 'notifications',
     svgIcon: <NotificationGreenIcon />,
     label: 'Notifications',
-    navigateTo: 'NotificationsScreen',
+    navigateTo: 'NotificationSettings',
   },
   {
     icon: 'exit-to-app',
@@ -91,9 +93,20 @@ const navigationItems = [
 
 function ProfileScreen({navigation}: Props) {
   const theme = useTheme();
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const handleNavigation = (screen: any) => {
     navigation.navigate(screen);
   };
+
+  useEffect(() => {
+    const initialize = async () => {
+      const userData = await AsyncStorage.getItem('userDetails');
+      if (userData) {
+        setCustomer(JSON.parse(userData));
+      }
+    };
+    initialize();
+  });
   return (
     <>
       <Center style={{height: Dimensions.get('window').height * 0.2}}>
@@ -121,15 +134,17 @@ function ProfileScreen({navigation}: Props) {
       <Box flex={1} px={10} style={{backgroundColor: theme.colors.gray[300]}}>
         <VStack mt={20} space={2}>
           <VStack alignItems={'center'}>
-            <Text variant={'title1'}>Olivia Austin</Text>
-            <Text variant={'label1'}>oliviaaustin@gmail.com</Text>
+            <Text variant={'title1'} style={{textTransform: 'capitalize'}}>
+              {customer?.firstname ?? 'Guest'} {customer?.lastname ?? ''}
+            </Text>
+            <Text variant={'label1'}>{customer?.email ?? '--'}</Text>
           </VStack>
           <FlatList
             data={navigationItems}
             keyExtractor={item => item.label}
             renderItem={({item}) => (
               <NavigationItem
-                icon={item.icon}
+                iconName={item.icon}
                 svgIcon={item?.svgIcon}
                 label={item.label}
                 onPress={() => {
@@ -141,45 +156,14 @@ function ProfileScreen({navigation}: Props) {
           />
         </VStack>
       </Box>
-      <BottomTabs navigation={navigation} />
+      <TabComponent navigation={navigation} />
     </>
   );
 }
 
 export default ProfileScreen;
 
-const NavigationItem = ({
-  icon,
-  svgIcon,
-  label,
-  onPress,
-}: {
-  icon: string;
-  svgIcon?: React.ReactElement;
-
-  label: String;
-  onPress: () => void;
-}) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <Box flexDirection="row" alignItems="center" paddingY={4} paddingX={2}>
-        {svgIcon ? svgIcon : <Icon name={icon} size={25} color="green.500" />}
-
-        <Text variant={'subTitle1'} style={{marginLeft: 10}}>
-          {label}
-        </Text>
-        <Icon
-          name="chevron-right"
-          size={25}
-          color="gray.500"
-          style={{marginLeft: 'auto'}}
-        />
-      </Box>
-    </TouchableOpacity>
-  );
-};
-
-const BottomTabs = ({navigation}: any) => {
+const TabComponent = ({navigation}: any) => {
   return (
     <Box
       style={{elevation: 1, backgroundColor: 'white', padding: 4}}

@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button, Text, Theme, useTheme} from 'native-base';
 import {useRef, useState} from 'react';
-import {Dimensions, Image, StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
+import ResponsiveImage from '../../components/ResponsiveImage';
 
 const OnboardingScreen = ({navigation}: any) => {
   const swiperRef: any = useRef(null);
@@ -56,7 +57,7 @@ const OnboardingScreen = ({navigation}: any) => {
         activeDot={<View style={styles.activeDot} />}>
         {slides.map((slide, index) => (
           <View key={slide.key} style={styles.slide}>
-            <Image source={slide.image} style={styles.image} />
+            <ResponsiveImage source={slide.image} alt={slide.title} />
             <View style={styles.textContainer}>
               <Text variant="heading">{slide.title}</Text>
               <Text variant={'body2'} style={styles.body}>
@@ -68,7 +69,7 @@ const OnboardingScreen = ({navigation}: any) => {
                 variant={'ghost'}
                 onPress={handleSkip}
                 _text={{
-                  color: theme.colors.gray[600],
+                  color: theme.colors.gray[900],
                 }}>
                 Skip
               </Button>
@@ -88,8 +89,9 @@ export default OnboardingScreen;
 export const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     body: {
+      textAlign: 'center',
       fontSize: 15,
-      color: 'gray.500',
+      color: theme.colors.gray[900],
       lineHeight: 22.5,
     },
     slide: {
@@ -120,6 +122,7 @@ export const createStyles = (theme: Theme) => {
       margin: 3,
     },
     textContainer: {
+      padding: 10,
       width: '100%',
       display: 'flex',
       justifyContent: 'space-between',

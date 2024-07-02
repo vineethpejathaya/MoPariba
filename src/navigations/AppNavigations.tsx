@@ -11,18 +11,18 @@ import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerif
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPassword';
 import SignUpScreen from '../screens/LoginAndRegistrations/SignUp';
 import OnboardingScreen from '../screens/OnBoardingScreens/OnBoardingScreen';
+import ProductListScreen from '../screens/ProductListScreen';
 import ReviewsScreen from '../screens/ProductReviews/ProductReviews';
 import ProductScreen from '../screens/ProductScreen/ProductScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import SearchScreen from '../screens/SearchScreen';
+import ProfileScreen from '../screens/UserProfileAndSettings/ProfileScreen';
+import NotificationSettings from '../screens/UserProfileAndSettings/SubScreens/NotificationSettings';
 import theme from '../themes/theme';
 import {RootStackParamList} from './types';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 function AppNavigator() {
-  const [isInitialLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [initialPage, setInitialPage] = useState<
     keyof RootStackParamList | null
   >(null);
@@ -71,17 +71,23 @@ function AppNavigator() {
               name={'ForgotPassword'}
               component={ForgotPasswordScreen}
             />
-            <Stack.Screen name={'SignUp'} component={SignUpScreen} />
             <Stack.Screen
               name={'EmailVerification'}
               component={EmailVerificationScreen}
             />
+            <Stack.Screen name={'SignUp'} component={SignUpScreen} />
+
             <Stack.Screen name={'Home'} component={HomeScreen} />
-            <Stack.Screen name={'Profile'} component={ProfileScreen} />
-            <Stack.Screen name={'Category'} component={CategoryScreen} />
             <Stack.Screen name={'Search'} component={SearchScreen} />
+            <Stack.Screen name={'Category'} component={CategoryScreen} />
+            <Stack.Screen name={'ProductList'} component={ProductListScreen} />
             <Stack.Screen name={'Product'} component={ProductScreen} />
             <Stack.Screen name={'Reviews'} component={ReviewsScreen} />
+            <Stack.Screen name={'Profile'} component={ProfileScreen} />
+            <Stack.Screen
+              name={'NotificationSettings'}
+              component={NotificationSettings}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </NativeBaseProvider>

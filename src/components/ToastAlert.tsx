@@ -30,7 +30,7 @@ const ToastAlert = ({
   return (
     <>
       <Alert
-        style={{width: 300}}
+        style={{width: 350}}
         alignSelf="center"
         flexDirection="row"
         status={status ? status : 'info'}

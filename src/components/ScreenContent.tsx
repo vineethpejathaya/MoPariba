@@ -10,6 +10,7 @@ function ScreenContent({containerStyles, ...rest}: ScreenContentProps) {
   const defaultStyles: ViewStyle = {
     paddingHorizontal: 10,
     paddingBottom: 10,
+    paddingTop: 10,
     backgroundColor: theme.colors.white,
   };
 

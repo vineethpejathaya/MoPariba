@@ -174,7 +174,7 @@ const theme = extendTheme({
     Button: {
       baseStyle: {
         borderRadius: 12,
-        height: 60,
+        height: 62,
         padding: '10px 40px',
         textTransform: 'capitalize',
         fontWeight: 700,
@@ -187,6 +187,7 @@ const theme = extendTheme({
           _text: {
             fontFamily: 'sen',
             color: 'white',
+            fontSize: 18,
             fontWeight: 700,
           },
           _pressed: {
@@ -224,6 +225,7 @@ const theme = extendTheme({
         borderColor: '#F4F5F9',
         borderWidth: 0,
         borderRadius: 'md',
+        height: 62,
         _focus: {
           borderColor: 'none',
         },
@@ -235,9 +237,11 @@ const theme = extendTheme({
         size: 'md',
         variant: 'outline',
       },
+
       variants: {
         outline: {
-          borderColor: 'none',
+          bg: '#F6F6F6',
+          borderColor: 'gray.600',
           _focus: {
             borderColor: 'gray.600',
           },

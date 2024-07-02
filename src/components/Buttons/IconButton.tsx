@@ -7,14 +7,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 export type Props = {
   iconName?: string;
   iconSize?: number;
-  SvgIcon?: React.ReactElement;
+  svgIcon?: React.ReactElement;
   onPress?: () => void;
   BtnStyles?: StyleProp<ViewStyle>;
 } & InterfaceIconButtonProps;
 
 function CustomIconButton({
   iconName,
-  SvgIcon,
+  svgIcon,
   iconSize = 25,
   onPress,
   BtnStyles,
@@ -27,15 +27,24 @@ function CustomIconButton({
       height: 45,
       borderRadius: 50,
       backgroundColor: theme.colors.gray[500],
+      color: '#181C2E',
     },
   });
+
+  const renderIcon = () => {
+    if (svgIcon) {
+      return svgIcon;
+    }
+
+    return (
+      <Icon name={iconName ?? 'check'} size={iconSize} color={'#181C2E'} />
+    );
+  };
 
   return (
     <IconButton
       style={[Styles.bth, BtnStyles]}
-      icon={
-        SvgIcon ? SvgIcon : <Icon name={iconName ?? 'check'} size={iconSize} />
-      }
+      icon={renderIcon()}
       {...rest}
       onPress={onPress}
     />

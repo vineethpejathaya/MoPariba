@@ -3,27 +3,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Box,
-  Button,
   Center,
   FlatList,
   HStack,
   Image,
   Input,
   theme as NativeTheme,
-  Spinner,
   Text,
   VStack,
   useTheme,
 } from 'native-base';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
+import SpinnerComponent from '../../components/SpinnerComponent';
+import TitleActions from '../../components/TitleActions';
 import {RootStackParamList} from '../../navigations/types';
-import {GET_CATEGORIES} from '../../services/GGL-Queries/Home';
+import {GET_HOME_SCREEN_DATA} from '../../services/GGL-Queries/Home';
+import {
+  CategoryItem,
+  Customer,
+  GetHomeScreenDataResponse,
+} from '../../services/interfaces/Home';
 
 const altImage = require('../../assets/images/pngs/altImage.png');
 
@@ -38,37 +43,30 @@ type Props = {
 
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
-  const [categories, setCategories] = useState([]);
-  const {loading, error, data} = useQuery(GET_CATEGORIES, {
-    variables: {parentId: ['2'], pageSize: 10, currentPage: 1},
-    onCompleted: res => {
-      console.log(res, 'result');
-      setCategories(res.categories.items);
+  const [categories, setCategories] = useState<CategoryItem[] | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
+    GET_HOME_SCREEN_DATA,
+    {
+      variables: {parentId: ['2'], pageSize: 10, currentPage: 1},
+      onCompleted: res => {
+        AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
+        setCategories(res.categories.items);
+        setCustomer(res.customer);
+      },
     },
-  });
-
-  const checkForUserToken = async () => {
-    const data = await AsyncStorage.getItem('userToken');
-    console.log(data, 'userToken');
-  };
-
-  useEffect(() => {
-    const initialize = async () => {
-      await checkForUserToken();
-    };
-
-    initialize();
-  }, []);
+  );
 
   if (loading) {
-    <Spinner />;
+    return <SpinnerComponent />;
   }
+
   return (
     <>
       <ScreenHeader
         leftComponents={[
           <CustomIconButton
-            SvgIcon={<MenuIcon />}
+            svgIcon={<MenuIcon />}
             iconSize={25}
             onPress={() => {
               navigation.navigate('Profile');
@@ -85,7 +83,7 @@ function HomeScreen({navigation}: Props) {
         ]}
         actions={[
           <CustomIconButton
-            SvgIcon={<NotificationIcon />}
+            svgIcon={<NotificationIcon />}
             BtnStyles={{backgroundColor: '#181C2E'}}
             iconSize={25}
             onPress={() => {
@@ -97,15 +95,28 @@ function HomeScreen({navigation}: Props) {
       <ScreenContent flex={1}>
         <VStack px={4} alignItems={'stretch'}>
           <Box>
-            <Text mb={4} variant={'title2'}>
-              Hey Halal, <Text style={{fontWeight: 700}}>How are you!</Text>
+            <Text
+              mb={4}
+              variant={'title2'}
+              style={{textTransform: 'capitalize'}}>
+              Hey {customer?.firstname ?? '--'} {customer?.lastname ?? '--'},{' '}
+              <Text style={{fontWeight: 700}}>How are you!</Text>
             </Text>
             <Input
               onPress={() => {
                 navigation.navigate('Search');
               }}
+              variant={'outline'}
               InputLeftElement={
-                <Icon name="search" size={25} style={{padding: 10}} />
+                <Icon
+                  name="search"
+                  size={25}
+                  style={{
+                    padding: 10,
+                    color: 'gray.200',
+                    backgroundColor: '#F6F6F6',
+                  }}
+                />
               }
               placeholder="Search dishes, restaurants"
             />
@@ -120,20 +131,24 @@ function HomeScreen({navigation}: Props) {
 
 export default HomeScreen;
 
-export const CategoryList = ({navigation, categories}: any) => {
+export const CategoryList = ({
+  navigation,
+  categories,
+}: {
+  navigation: any;
+  categories: CategoryItem[] | null;
+}) => {
   const theme = useTheme();
 
   return (
     <>
-      <HStack justifyContent="space-between" alignItems="center" mt={4}>
-        <Text variant={'header2'}>All Categories</Text>
-        <Button
-          variant="link"
-          rightIcon={<Icon name="chevron-right" size={20} />}
-          onPress={() => {}}>
-          See All
-        </Button>
-      </HStack>
+      <TitleActions
+        title="All Categories"
+        btnText="See all"
+        onPress={() => {
+          navigation.navigate('Category');
+        }}
+      />
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -170,15 +185,11 @@ export const CategoryList = ({navigation, categories}: any) => {
 export const GroceryShopList = () => {
   return (
     <>
-      <HStack justifyContent="space-between" alignItems="center" mt={4}>
-        <Text variant={'header2'}>Open Grocery Shop</Text>
-        <Button
-          variant="link"
-          rightIcon={<Icon name="chevron-right" size={20} />}
-          onPress={() => {}}>
-          See All
-        </Button>
-      </HStack>
+      <TitleActions
+        title="Open Grocery Shop"
+        btnText="See all"
+        onPress={() => {}}
+      />
       <Box bg="gray.200" p={4} borderRadius="lg">
         <HStack justifyContent="space-between" alignItems="center">
           <VStack>

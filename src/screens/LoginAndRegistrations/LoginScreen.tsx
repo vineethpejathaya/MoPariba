@@ -39,9 +39,12 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       title={'Log In'}
       subTitle={'Please sign in to your existing account'}
       disableBackBtn={true}>
-      <VStack flex={1} px="3" style={{justifyContent: 'space-between'}}>
+      <VStack flex={1} px="3" style={{justifyContent: 'space-evenly'}}>
         <LoginForm navigation={navigation} />
-        <Stack direction={'row'} style={{alignItems: 'center', margin: 'auto'}}>
+
+        <HStack
+          direction={'row'}
+          style={{alignItems: 'center', margin: 'auto'}}>
           <Text variant={'title2'}>Don't have an account?</Text>
           <Button
             variant={'ghost'}
@@ -51,7 +54,11 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             onPress={() => navigation.navigate('SignUp')}>
             SIGN UP
           </Button>
-        </Stack>
+        </HStack>
+        <Text variant={'title2'} style={{textAlign: 'center'}}>
+          Or
+        </Text>
+
         <SocialMediaList />
       </VStack>
     </LoginScreenTemplate>
@@ -73,6 +80,7 @@ export const LoginForm = ({
     password: '',
     rememberMe: false,
   });
+
   const [generateCustomerToken, {data, loading, error}] = useMutation(
     LOGIN_MUTATION,
     {
@@ -91,7 +99,6 @@ export const LoginForm = ({
 
   const handleLogin = () => {
     const {isInValid, errorMessage} = handleLoginValidation(formData);
-
     if (isInValid) {
       toast.show({
         render: ({id}) => {
@@ -110,7 +117,6 @@ export const LoginForm = ({
       });
       return;
     }
-
     generateCustomerToken({
       variables: {
         email: formData.email,
@@ -121,7 +127,7 @@ export const LoginForm = ({
 
   return (
     <>
-      <VStack space={7} w="100%">
+      <VStack space={3} w="100%">
         <TextField
           label={'Email'}
           name={'email'}
@@ -152,7 +158,7 @@ export const LoginForm = ({
           InputRightElement={
             <Pressable onPress={() => setShow(!show)}>
               <MaterialIcon
-                style={{marginRight: 5}}
+                style={{marginRight: 15}}
                 name={show ? 'visibility' : 'visibility-off'}
                 size={25}
                 color="muted.500"
@@ -165,8 +171,16 @@ export const LoginForm = ({
         <HStack
           direction={'row'}
           style={{alignItems: 'center', justifyContent: 'space-between'}}>
-          <Checkbox value={'rememberMe'} isChecked={formData.rememberMe}>
-            Remember me
+          <Checkbox
+            value={'rememberMe'}
+            isChecked={formData.rememberMe}
+            onChange={e => {
+              setFormData(s => ({
+                ...s,
+                rememberMe: !formData.rememberMe,
+              }));
+            }}>
+            <Text>Remember me</Text>
           </Checkbox>
           <Button
             variant={'ghost'}
@@ -177,15 +191,14 @@ export const LoginForm = ({
             Forgot Password
           </Button>
         </HStack>
-
-        <Button
-          isLoading={loading}
-          spinnerPlacement="end"
-          isLoadingText="Submitting"
-          onPress={handleLogin}>
-          Log In
-        </Button>
       </VStack>
+      <Button
+        isLoading={loading}
+        spinnerPlacement="end"
+        isLoadingText="Submitting"
+        onPress={handleLogin}>
+        Log In
+      </Button>
     </>
   );
 };
@@ -193,24 +206,20 @@ export const LoginForm = ({
 export const SocialMediaList = () => {
   return (
     <>
-      <VStack space={4} style={{alignItems: 'center'}}>
-        <Text variant={'title2'}>Or</Text>
-
-        <Stack direction={'row'} space={4}>
-          <IconButton
-            icon={<FontAwesomeIcon name="facebook" size={35} color="white" />}
-            style={[iconStyle.style, {backgroundColor: '#395998'}]}
-          />
-          <IconButton
-            icon={<FontAwesomeIcon name="twitter" size={35} color="white" />}
-            style={[iconStyle.style, {backgroundColor: '#169CE8'}]}
-          />
-          <IconButton
-            icon={<FontAwesomeIcon name="apple" size={35} color="white" />}
-            style={[iconStyle.style, {backgroundColor: '#1B1F2F'}]}
-          />
-        </Stack>
-      </VStack>
+      <Stack direction={'row'} space={4} style={{margin: 'auto'}}>
+        <IconButton
+          icon={<FontAwesomeIcon name="facebook" size={35} color="white" />}
+          style={[iconStyle.style, {backgroundColor: '#395998'}]}
+        />
+        <IconButton
+          icon={<FontAwesomeIcon name="twitter" size={35} color="white" />}
+          style={[iconStyle.style, {backgroundColor: '#169CE8'}]}
+        />
+        <IconButton
+          icon={<FontAwesomeIcon name="apple" size={35} color="white" />}
+          style={[iconStyle.style, {backgroundColor: '#1B1F2F'}]}
+        />
+      </Stack>
     </>
   );
 };
