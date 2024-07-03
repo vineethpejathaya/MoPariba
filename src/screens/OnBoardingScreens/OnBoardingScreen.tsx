@@ -1,15 +1,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Button, Text, Theme, useTheme} from 'native-base';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {Button, Text} from 'native-base';
 import {useRef, useState} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import ResponsiveImage from '../../components/ResponsiveImage';
+import {RootStackParamList} from '../../navigations/types';
+import theme from '../../themes/theme';
+import onBoardingStyles from './styles';
 
-const OnboardingScreen = ({navigation}: any) => {
+type OnBoardingScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Onboarding'
+>;
+
+type Props = {
+  navigation: OnBoardingScreenNavigationProp;
+};
+
+function OnboardingScreen({navigation}: Props) {
   const swiperRef: any = useRef(null);
-  const theme = useTheme();
-  const styles = createStyles(theme);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const slides = [
@@ -53,18 +64,18 @@ const OnboardingScreen = ({navigation}: any) => {
         ref={swiperRef}
         loop={false}
         onIndexChanged={index => setCurrentIndex(index)}
-        dot={<View style={styles.dot} />}
-        activeDot={<View style={styles.activeDot} />}>
+        dot={<View style={onBoardingStyles.dot} />}
+        activeDot={<View style={onBoardingStyles.activeDot} />}>
         {slides.map((slide, index) => (
-          <View key={slide.key} style={styles.slide}>
+          <View key={slide.key} style={onBoardingStyles.slide}>
             <ResponsiveImage source={slide.image} alt={slide.title} />
-            <View style={styles.textContainer}>
+            <View style={onBoardingStyles.textContainer}>
               <Text variant="heading">{slide.title}</Text>
-              <Text variant={'body2'} style={styles.body}>
+              <Text variant={'body2'} style={onBoardingStyles.body}>
                 {slide.text}
               </Text>
             </View>
-            <View style={styles.buttonContainer}>
+            <View style={onBoardingStyles.buttonContainer}>
               <Button
                 variant={'ghost'}
                 onPress={handleSkip}
@@ -82,62 +93,6 @@ const OnboardingScreen = ({navigation}: any) => {
       </Swiper>
     </SafeAreaView>
   );
-};
+}
 
 export default OnboardingScreen;
-
-export const createStyles = (theme: Theme) => {
-  const styles = StyleSheet.create({
-    body: {
-      textAlign: 'center',
-      fontSize: 15,
-      color: theme.colors.gray[900],
-      lineHeight: 22.5,
-    },
-    slide: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.colors.white,
-      padding: 20,
-    },
-    image: {
-      width: Dimensions.get('window').width - 40,
-      height: 380,
-      marginBottom: 40,
-    },
-
-    dot: {
-      backgroundColor: theme.colors.gray[100],
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      margin: 3,
-    },
-    activeDot: {
-      backgroundColor: theme.colors.primary[700],
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      margin: 3,
-    },
-    textContainer: {
-      padding: 10,
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: 10,
-    },
-    buttonContainer: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      position: 'absolute',
-      bottom: 50,
-    },
-  });
-  return styles;
-};

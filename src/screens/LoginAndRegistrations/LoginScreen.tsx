@@ -33,13 +33,13 @@ type Props = {
   navigation: LoginScreenNavigationProp;
 };
 
-const LoginScreen: React.FC<Props> = ({navigation}) => {
+function LoginScreen({navigation}: Props) {
   return (
     <LoginScreenTemplate
       title={'Log In'}
       subTitle={'Please sign in to your existing account'}
       disableBackBtn={true}>
-      <VStack flex={1} px="3" style={{justifyContent: 'space-evenly'}}>
+      <VStack flex={1} px="3" style={{justifyContent: 'space-between'}}>
         <LoginForm navigation={navigation} />
 
         <HStack
@@ -63,7 +63,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       </VStack>
     </LoginScreenTemplate>
   );
-};
+}
 
 export default LoginScreen;
 
@@ -74,7 +74,6 @@ export const LoginForm = ({
 }) => {
   const toast = useToast();
   const [show, setShow] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',

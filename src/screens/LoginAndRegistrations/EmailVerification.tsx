@@ -1,7 +1,6 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Button, HStack, Input, Text, VStack} from 'native-base';
 import React, {useRef, useState} from 'react';
-import {StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {RootStackParamList} from '../../navigations/types';
 import LoginScreenTemplate from './components/ScreenTemplate';
@@ -15,7 +14,7 @@ type Props = {
   navigation: EmailVerificationNavigationProp;
 };
 
-const EmailVerificationScreen: React.FC<Props> = ({navigation}: Props) => {
+function EmailVerificationScreen({navigation}: Props) {
   const [code, setCode] = useState(['', '', '', '']);
   const inputs: any = useRef([]);
 
@@ -71,23 +70,6 @@ const EmailVerificationScreen: React.FC<Props> = ({navigation}: Props) => {
       </KeyboardAwareScrollView>
     </LoginScreenTemplate>
   );
-};
+}
 
 export default EmailVerificationScreen;
-
-const styles = StyleSheet.create({
-  codeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginHorizontal: 10,
-  },
-  codeInput: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    width: 100,
-    height: 50,
-    textAlign: 'center',
-    borderRadius: 10,
-  },
-});

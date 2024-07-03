@@ -7,12 +7,10 @@ import {
   IconButton,
   Image,
   Text,
-  Theme,
   VStack,
-  useTheme,
 } from 'native-base';
 import React from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {ShoppingBagIcon} from '../../assets/icons/Icons';
 import FavoriteCheckbox from '../../components/FavoriteCheckBox';
@@ -20,6 +18,8 @@ import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import StarRating from '../../components/StarRating';
 import {RootStackParamList} from '../../navigations/types';
+import theme from '../../themes/theme';
+import productStyles from './styles';
 
 type ProductScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -30,8 +30,6 @@ type Props = {
 };
 
 function ProductScreen({navigation}: Props) {
-  const theme = useTheme();
-  const styles = createStyle(theme);
   return (
     <>
       <ScreenHeader />
@@ -54,7 +52,7 @@ function ProductScreen({navigation}: Props) {
             <ProductBrief navigation={navigation} />
             <FavoriteCheckbox />
           </HStack>
-          <Text variant={'body1'} style={styles.text}>
+          <Text variant={'body1'} style={productStyles.text}>
             Organic Mountain works as a seller for many organic growers of
             organic lemons. Organic lemons are easy to spot in your produce
             aisle. They are just like regular lemons, but they will usually have
@@ -63,8 +61,10 @@ function ProductScreen({navigation}: Props) {
           </Text>
 
           <VStack space={2} alignItems="center" justifyContent="space-between">
-            <HStack style={styles.quantityContainer}>
-              <Text style={[styles.text, {fontSize: 16}]} variant={'body1'}>
+            <HStack style={productStyles.quantityContainer}>
+              <Text
+                style={[productStyles.text, {fontSize: 16}]}
+                variant={'body1'}>
                 Quantity
               </Text>
               <HStack space={2} alignItems="center">
@@ -85,7 +85,7 @@ function ProductScreen({navigation}: Props) {
                 <Divider orientation="vertical" />
               </HStack>
             </HStack>
-            <Button style={styles.btn} rightIcon={<ShoppingBagIcon />}>
+            <Button style={productStyles.btn} rightIcon={<ShoppingBagIcon />}>
               Add to cart
             </Button>
           </VStack>
@@ -98,16 +98,14 @@ function ProductScreen({navigation}: Props) {
 export default ProductScreen;
 
 export const ProductBrief = ({navigation}: any) => {
-  const theme = useTheme();
-  const styles = createStyle(theme);
   return (
     <>
       <VStack>
-        <Text variant={'subTitle1'} style={styles.prize}>
+        <Text variant={'subTitle1'} style={productStyles.prize}>
           $2.22
         </Text>
         <Text variant={'header1'}>Organic Lemons</Text>
-        <Text variant={''} style={styles.text}>
+        <Text variant={''} style={productStyles.text}>
           1.50 lbs
         </Text>
         <HStack alignItems={'center'}>
@@ -124,32 +122,4 @@ export const ProductBrief = ({navigation}: any) => {
       </VStack>
     </>
   );
-};
-
-export const createStyle = (theme: Theme) => {
-  const style = StyleSheet.create({
-    prize: {
-      color: theme.colors.primary[500],
-      fontSize: 18,
-      lineHeight: 30,
-    },
-    text: {
-      color: 'gray.500',
-    },
-
-    quantityContainer: {
-      width: '100%',
-      padding: 5,
-      backgroundColor: theme.colors.white,
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    btn: {
-      fontSize: 18,
-      height: 60,
-      width: '100%',
-    },
-  });
-
-  return style;
 };

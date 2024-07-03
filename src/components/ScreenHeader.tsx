@@ -6,19 +6,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 function ScreenHeader({
   title,
-  leftComponents,
-  actions,
+  leftActions,
+  rightActions,
 }: {
   title?: string | ReactNode;
-  leftComponents?: ReactElement[];
-  actions?: ReactElement[];
+  leftActions?: ReactElement[];
+  rightActions?: ReactElement[];
 }) {
   const navigation = useNavigation();
   return (
     <HStack style={styles.container}>
       <HStack space={2} alignItems="center">
-        {leftComponents ? (
-          leftComponents?.map((component, index) => (
+        {leftActions ? (
+          leftActions?.map((component, index) => (
             <Box key={index}>{component}</Box>
           ))
         ) : (
@@ -34,8 +34,8 @@ function ScreenHeader({
         </Text>
       )}
       <HStack space={2} alignItems="center">
-        {actions &&
-          actions?.map((component, index) => (
+        {rightActions &&
+          rightActions?.map((component, index) => (
             <Box key={index}>{component}</Box>
           ))}
       </HStack>

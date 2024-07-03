@@ -1,24 +1,15 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import {
-  Box,
-  Button,
-  Divider,
-  FlatList,
-  Image,
-  Text,
-  Theme,
-  VStack,
-  useTheme,
-} from 'native-base';
+import {Box, Button, Divider, FlatList, Image, Text, VStack} from 'native-base';
 import React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import {FilterIcon, ShoppingBagIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
+import productListStyles from './styles';
 
 const data = [
   {
@@ -82,16 +73,14 @@ export type ProductListScreenProps = {
   navigation: ProductListScreenNavigationProp;
 };
 
-const ProductListScreen = ({route, navigation}: ProductListScreenProps) => {
+function ProductListScreen({route, navigation}: ProductListScreenProps) {
   const {categoryName} = route.params;
 
-  const theme = useTheme();
-  const productStyles = createStyles(theme);
   return (
     <>
       <ScreenHeader
         title={categoryName}
-        actions={[
+        rightActions={[
           <CustomIconButton
             svgIcon={<FilterIcon />}
             BtnStyles={{backgroundColor: 'white'}}
@@ -104,7 +93,7 @@ const ProductListScreen = ({route, navigation}: ProductListScreenProps) => {
         <FlatList
           data={data}
           renderItem={({item}) => (
-            <Box style={productStyles.container}>
+            <Box style={productListStyles.container}>
               <TouchableOpacity onPress={() => navigation.navigate('Product')}>
                 <Image
                   source={item?.image}
@@ -116,11 +105,11 @@ const ProductListScreen = ({route, navigation}: ProductListScreenProps) => {
                   space={1}
                   style={{paddingBottom: 3}}
                   alignItems={'center'}>
-                  <Text variant="body2" style={productStyles.prize}>
+                  <Text variant="body2" style={productListStyles.prize}>
                     {item.price}
                   </Text>
                   <Text variant="title1">{item.name}</Text>
-                  <Text variant="body2" style={productStyles.weight}>
+                  <Text variant="body2" style={productListStyles.weight}>
                     {item.weight}
                   </Text>
                 </VStack>
@@ -137,7 +126,7 @@ const ProductListScreen = ({route, navigation}: ProductListScreenProps) => {
       </ScreenContent>
     </>
   );
-};
+}
 
 export default ProductListScreen;
 
@@ -165,61 +154,4 @@ function CartButton() {
       </Button>
     </>
   );
-}
-
-function createStyles(theme: Theme) {
-  const styles = StyleSheet.create({
-    container: {
-      width: '50%',
-      borderWidth: 1,
-      borderColor: theme.colors.gray[200],
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-
-    new: {
-      borderColor: theme.colors.primary[100],
-      width: 38,
-      height: 18,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      zIndex: 1,
-    },
-    favorite: {
-      borderColor: 'red.400',
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      zIndex: 1,
-    },
-    discount: {
-      borderColor: 'red.400',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      zIndex: 1,
-    },
-    image: {
-      width: 20,
-      height: 94,
-      objectFit: 'contain',
-    },
-    prize: {
-      fontSize: 12,
-      color: theme.colors.primary[700],
-    },
-    weight: {
-      fontSize: 12,
-      color: theme.colors.gray[700],
-    },
-    addToCartBtn: {
-      color: 'black',
-    },
-  });
-
-  return styles;
 }

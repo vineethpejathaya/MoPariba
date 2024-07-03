@@ -1,6 +1,5 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
-  Avatar,
   Badge,
   Box,
   FlatList,
@@ -8,19 +7,19 @@ import {
   Image,
   Input,
   Text,
-  Theme,
   VStack,
-  theme,
-  useTheme,
 } from 'native-base';
 import React from 'react';
-import {SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
+import {SafeAreaView, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
+import ResponsiveImage from '../../components/ResponsiveImage';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
+import theme from '../../themes/theme';
+import searchScreenStyles from './styles';
 
 type SearchScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -34,7 +33,7 @@ function SearchScreen({navigation}: Props) {
   return (
     <>
       <ScreenHeader
-        leftComponents={[
+        leftActions={[
           <HStack space={4} alignItems={'center'}>
             <CustomIconButton
               iconName="chevron-left"
@@ -43,13 +42,12 @@ function SearchScreen({navigation}: Props) {
                 navigation.goBack();
               }}
             />
-
             <Text variant={'subTitle2'} style={{fontSize: 17}}>
               Search
             </Text>
           </HStack>,
         ]}
-        actions={[
+        rightActions={[
           <CustomIconButton
             svgIcon={<NotificationIcon />}
             BtnStyles={{backgroundColor: '#181C2E'}}
@@ -66,13 +64,18 @@ function SearchScreen({navigation}: Props) {
             <Input
               variant={'outline'}
               InputLeftElement={
-                <Icon name="search" size={25} style={{padding: 10}} />
+                <Icon
+                  name="search"
+                  size={25}
+                  style={{padding: 10}}
+                  color={theme.colors.gray[900]}
+                />
               }
               placeholder="Search dishes, restaurants"
             />
-            <RecentSearch />
-            <SuggestedStores />
-            <PopularOffers navigation={navigation} />
+            <RecentSearchSection />
+            <SuggestedStoresSection />
+            <PopularOffersSection navigation={navigation} />
           </VStack>
         </SafeAreaView>
       </ScreenContent>
@@ -82,56 +85,72 @@ function SearchScreen({navigation}: Props) {
 
 export default SearchScreen;
 
-export const RecentSearch = () => {
+export const RecentSearchSection = () => {
   const recentKeywords = ['Fruite', 'Grocery', 'Veggies', 'Snacks'];
-  const theme = useTheme();
-  const styles = createRecentSearchStyles(theme);
+
   return (
     <>
-      <VStack space={2}>
+      <VStack space={4}>
         <Text variant={'header2'}>Recent Keywords</Text>
-        <HStack space={2} mb={4} flexWrap="wrap">
-          {recentKeywords.map((keyword, index) => (
-            <Badge key={index} style={styles.container} variant="outline">
-              {keyword}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={recentKeywords}
+          renderItem={({item}: any) => (
+            <Badge
+              style={searchScreenStyles.recentSearchContainer}
+              variant="outline">
+              {item}
             </Badge>
-          ))}
-        </HStack>
+          )}
+          keyExtractor={(item: any) => item}
+        />
       </VStack>
     </>
   );
 };
 
-export const SuggestedStores = () => {
+export const SuggestedStoresSection = () => {
   const suggestedStores = [
-    {name: 'Pansi Store', rating: 4.7},
-    {name: 'Store 2', rating: 4.3},
-    {name: 'Store 3', rating: 4.0},
+    {
+      name: 'Pansi Store',
+      rating: 4.7,
+    },
+    {
+      name: 'Store 2',
+      rating: 4.3,
+      image: require('../../assets/images/pngs/pineapple-pieces.png'),
+    },
+    {
+      name: 'Store 3',
+      rating: 4.0,
+      image: require('../../assets/images/pngs/pineapple-pieces.png'),
+    },
   ];
 
   return (
     <>
       <VStack space={2}>
         <Text variant={'header2'}>Suggested Stores</Text>
-        <VStack space={3} mb={4}>
+        <VStack space={3}>
           <FlatList
             data={suggestedStores}
             renderItem={({item, index}) => (
-              <HStack
-                key={index}
-                alignItems="center"
-                space={3}
-                style={{
-                  borderBottomWidth: 1,
-                  paddingVertical: 10,
-                  borderColor: 'gray.500',
-                }}>
-                <Avatar bg="gray.300" size="48px" />
-                <VStack>
-                  <Text>{item.name}</Text>
+              <HStack key={index} style={searchScreenStyles.suggestedStoreItem}>
+                <ResponsiveImage
+                  styles={searchScreenStyles.suggestedStoreImage}
+                  source={item.image}
+                  alt={item.name}
+                />
+                <VStack space={2}>
+                  <Text variant={'title2'}>{item.name}</Text>
                   <HStack space={1} alignItems="center">
-                    <Icon name="star" size={12} color="orange.400" />
-                    <Text>{item.rating}</Text>
+                    <Icon
+                      name="star"
+                      size={15}
+                      color={theme.colors.orange[700]}
+                    />
+                    <Text variant={'title2'}>{item.rating}</Text>
                   </HStack>
                 </VStack>
               </HStack>
@@ -145,7 +164,11 @@ export const SuggestedStores = () => {
   );
 };
 
-export const PopularOffers = ({navigation}: any) => {
+export const PopularOffersSection = ({
+  navigation,
+}: {
+  navigation: SearchScreenNavigationProp;
+}) => {
   const popularOffers = [
     {
       id: '1',
@@ -171,17 +194,16 @@ export const PopularOffers = ({navigation}: any) => {
           horizontal
           data={popularOffers}
           renderItem={({item}) => (
-            <Box style={CategoryStyles?.container}>
+            <Box style={searchScreenStyles?.categoryContainer}>
               <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                 <Image
-                  style={CategoryStyles?.image}
+                  style={searchScreenStyles?.categoryImage}
                   source={item.image}
                   alt={item?.name}
                   resizeMode="contain"
                   height={140}
                   width={122}
                 />
-
                 <Text variant={'subheader2'}>{item.name}</Text>
                 <HStack space={3}>
                   <Text>{item.discount}</Text>
@@ -196,36 +218,3 @@ export const PopularOffers = ({navigation}: any) => {
     </>
   );
 };
-
-const createRecentSearchStyles = (theme: Theme) => {
-  const RecentSearchStyles = StyleSheet.create({
-    container: {
-      height: 46,
-      width: 89,
-      color: theme.colors.gray[500],
-      borderRadius: 15,
-      borderColor: theme.colors.gray[500],
-      padding: 5,
-      fontSize: 16,
-    },
-  });
-  return RecentSearchStyles;
-};
-
-export const CategoryStyles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.white,
-    padding: 4,
-    margin: 4,
-    borderRadius: 10,
-    width: 147,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 1,
-  },
-  image: {
-    borderRadius: 10,
-    objectFit: 'contain',
-    zIndex: 1,
-  },
-});

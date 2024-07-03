@@ -1,6 +1,6 @@
 import {useMutation} from '@apollo/client';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Button, Pressable, VStack, useToast} from 'native-base';
+import {Button, Pressable, ScrollView, VStack, useToast} from 'native-base';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
@@ -19,17 +19,19 @@ type Props = {
   navigation: SignUpNavigationProp;
 };
 
-const SignUpScreen: React.FC<Props> = ({navigation}) => {
+function SignUpScreen({navigation}: Props) {
   return (
     <LoginScreenTemplate
       title={'Sign Up'}
       subTitle={'Please sign up to get started'}>
-      <VStack space={4} w="100%">
-        <SignUpForm navigation={navigation} />
-      </VStack>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <VStack space={4} w="100%" px={4}>
+          <SignUpForm navigation={navigation} />
+        </VStack>
+      </ScrollView>
     </LoginScreenTemplate>
   );
-};
+}
 
 export default SignUpScreen;
 
@@ -81,7 +83,7 @@ export const SignUpForm = ({
 
   const handleSignUp = () => {
     const {isInValid, errorMessage} = handleSignUpValidation(formData);
-    console.log('clicked', isInValid);
+
     if (isInValid) {
       toast.show({
         render: ({id}) => {

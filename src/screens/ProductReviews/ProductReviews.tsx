@@ -55,7 +55,7 @@ const ReviewsScreen = ({navigation}: Props) => (
   <>
     <ScreenHeader
       title={'Reviews'}
-      actions={[
+      rightActions={[
         <CustomIconButton
           iconName={'plus'}
           BtnStyles={{backgroundColor: 'white'}}

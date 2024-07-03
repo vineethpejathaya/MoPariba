@@ -1,16 +1,7 @@
 import {useQuery} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {
-  Box,
-  FlatList,
-  HStack,
-  Image,
-  Input,
-  Text,
-  VStack,
-  useTheme,
-} from 'native-base';
+import {Box, FlatList, Input, Text, VStack, useTheme} from 'native-base';
 import {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
@@ -18,6 +9,7 @@ import CustomIconButton from '../../components/Buttons/IconButton';
 import CategoryCard from '../../components/CategoryCard';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
+import ShopCard from '../../components/ShopyCard';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
 import {RootStackParamList} from '../../navigations/types';
@@ -27,8 +19,6 @@ import {
   Customer,
   GetHomeScreenDataResponse,
 } from '../../services/interfaces/Home';
-
-const altImage = require('../../assets/images/pngs/altImage.png');
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -62,7 +52,7 @@ function HomeScreen({navigation}: Props) {
   return (
     <>
       <ScreenHeader
-        leftComponents={[
+        leftActions={[
           <CustomIconButton
             svgIcon={<MenuIcon />}
             iconSize={25}
@@ -79,7 +69,7 @@ function HomeScreen({navigation}: Props) {
             <Text variant="subTitle2">Halal Lab office</Text>
           </Box>,
         ]}
-        actions={[
+        rightActions={[
           <CustomIconButton
             svgIcon={<NotificationIcon />}
             BtnStyles={{backgroundColor: '#181C2E'}}
@@ -135,7 +125,7 @@ export const CategoryList = ({
   navigation,
   categories,
 }: {
-  navigation: any;
+  navigation: HomeScreenNavigationProp;
   categories: CategoryItem[] | null;
 }) => {
   return (
@@ -145,7 +135,9 @@ export const CategoryList = ({
           title="All Categories"
           btnText="See all"
           onPress={() => {
-            navigation.navigate('Category');
+            navigation.navigate('Category', {
+              categoryName: '',
+            });
           }}
         />
         <FlatList
@@ -157,6 +149,9 @@ export const CategoryList = ({
               title={item.name}
               price={item.price}
               imageUrl={item.image}
+              onPress={() => {
+                console.log('clicked home');
+              }}
             />
           )}
           keyExtractor={(item: any) => item.uid}
@@ -175,36 +170,7 @@ export const GroceryShopList = () => {
         btnText="See all"
         onPress={() => {}}
       />
-      <Box bg="gray.200" p={4} borderRadius="lg">
-        <HStack justifyContent="space-between" alignItems="center">
-          <VStack>
-            <Text fontSize="lg" bold>
-              Grocery Shop
-            </Text>
-            <Text>Fruit, Vegetable</Text>
-            <HStack mt={2}>
-              <HStack alignItems="center" mr={4}>
-                {/* <Icon name="star" color="orange.500" /> */}
-                <Text ml={1}>4.7</Text>
-              </HStack>
-              <HStack alignItems="center" mr={4}>
-                {/* <Icon name="truck" color="orange.500" /> */}
-                <Text ml={1}>Free</Text>
-              </HStack>
-              <HStack alignItems="center">
-                {/* <Icon name="clock-o" color="orange.500" /> */}
-                <Text ml={1}>20 min</Text>
-              </HStack>
-            </HStack>
-          </VStack>
-          <Image
-            source={{uri: 'https://via.placeholder.com/100'}}
-            alt="Grocery Shop"
-            size="lg"
-            borderRadius="lg"
-          />
-        </HStack>
-      </Box>
+      <ShopCard />
     </>
   );
 };

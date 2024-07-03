@@ -51,10 +51,10 @@ export default LoginScreenTemplate;
 export const Styles = StyleSheet.create({
   header: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 20,
+    gap: 0,
+    padding: 40,
     height: Dimensions.get('window').height * 0.25,
   },
   backgroundImage: {

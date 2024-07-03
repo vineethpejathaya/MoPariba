@@ -14,7 +14,7 @@ type Props = {
   navigation: ForgotPasswordNavigationProp;
 };
 
-const ForgotPasswordScreen: React.FC<Props> = ({navigation}) => {
+function ForgotPasswordScreen({navigation}: Props) {
   const [formData, setFormData] = useState({
     email: '',
   });
@@ -23,10 +23,11 @@ const ForgotPasswordScreen: React.FC<Props> = ({navigation}) => {
     <LoginScreenTemplate
       title={'Forgot Password'}
       subTitle={'Please sign in to your existing account'}>
-      <VStack space={4} w="100%">
+      <VStack space={10} w="100%">
         <TextField
           label={'Email'}
           name={'email'}
+          inputStyles={{backgroundColor: '#F5F8FA'}}
           value={formData.email}
           onChangeText={e => {
             setFormData(s => ({
@@ -42,6 +43,6 @@ const ForgotPasswordScreen: React.FC<Props> = ({navigation}) => {
       </VStack>
     </LoginScreenTemplate>
   );
-};
+}
 
 export default ForgotPasswordScreen;
