@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
   VStack,
-  theme,
   useToast,
 } from 'native-base';
 import React, {useState} from 'react';
@@ -18,12 +17,13 @@ import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
-import ToastAlert from '../../components/ToastAlert';
+import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
-import {handleLoginValidation} from '../../services/Form Validations/ValidationMethos';
-import {LOGIN_MUTATION} from '../../services/GGL-Queries/loginAndRegistartion';
+import {loginSchema} from '../../services/form-validations/ValidationSchema';
+import {LOGIN_MUTATION} from '../../services/ggl-queries/loginAndRegistartion';
+import {LoginFormData} from '../../services/interfaces/LoginAndRegistartions.interface';
+import theme from '../../themes/theme';
 import LoginScreenTemplate from './components/ScreenTemplate';
-
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Login'
@@ -73,8 +73,9 @@ export const LoginForm = ({
   navigation: LoginScreenNavigationProp;
 }) => {
   const toast = useToast();
-  const [show, setShow] = useState(false);
-  const [formData, setFormData] = useState({
+  const {validate} = useValidation(loginSchema);
+  const [show, setShow] = useState<boolean>(false);
+  const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     rememberMe: false,
@@ -91,37 +92,23 @@ export const LoginForm = ({
         navigation.navigate('Home');
       },
       onError: err => {
-        toast.show({title: err.message, color: 'red.400'});
+        toast.show({description: err.message});
       },
     },
   );
 
-  const handleLogin = () => {
-    const {isInValid, errorMessage} = handleLoginValidation(formData);
-    if (isInValid) {
-      toast.show({
-        render: ({id}) => {
-          return (
-            <ToastAlert
-              id={id}
-              variant={'left-accent'}
-              title={'Login form validation failed'}
-              description={errorMessage}
-              status={'error'}
-              isClosable={true}
-            />
-          );
+  const handleLogin = async () => {
+    const result = await validate(formData);
+    if (result.isValid) {
+      generateCustomerToken({
+        variables: {
+          email: formData.email,
+          password: formData.password,
         },
-        placement: 'top-right',
       });
-      return;
+    } else {
+      console.log('Form has errors:', result.errors);
     }
-    generateCustomerToken({
-      variables: {
-        email: formData.email,
-        password: formData.password,
-      },
-    });
   };
 
   return (
@@ -160,7 +147,7 @@ export const LoginForm = ({
                 style={{marginRight: 15}}
                 name={show ? 'visibility' : 'visibility-off'}
                 size={25}
-                color="muted.500"
+                color={theme.colors.gray[900]}
               />
             </Pressable>
           }
@@ -196,7 +183,7 @@ export const LoginForm = ({
         spinnerPlacement="end"
         isLoadingText="Submitting"
         onPress={handleLogin}>
-        Log In
+        LOG IN
       </Button>
     </>
   );

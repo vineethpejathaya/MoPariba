@@ -1,4 +1,4 @@
-import {NotificationSettingsType} from '../services/interfaces/NotificationSettings';
+import {NotificationSettingsType} from '../services/interfaces/NotificationSettings.interface';
 
 interface NotificationItem {
   key: keyof NotificationSettingsType;

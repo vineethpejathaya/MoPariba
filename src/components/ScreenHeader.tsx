@@ -1,8 +1,9 @@
 import {useNavigation} from '@react-navigation/native';
-import {Box, HStack, IconButton, Text, theme} from 'native-base';
+import {Box, HStack, IconButton, Text} from 'native-base';
 import React, {ReactElement, ReactNode} from 'react';
 import {StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import theme from '../themes/theme';
 
 function ScreenHeader({
   title,
@@ -23,16 +24,18 @@ function ScreenHeader({
           ))
         ) : (
           <IconButton
-            icon={<Icon name="arrow-back" size={25} />}
+            icon={
+              <Icon
+                name="arrow-back"
+                size={25}
+                color={theme.colors.gray[900]}
+              />
+            }
             onPress={() => navigation.goBack()}
           />
         )}
       </HStack>
-      {title && (
-        <Text variant={'subheader1'} textAlign={'center'}>
-          {title}
-        </Text>
-      )}
+      {title && <Text variant={'subheader1'}>{title}</Text>}
       <HStack space={2} alignItems="center">
         {rightActions &&
           rightActions?.map((component, index) => (
@@ -49,7 +52,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: 10,
     backgroundColor: theme.colors.white,
+    elevation: 1,
   },
 });

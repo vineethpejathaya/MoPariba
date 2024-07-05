@@ -1,5 +1,13 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Avatar, Divider, HStack, Text, VStack, theme} from 'native-base';
+import {
+  Avatar,
+  Divider,
+  HStack,
+  ScrollView,
+  Text,
+  VStack,
+  theme,
+} from 'native-base';
 import React from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import CustomIconButton from '../../components/Buttons/IconButton';
@@ -64,12 +72,13 @@ const ReviewsScreen = ({navigation}: Props) => (
         />,
       ]}
     />
-
-    <VStack space={3} alignItems={'center'} flex={1} mt={4}>
-      {reviews.map((review, index: number) => (
-        <ReviewItem key={index} {...review} />
-      ))}
-    </VStack>
+    <ScrollView>
+      <VStack space={3} alignItems={'center'} flex={1} py={4}>
+        {reviews.map((review, index: number) => (
+          <ReviewItem key={index} {...review} />
+        ))}
+      </VStack>
+    </ScrollView>
   </>
 );
 

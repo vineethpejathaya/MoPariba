@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {NotificationsList} from '../../../constants/NotificationsList';
-import {NotificationSettingsType} from '../../../services/interfaces/NotificationSettings';
+import {NotificationSettingsType} from '../../../services/interfaces/NotificationSettings.interface';
 
 const NotificationSettings = () => {
   const [notifications, setNotifications] = useState<NotificationSettingsType>({

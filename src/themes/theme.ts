@@ -21,7 +21,7 @@ const theme = extendTheme({
       500: '#ECF0F4',
       600: '#C4C4C4',
       700: '#98A8B8',
-      900: '#868889 ',
+      900: '#868889',
     },
     orange: {
       100: '#E8AD41',
@@ -177,7 +177,7 @@ const theme = extendTheme({
         borderRadius: 12,
         height: 62,
         padding: '10px 40px',
-        textTransform: 'capitalize',
+        textTransform: 'uppercase',
         fontWeight: 700,
         fontSize: 16,
         color: 'primary.900',

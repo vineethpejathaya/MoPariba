@@ -1,13 +1,14 @@
 import {useMutation} from '@apollo/client';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Button, Pressable, ScrollView, VStack, useToast} from 'native-base';
+import {Button, Pressable, ScrollView, VStack} from 'native-base';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
-import ToastAlert from '../../components/ToastAlert';
+import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
-import {handleSignUpValidation} from '../../services/Form Validations/ValidationMethos';
-import {CREATE_CUSTOMER_MUTATION} from '../../services/GGL-Queries/loginAndRegistartion';
+import {signUpSchema} from '../../services/form-validations/ValidationSchema';
+import {CREATE_CUSTOMER_MUTATION} from '../../services/ggl-queries/loginAndRegistartion';
+import theme from '../../themes/theme';
 import LoginScreenTemplate from './components/ScreenTemplate';
 
 type SignUpNavigationProp = NativeStackNavigationProp<
@@ -40,7 +41,7 @@ export const SignUpForm = ({
 }: {
   navigation: SignUpNavigationProp;
 }) => {
-  const toast = useToast();
+  const {validate} = useValidation(signUpSchema);
   const [show, setShow] = useState({
     password: false,
     confirmPassword: false,
@@ -59,61 +60,29 @@ export const SignUpForm = ({
     CREATE_CUSTOMER_MUTATION,
     {
       onCompleted: res => {
-        toast.show({
-          render: ({id}) => {
-            return (
-              <ToastAlert
-                id={id}
-                variant={'left-accent'}
-                title={'Sign up successful'}
-                status={'success'}
-              />
-            );
-          },
-          placement: 'top-right',
-        });
         navigation.navigate('Login');
       },
-      onError: err => {
-        toast.show({title: err.message});
-        console.log(err, 'err');
-      },
+      onError: err => {},
     },
   );
 
-  const handleSignUp = () => {
-    const {isInValid, errorMessage} = handleSignUpValidation(formData);
-
-    if (isInValid) {
-      toast.show({
-        render: ({id}) => {
-          return (
-            <ToastAlert
-              id={id}
-              variant={'left-accent'}
-              title={'Sign up form validation failed'}
-              description={errorMessage}
-              status={'error'}
-              isClosable={true}
-            />
-          );
+  const handleSignUp = async () => {
+    const result = await validate(formData);
+    if (result.isValid) {
+      createCustomer({
+        variables: {
+          input: {
+            firstname: formData.firstName,
+            lastname: formData.lastName,
+            email: formData.email,
+            password: formData.password,
+            is_subscribed: true,
+          },
         },
-        placement: 'top-right',
       });
-      return;
+    } else {
+      console.log('Form has errors:', result.errors);
     }
-
-    createCustomer({
-      variables: {
-        input: {
-          firstname: formData.firstName,
-          lastname: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-          is_subscribed: true,
-        },
-      },
-    });
   };
 
   return (
@@ -180,7 +149,7 @@ export const SignUpForm = ({
                 style={{marginRight: 15}}
                 name={show.password ? 'visibility' : 'visibility-off'}
                 size={25}
-                color="muted.500"
+                color={theme.colors.gray[900]}
               />
             </Pressable>
           }
@@ -208,7 +177,7 @@ export const SignUpForm = ({
                 style={{marginRight: 15}}
                 name={show.confirmPassword ? 'visibility' : 'visibility-off'}
                 size={25}
-                color="muted.500"
+                color={theme.colors.gray[900]}
               />
             </Pressable>
           }

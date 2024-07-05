@@ -1,14 +1,15 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
-import {Box, Button, Divider, FlatList, Image, Text, VStack} from 'native-base';
-import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {useQuery} from '@apollo/client';
+import {Box, Button, FlatList, Image, Text, VStack} from 'native-base';
+import React, {useState} from 'react';
 import {FilterIcon, ShoppingBagIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import {RootStackParamList} from '../../navigations/types';
+import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/ggl-queries/products';
 import productListStyles from './styles';
 
 const data = [
@@ -74,12 +75,26 @@ export type ProductListScreenProps = {
 };
 
 function ProductListScreen({route, navigation}: ProductListScreenProps) {
-  const {categoryName} = route.params;
+  // const {categoryName, categoryId} = route.params;
+  const [products, setProducts] = useState<any[] | []>([]);
+
+  const {loading, error} = useQuery(GET_PRODUCTS_BY_CATEGORY_ID, {
+    variables: {
+      categoryUid: 'NA==' || null,
+      pageSize: 10,
+      currentPage: 1,
+    },
+    onCompleted: res => {
+      setProducts(res.products.items);
+    },
+  });
+
+  console.log(products, 'products');
 
   return (
     <>
       <ScreenHeader
-        title={categoryName}
+        title={''}
         rightActions={[
           <CustomIconButton
             svgIcon={<FilterIcon />}
@@ -91,36 +106,82 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
       />
       <ScreenContent>
         <FlatList
-          data={data}
-          renderItem={({item}) => (
-            <Box style={productListStyles.container}>
-              <TouchableOpacity onPress={() => navigation.navigate('Product')}>
-                <Image
-                  source={item?.image}
-                  alt={item?.name}
-                  resizeMode="contain"
-                  height={150}
-                />
-                <VStack
-                  space={1}
-                  style={{paddingBottom: 3}}
-                  alignItems={'center'}>
-                  <Text variant="body2" style={productListStyles.prize}>
-                    {item.price}
-                  </Text>
-                  <Text variant="title1">{item.name}</Text>
-                  <Text variant="body2" style={productListStyles.weight}>
-                    {item.weight}
-                  </Text>
-                </VStack>
-              </TouchableOpacity>
-              <Divider />
-              <CartButton />
-            </Box>
-          )}
+          data={products}
+          renderItem={({item}) => {
+            return (
+              <>
+                {/* <Box style={productListStyles.container}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Product')}>
+                    <Box
+                      style={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: 10,
+                        backgroundColor: theme.colors.gray[900],
+                      }}>
+                      <Image
+                        style={productListStyles.image}
+                        source={{uri: item?.image?.url}}
+                        alt={item?.image?.label}
+                      />
+                    </Box>
+                    <VStack
+                      space={1}
+                      style={{paddingBottom: 3}}
+                      alignItems={'center'}>
+                      <Text variant="body2" style={productListStyles.prize}>
+                        {item.price}
+                      </Text>
+                      <Text variant="title1">{item.name}</Text>
+                      <Text variant="body2" style={productListStyles.weight}>
+                        {item.weight}
+                      </Text>
+                    </VStack>
+                  </TouchableOpacity>
+                  <Divider />
+                  <CartButton />
+                </Box> */}
+
+                <Box style={productListStyles.container}>
+                  <VStack space={2}>
+                    <Image
+                      source={{uri: item.imageUrl}}
+                      alt={item.name}
+                      size="xl"
+                    />
+                    <Text variant="title1">{item.name}</Text>
+                    <Text variant="body2" style={productListStyles.weight}>
+                      {item.weight}
+                    </Text>
+                    <Text>{item.weight}</Text>
+                    <Text textDecorationLine="line-through">
+                      ₹{item.originalPrice}
+                    </Text>
+                    <Text fontWeight="bold">₹{item.discountedPrice}</Text>
+                    {/* {item.options.length > 0 ? (
+                      <Select
+                        selectedValue={item.options[0]}
+                        minWidth="200"
+                        accessibilityLabel="Choose option"
+                        placeholder="Choose option"
+                        _selectedItem={{
+                          bg: 'teal.600',
+                          endIcon: <CheckIcon size="5" />,
+                        }}
+                        mt={1}></Select>
+                    ) : (
+                
+                    )} */}
+                    <Button variant={'outline'} mt={2}>
+                      Add
+                    </Button>
+                  </VStack>
+                </Box>
+              </>
+            );
+          }}
           numColumns={2}
-          columnWrapperStyle={{gap: 10, paddingHorizontal: 12}}
-          contentContainerStyle={{gap: 10, paddingBottom: 16}}
           keyExtractor={item => item.id}
         />
       </ScreenContent>

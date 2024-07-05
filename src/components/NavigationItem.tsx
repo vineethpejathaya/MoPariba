@@ -2,6 +2,7 @@ import {Box, Text} from 'native-base';
 import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import theme from '../themes/theme';
 
 interface NavigationItemProps {
   iconName?: string;
@@ -36,7 +37,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
         <Icon
           name="chevron-right"
           size={25}
-          color="gray.500"
+          color={theme.colors.gray[900]}
           style={{marginLeft: 'auto'}}
         />
       </Box>

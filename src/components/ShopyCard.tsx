@@ -1,20 +1,13 @@
 import {Box, HStack, Text, VStack} from 'native-base';
 import React from 'react';
-import {Image, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ResponsiveImage from './ResponsiveImage';
 const ShopCard = () => {
-  const imageUrl = '';
   return (
     <Box style={styles.card}>
-      <Image
-        source={
-          imageUrl
-            ? {uri: imageUrl}
-            : require('../assets/images/pngs/altImage.png')
-        }
-        style={styles.image}
-      />
+      <ResponsiveImage styles={styles.image} alt={'image'} />
       <VStack p="4" space={2}>
         <Text variant={'header2'}>Grocery Shop</Text>
         <Text variant={'subTitle2'} style={styles.subtitle}>

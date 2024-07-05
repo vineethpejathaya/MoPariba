@@ -1,73 +1,53 @@
 import {Box, Image, Text, VStack} from 'native-base';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
+import {baseUrl} from '../constants/main';
+import theme from '../themes/theme';
 
 const CategoryCard = ({
   title,
-  price,
   imageUrl,
   onPress,
 }: {
   title: string;
-  price: number;
   imageUrl: string;
   onPress: () => void;
 }) => {
   return (
-    <Box style={styles.cardContainer}>
-      <TouchableOpacity onPress={onPress} style={{alignItems: 'center'}}>
-        <Image
-          source={
-            imageUrl
-              ? {uri: imageUrl}
-              : require('../assets/images/pngs/altImage.png')
-          }
-          alt={title}
-          style={styles.image}
-        />
-        <Box style={styles.card}>
-          <VStack space={2} alignItems="center">
-            <Text variant={'subheader2'} style={{textAlign: 'center'}}>
-              {title}
-            </Text>
-          </VStack>
+    <VStack style={styles.card}>
+      <TouchableOpacity onPress={onPress}>
+        <Box style={styles.imageContainer}>
+          <Image
+            source={{uri: `${baseUrl}/${imageUrl}`}}
+            style={{width: '80%', height: '80%'}}
+            resizeMode="contain"
+            alt={''}
+          />
         </Box>
       </TouchableOpacity>
-    </Box>
+      <Text style={{textAlign: 'center'}}>{title}</Text>
+    </VStack>
   );
 };
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    alignItems: 'center',
-    margin: 4,
-  },
-
   image: {
-    width: 120,
-    height: 100,
-    borderRadius: 10,
-    position: 'absolute',
-    top: -20,
-    zIndex: 1,
+    height: 80,
   },
-
   card: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    width: 150,
-    height: 144,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    gap: 2,
+    flex: 1,
+    margin: 5,
+  },
+  imageContainer: {
+    width: 150,
+    height: 150,
+    aspectRatio: 1,
+    backgroundColor: theme.colors.gray[200],
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

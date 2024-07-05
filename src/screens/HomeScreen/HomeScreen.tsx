@@ -1,7 +1,15 @@
 import {useQuery} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Box, FlatList, Input, Text, VStack, useTheme} from 'native-base';
+import {
+  Box,
+  FlatList,
+  Input,
+  Text,
+  VStack,
+  useTheme,
+  useToast,
+} from 'native-base';
 import {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
@@ -13,12 +21,10 @@ import ShopCard from '../../components/ShopyCard';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
 import {RootStackParamList} from '../../navigations/types';
-import {GET_HOME_SCREEN_DATA} from '../../services/GGL-Queries/Home';
-import {
-  CategoryItem,
-  Customer,
-  GetHomeScreenDataResponse,
-} from '../../services/interfaces/Home';
+import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
+import {CategoryItem} from '../../services/interfaces/category.interface';
+import {Customer} from '../../services/interfaces/customer.interface';
+import {GetHomeScreenDataResponse} from '../../services/interfaces/home.interface';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -31,6 +37,7 @@ type Props = {
 
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
+  const toast = useToast();
   const [categories, setCategories] = useState<CategoryItem[] | []>([]);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
@@ -41,6 +48,9 @@ function HomeScreen({navigation}: Props) {
         AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
         setCategories(res.categories.items);
         setCustomer(res.customer);
+      },
+      onError: err => {
+        toast.show({description: err.message});
       },
     },
   );
@@ -101,7 +111,7 @@ function HomeScreen({navigation}: Props) {
                   size={25}
                   style={{
                     padding: 10,
-                    color: 'gray.200',
+                    color: theme.colors.gray[900],
                     backgroundColor: '#F6F6F6',
                   }}
                 />
@@ -135,25 +145,37 @@ export const CategoryList = ({
           title="All Categories"
           btnText="See all"
           onPress={() => {
-            navigation.navigate('Category', {
-              categoryName: '',
-            });
+            navigation.navigate('Category', {parentId: 2});
           }}
         />
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
           data={categories}
-          renderItem={({item}: any) => (
+          renderItem={({item}: {item: CategoryItem}) => (
             <CategoryCard
               title={item.name}
-              price={item.price}
-              imageUrl={item.image}
+              imageUrl={item.sw_menu_icon_img}
               onPress={() => {
-                console.log('clicked home');
+                if (item.children_count > 0) {
+                  navigation.navigate('Category', {
+                    categoryUid: item.uid,
+                    categoryName: item.name,
+                  });
+                } else {
+                  navigation.navigate('ProductList', {
+                    categoryId: item.uid,
+                    categoryName: item.name,
+                  });
+                }
               }}
             />
           )}
+          contentContainerStyle={{
+            gap: 10,
+
+            paddingHorizontal: 5,
+          }}
           keyExtractor={(item: any) => item.uid}
           mt={4}
         />

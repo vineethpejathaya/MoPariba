@@ -1,5 +1,6 @@
 import {Button, HStack, Text} from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import theme from '../themes/theme';
 
 const TitleActions = ({
   title,
@@ -16,7 +17,13 @@ const TitleActions = ({
         <Text variant={'header2'}>{title}</Text>
         <Button
           variant="link"
-          rightIcon={<Icon name="chevron-right" size={20} />}
+          rightIcon={
+            <Icon
+              name="chevron-right"
+              size={20}
+              color={theme.colors.gray[900]}
+            />
+          }
           onPress={onPress}>
           {btnText}
         </Button>

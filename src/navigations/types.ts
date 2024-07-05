@@ -9,9 +9,12 @@ export type RootStackParamList = {
   Search: undefined;
   Category: {
     categoryName?: string;
+    categoryUid?: string;
+    parentId?: number;
   };
   ProductList: {
     categoryName: string;
+    categoryId: string;
   };
   Product: undefined;
   Reviews: undefined;

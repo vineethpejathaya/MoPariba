@@ -11,6 +11,7 @@ function ScreenContent({containerStyles, ...rest}: ScreenContentProps) {
     paddingHorizontal: 10,
     paddingBottom: 10,
     paddingTop: 10,
+    flex: 1,
     backgroundColor: theme.colors.white,
   };
 

@@ -1,16 +1,13 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import theme from '../../themes/theme';
 
 const productListStyles = StyleSheet.create({
   container: {
-    width: '50%',
     borderWidth: 1,
     borderColor: theme.colors.gray[200],
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderRadius: 10,
+    width: (Dimensions.get('window').width * 0.9) / 2,
+    padding: 2,
   },
 
   new: {
@@ -37,7 +34,6 @@ const productListStyles = StyleSheet.create({
     zIndex: 1,
   },
   image: {
-    width: 20,
     height: 94,
     objectFit: 'contain',
   },

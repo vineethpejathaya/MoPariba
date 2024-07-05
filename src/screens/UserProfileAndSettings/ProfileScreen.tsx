@@ -9,7 +9,6 @@ import {
   IconButton,
   Text,
   VStack,
-  useTheme,
 } from 'native-base';
 import {useEffect, useState} from 'react';
 import {Dimensions} from 'react-native';
@@ -27,7 +26,8 @@ import {
 import CustomIconButton from '../../components/Buttons/IconButton';
 import NavigationItem from '../../components/NavigationItem';
 import {RootStackParamList} from '../../navigations/types';
-import {Customer} from '../../services/interfaces/Home';
+import {Customer} from '../../services/interfaces/customer.interface';
+import theme from '../../themes/theme';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -92,7 +92,6 @@ const navigationItems = [
 ];
 
 function ProfileScreen({navigation}: Props) {
-  const theme = useTheme();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const handleNavigation = (screen: any) => {
     navigation.navigate(screen);
