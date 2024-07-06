@@ -210,14 +210,17 @@ export const ProductVariant = ({variant}: any) => {
     <>
       <HStack
         style={{
-          padding: 10,
-          borderRadius: 10,
-          borderWidth: 1,
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          shadowColor: '#000',
+          backgroundColor: '#fff',
+          borderRadius: 8,
+          padding: 16,
 
-          shadowOffset: {width: 0, height: 1},
+          justifyContent: 'space-between',
+          elevation: 1,
+
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 2},
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
         }}>
         <HStack alignItems={'center'} space={2}>
           <Box
