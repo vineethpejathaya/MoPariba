@@ -15,6 +15,8 @@ export type RootStackParamList = {
   ProductList: {
     categoryName: string;
     categoryId: string;
+    categoryImageUrl: string;
+    totalProductCount: number;
   };
   Product: undefined;
   Reviews: undefined;

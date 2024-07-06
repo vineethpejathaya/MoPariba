@@ -7,39 +7,26 @@ const productListStyles = StyleSheet.create({
     borderColor: theme.colors.gray[200],
     borderRadius: 10,
     width: (Dimensions.get('window').width * 0.9) / 2,
-    padding: 2,
-  },
-
-  new: {
-    borderColor: theme.colors.primary[100],
-    width: 38,
-    height: 18,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
-  },
-  favorite: {
-    borderColor: 'red.400',
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    zIndex: 1,
-  },
-  discount: {
-    borderColor: 'red.400',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
+    padding: 10,
   },
   image: {
-    height: 94,
+    width: '80%',
+    height: 140,
     objectFit: 'contain',
+    aspectRatio: 1,
   },
+  imageContainer: {
+    width: 150,
+    height: 150,
+    aspectRatio: 1,
+    backgroundColor: theme.colors.gray[200],
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   prize: {
     fontSize: 12,
-    color: theme.colors.primary[700],
   },
   weight: {
     fontSize: 12,

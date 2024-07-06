@@ -9,20 +9,18 @@ function ScreenHeader({
   title,
   leftActions,
   rightActions,
+  disableNavigateBack = false,
 }: {
   title?: string | ReactNode;
   leftActions?: ReactElement[];
   rightActions?: ReactElement[];
+  disableNavigateBack?: boolean;
 }) {
   const navigation = useNavigation();
   return (
     <HStack style={styles.container}>
       <HStack space={2} alignItems="center">
-        {leftActions ? (
-          leftActions?.map((component, index) => (
-            <Box key={index}>{component}</Box>
-          ))
-        ) : (
+        {!disableNavigateBack && (
           <IconButton
             icon={
               <Icon
@@ -34,6 +32,10 @@ function ScreenHeader({
             onPress={() => navigation.goBack()}
           />
         )}
+        {leftActions &&
+          leftActions?.map((component, index) => (
+            <Box key={index}>{component}</Box>
+          ))}
       </HStack>
       {title && <Text variant={'subheader1'}>{title}</Text>}
       <HStack space={2} alignItems="center">

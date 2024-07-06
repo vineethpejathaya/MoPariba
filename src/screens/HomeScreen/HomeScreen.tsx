@@ -20,11 +20,14 @@ import ScreenHeader from '../../components/ScreenHeader';
 import ShopCard from '../../components/ShopyCard';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
+import {baseUrl} from '../../constants/main';
 import {RootStackParamList} from '../../navigations/types';
 import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
 import {CategoryItem} from '../../services/interfaces/category.interface';
-import {Customer} from '../../services/interfaces/customer.interface';
-import {GetHomeScreenDataResponse} from '../../services/interfaces/home.interface';
+import {
+  GetHomeScreenDataResponse,
+  HomeScreenState,
+} from '../../services/interfaces/home.interface';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -35,19 +38,27 @@ type Props = {
   navigation: HomeScreenNavigationProp;
 };
 
+const defaultState = {
+  categories: null,
+  categoryItems: [],
+  customer: null,
+};
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
   const toast = useToast();
-  const [categories, setCategories] = useState<CategoryItem[] | []>([]);
-  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [homeScreenState, setHomeScreenState] =
+    useState<HomeScreenState>(defaultState);
   const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
     GET_HOME_SCREEN_DATA,
     {
       variables: {parentId: ['2'], pageSize: 10, currentPage: 1},
       onCompleted: res => {
         AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
-        setCategories(res.categories.items);
-        setCustomer(res.customer);
+        setHomeScreenState(prev => ({
+          categories: res.categories,
+          customer: res.customer,
+          categoryItems: res.categories.items,
+        }));
       },
       onError: err => {
         toast.show({description: err.message});
@@ -62,6 +73,7 @@ function HomeScreen({navigation}: Props) {
   return (
     <>
       <ScreenHeader
+        disableNavigateBack
         leftActions={[
           <CustomIconButton
             svgIcon={<MenuIcon />}
@@ -97,7 +109,8 @@ function HomeScreen({navigation}: Props) {
               mb={4}
               variant={'title2'}
               style={{textTransform: 'capitalize'}}>
-              Hey {customer?.firstname ?? '--'} {customer?.lastname ?? '--'},{' '}
+              Hey {homeScreenState?.customer?.firstname ?? '--'}{' '}
+              {homeScreenState?.customer?.lastname ?? '--'},{' '}
               <Text style={{fontWeight: 700}}>How are you!</Text>
             </Text>
             <Input
@@ -119,8 +132,8 @@ function HomeScreen({navigation}: Props) {
               placeholder="Search dishes, restaurants"
             />
           </Box>
-          {categories?.length > 0 && (
-            <CategoryList navigation={navigation} categories={categories} />
+          {homeScreenState?.categoryItems?.length > 0 && (
+            <CategoryList navigation={navigation} state={homeScreenState} />
           )}
           <GroceryShopList />
         </VStack>
@@ -133,11 +146,12 @@ export default HomeScreen;
 
 export const CategoryList = ({
   navigation,
-  categories,
+  state,
 }: {
   navigation: HomeScreenNavigationProp;
-  categories: CategoryItem[] | null;
+  state: HomeScreenState;
 }) => {
+  const {categoryItems, categories} = state;
   return (
     <>
       <Box>
@@ -148,37 +162,39 @@ export const CategoryList = ({
             navigation.navigate('Category', {parentId: 2});
           }}
         />
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={categories}
-          renderItem={({item}: {item: CategoryItem}) => (
-            <CategoryCard
-              title={item.name}
-              imageUrl={item.sw_menu_icon_img}
-              onPress={() => {
-                if (item.children_count > 0) {
-                  navigation.navigate('Category', {
-                    categoryUid: item.uid,
-                    categoryName: item.name,
-                  });
-                } else {
-                  navigation.navigate('ProductList', {
-                    categoryId: item.uid,
-                    categoryName: item.name,
-                  });
-                }
-              }}
-            />
-          )}
-          contentContainerStyle={{
-            gap: 10,
-
-            paddingHorizontal: 5,
-          }}
-          keyExtractor={(item: any) => item.uid}
-          mt={4}
-        />
+        <Box>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={categoryItems}
+            renderItem={({item}: {item: CategoryItem}) => (
+              <CategoryCard
+                title={item.name}
+                imageUrl={item.sw_menu_icon_img}
+                onPress={() => {
+                  if (item.children_count > 0) {
+                    navigation.navigate('Category', {
+                      categoryUid: item.uid,
+                      categoryName: item.name,
+                    });
+                  } else {
+                    navigation.navigate('ProductList', {
+                      categoryId: item.uid,
+                      categoryName: item.name,
+                      categoryImageUrl: `${baseUrl}/${item.sw_menu_icon_img}`,
+                      totalProductCount: categories?.total_count ?? 0,
+                    });
+                  }
+                }}
+              />
+            )}
+            contentContainerStyle={{
+              gap: 10,
+              paddingHorizontal: 5,
+            }}
+            keyExtractor={(item: any) => item.uid}
+          />
+        </Box>
       </Box>
     </>
   );

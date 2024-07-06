@@ -54,6 +54,10 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
               uid
               sku
               name
+              image {
+                url
+                label
+              }
               price_range {
                 minimum_price {
                   discount {

@@ -14,6 +14,7 @@ const theme = extendTheme({
     gray: {
       30: '#EBEBEB',
       50: '#F6F6F6',
+      70: '#C3A894',
       100: '#DCDCDC',
       200: '#F5F5F5',
       300: '#F4F5F9',
@@ -197,13 +198,13 @@ const theme = extendTheme({
         },
         outline: {
           bg: 'transparent',
-          borderColor: 'primary',
+          borderColor: 'primary.900',
           borderWidth: 1,
           _text: {
-            color: 'primary',
+            color: 'primary.900',
           },
           _pressed: {
-            bg: 'primary',
+            bg: 'transparent',
             borderColor: 'secondary',
           },
         },

@@ -1,3 +1,4 @@
+import React from 'react';
 import {SvgXml} from 'react-native-svg';
 
 export const FilterIcon = () => {
@@ -165,6 +166,13 @@ export const HomeIcon = () => {
 <path d="M14.4499 21.374H8.74975C8.35622 21.374 8.03723 21.055 8.03723 20.6615V14.3379C8.03723 13.1102 9.03609 12.1113 10.2638 12.1113H12.9358C14.1635 12.1113 15.1624 13.1102 15.1624 14.3379V20.6615C15.1624 21.055 14.8434 21.374 14.4499 21.374ZM9.46226 19.949H13.7373V14.3379C13.7373 13.896 13.3777 13.5364 12.9358 13.5364H10.2638C9.82186 13.5364 9.46226 13.896 9.46226 14.3379V19.949Z" fill="#868889"/>
 </svg>
 `;
+
+  const SvgIcon = () => <SvgXml xml={svgMarkup} width="25" height="25" />;
+  return <SvgIcon />;
+};
+
+export const StoreIcon = () => {
+  const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"/><polyline points="48 139.59 48 216 208 216 208 139.59" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M54,40H202a8,8,0,0,1,7.69,5.8L224,96H32L46.34,45.8A8,8,0,0,1,54,40Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M96,96v16a32,32,0,0,1-64,0V96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M160,96v16a32,32,0,0,1-64,0V96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M224,96v16a32,32,0,0,1-64,0V96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>`;
 
   const SvgIcon = () => <SvgXml xml={svgMarkup} width="25" height="25" />;
   return <SvgIcon />;
