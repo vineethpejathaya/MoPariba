@@ -5,6 +5,7 @@ import {StyleSheet} from 'react-native';
 import {useCart} from '../hooks/UseCart';
 import {ADD_CONFIGURABLE_PRODUCTS_TO_CART} from '../services/ggl-queries/cart';
 import theme from '../themes/theme';
+import QuantityButton from './QuantityButton';
 
 function ProductVariant({
   variant,
@@ -14,20 +15,39 @@ function ProductVariant({
   parentSku?: string;
 }) {
   const [qnt, setQnt] = useState(0);
-  const {cartId, setCartId} = useCart();
+  const {cartId, cart, setCart} = useCart();
   const variantName = variant?.product?.name;
   const price =
     variant?.product?.price_range?.maximum_price?.final_price?.value?.value;
   const sku = variant?.product?.sku;
 
-  const [addToCart, {loading, error, data}] = useMutation(
+  const cartItem = null;
+  const [addToCartFn, {loading, error, data}] = useMutation(
     ADD_CONFIGURABLE_PRODUCTS_TO_CART,
     {
       onCompleted: res => {
-        setQnt(prev => prev++);
+        setCart(res?.addConfigurableProductsToCart?.cart?.items);
       },
     },
   );
+
+  const handleAdd = () => {
+    addToCartFn({
+      variables: {
+        cartId: cartId,
+        cartItems: [
+          {
+            parent_sku: parentSku,
+            data: {
+              quantity: 1,
+              sku: sku,
+            },
+          },
+        ],
+      },
+    });
+  };
+
   return (
     <>
       <HStack style={styles.container}>
@@ -51,28 +71,35 @@ function ProductVariant({
             </Text>
           </VStack>
         </HStack>
-        <Button
-          onPress={() => {
-            addToCart({
-              variables: {
-                cartId: cartId,
-                cartItems: [
-                  {
-                    parent_sku: parentSku,
-                    data: {
-                      quantity: 1,
-                      sku: sku,
+        {qnt > 0 ? (
+          <>
+            <QuantityButton quantity={qnt} handleAdd={handleAdd} />
+          </>
+        ) : (
+          <Button
+            onPress={() => {
+              setQnt(prev => ++prev);
+              addToCartFn({
+                variables: {
+                  cartId: cartId,
+                  cartItems: [
+                    {
+                      parent_sku: parentSku,
+                      data: {
+                        quantity: 1,
+                        sku: sku,
+                      },
                     },
-                  },
-                ],
-              },
-            });
-          }}
-          variant={'ghost'}
-          _text={styles.btnText}
-          style={styles.btn}>
-          ADD
-        </Button>
+                  ],
+                },
+              });
+            }}
+            variant={'ghost'}
+            _text={styles.btnText}
+            style={styles.btn}>
+            ADD
+          </Button>
+        )}
       </HStack>
     </>
   );

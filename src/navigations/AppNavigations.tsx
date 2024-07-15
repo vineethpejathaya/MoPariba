@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NativeBaseProvider} from 'native-base';
 import {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
-import {AuthProvider, useAuth} from '../hooks/UseAuth';
+import {AuthProvider} from '../hooks/UseAuth';
 import {CartProvider} from '../hooks/UseCart';
-import CartScreen from '../screens/CartScreen';
 import CategoryScreen from '../screens/CategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginAndRegistrations';
@@ -27,7 +28,7 @@ import Tabs from './TabNavigations';
 import {RootStackParamList} from './types';
 
 const Stack = createStackNavigator<RootStackParamList>();
-
+const Tab = createBottomTabNavigator();
 function AppNavigator() {
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -49,46 +50,59 @@ function AppNavigator() {
 export default AppNavigator;
 
 function Navigator() {
-  const {isAuthenticated, setIsAuthenticated} = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        const userToken = await AsyncStorage.getItem('userToken');
-        setIsAuthenticated(userToken !== null);
-      } catch (error) {
-        console.error('Error checking authentication state:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuthentication();
-  }, []);
-
-  if (isLoading) {
-    return null;
-  }
-
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="MainTabs" component={Tabs} />
       <Stack.Screen name={'NoNetwork'} component={NoNetworkScreen} />
       <Stack.Screen name="AuthStack" component={AuthStack} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name={'Home'} component={HomeScreen} />
-      <Stack.Screen name={'Search'} component={SearchScreen} />
-      <Stack.Screen name={'Category'} component={CategoryScreen} />
-      <Stack.Screen name={'Cart'} component={CartScreen} />
-      <Stack.Screen name={'ProductList'} component={ProductListScreen} />
-      <Stack.Screen name={'Product'} component={ProductScreen} />
-      <Stack.Screen name={'Reviews'} component={ReviewsScreen} />
-      <Stack.Screen
+    </Stack.Navigator>
+  );
+}
+
+const MnStack = createNativeStackNavigator<RootStackParamList>();
+
+export function MainStack() {
+  return (
+    <MnStack.Navigator
+      initialRouteName="Home"
+      screenOptions={{headerShown: false}}>
+      <MnStack.Screen name={'Home'} component={HomeScreen} />
+      <MnStack.Screen name={'Search'} component={SearchScreen} />
+    </MnStack.Navigator>
+  );
+}
+
+const CategoryStack = createNativeStackNavigator<RootStackParamList>();
+
+export function ProductNavigationStack() {
+  return (
+    <CategoryStack.Navigator
+      initialRouteName="Category"
+      screenOptions={{headerShown: false}}>
+      <CategoryStack.Screen name={'Category'} component={CategoryScreen} />
+      <CategoryStack.Screen
+        name={'ProductList'}
+        component={ProductListScreen}
+      />
+      <CategoryStack.Screen name={'Product'} component={ProductScreen} />
+      <CategoryStack.Screen name={'Reviews'} component={ReviewsScreen} />
+    </CategoryStack.Navigator>
+  );
+}
+
+const ProfileStack = createNativeStackNavigator<RootStackParamList>();
+
+export function ProfileNavigationStack() {
+  return (
+    <ProfileStack.Navigator
+      initialRouteName="Profile"
+      screenOptions={{headerShown: false}}>
+      <ProfileStack.Screen
         name={'NotificationSettings'}
         component={NotificationSettings}
       />
-    </Stack.Navigator>
+      <ProfileStack.Screen name="Profile" component={ProfileScreen} />
+    </ProfileStack.Navigator>
   );
 }
 
@@ -104,6 +118,7 @@ function AuthStack() {
 
       if (isInitialLaunch === null) {
         await AsyncStorage.setItem('isInitialLaunch', 'false');
+        console.log('isInitialLaunch:', isInitialLaunch);
         setInitialPage('Onboarding');
       } else {
         if (userToken === null) {

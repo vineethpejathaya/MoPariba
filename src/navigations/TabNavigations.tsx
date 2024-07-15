@@ -13,9 +13,11 @@ import {
   ProfileTabIcon,
 } from '../assets/icons/Icons';
 import CartScreen from '../screens/CartScreen';
-import CategoryScreen from '../screens/CategoryScreen';
-import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/UserProfileAndSettings/ProfileScreen';
+import {
+  MainStack,
+  ProductNavigationStack,
+  ProfileNavigationStack,
+} from './AppNavigations';
 import {RootStackParamList} from './types';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -33,13 +35,13 @@ export const TabArr: TabItem[] = [
     route: 'Home',
     label: 'Home',
     icon: <HomeIcon />,
-    component: HomeScreen,
+    component: MainStack,
   },
   {
     route: 'Category',
     label: 'Category',
     icon: <CategoryIcon />,
-    component: CategoryScreen,
+    component: ProductNavigationStack,
   },
   {
     route: 'Cart',
@@ -52,7 +54,7 @@ export const TabArr: TabItem[] = [
     route: 'Profile',
     label: 'Profile',
     icon: <ProfileTabIcon />,
-    component: ProfileScreen,
+    component: ProfileNavigationStack,
   },
 ];
 
@@ -82,6 +84,7 @@ export const TabButton = ({item, ...props}: any) => {
 export default function Tabs() {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarStyle: {

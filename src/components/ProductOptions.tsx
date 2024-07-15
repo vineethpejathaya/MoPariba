@@ -1,9 +1,13 @@
 import {Button, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
+import {useCart} from '../hooks/UseCart';
 import ModalButton from './ModalButton';
 import ProductVariant from './ProductVariant';
 
 function ProductOptions({product}: any) {
+  const {cartId, setCartId, addToCart, cart, setCart} = useCart();
+  const sku = product?.sku;
+  const cartItem = cart?.find(item => item?.product?.sku == sku);
   const totalOptions = product?.variants?.length;
   return (
     <>
@@ -21,8 +25,12 @@ function ProductOptions({product}: any) {
           <>
             <VStack space={3}>
               <Text variant={'subheader2'}>{product?.name}</Text>
-              {product?.variants?.map((variant: any) => (
-                <ProductVariant variant={variant} parentSku={product.sku} />
+              {product?.variants?.map((variant: any, index: number) => (
+                <ProductVariant
+                  key={index}
+                  variant={variant}
+                  parentSku={product.sku}
+                />
               ))}
             </VStack>
           </>

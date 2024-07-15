@@ -33,4 +33,5 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   MyAddress: undefined;
   MainTabs: undefined;
+  Dummy: undefined;
 };

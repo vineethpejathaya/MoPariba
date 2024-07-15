@@ -1,11 +1,21 @@
-import {Box, Button, Center, HStack, Text} from 'native-base';
+import {Box, Center, HStack, Text} from 'native-base';
 import React, {useState} from 'react';
+import {TouchableOpacity} from 'react-native';
 
-const QuantityButton = ({quantity}: {quantity: number}) => {
+const QuantityButton = ({
+  quantity,
+  refetch,
+  handleAdd,
+}: {
+  quantity: number;
+  refetch?: () => void;
+  handleAdd?: () => void;
+}) => {
   const [qnt, setQnt] = useState(quantity);
 
   const increaseQuantity = () => {
     setQnt(prevQuantity => prevQuantity + 1);
+    handleAdd && handleAdd();
   };
 
   const decreaseQuantity = () => {
@@ -16,30 +26,22 @@ const QuantityButton = ({quantity}: {quantity: number}) => {
 
   return (
     <Box borderWidth={1} borderColor="gray.300" borderRadius="md">
-      <HStack space={4} alignItems="center">
-        <Button
-          onPress={decreaseQuantity}
-          variant="ghost"
-          size={'sm'}
-          style={{padding: 0}}>
+      <HStack space={4} alignItems="center" p={3}>
+        <TouchableOpacity onPress={decreaseQuantity}>
           <Text fontSize="md" fontWeight={'bold'} color="green.500">
             -
           </Text>
-        </Button>
+        </TouchableOpacity>
         <Center>
           <Text fontSize="md" fontWeight={'bold'} color="green.500">
             {qnt}
           </Text>
         </Center>
-        <Button
-          size={'sm'}
-          onPress={increaseQuantity}
-          variant="ghost"
-          style={{padding: 0}}>
+        <TouchableOpacity onPress={increaseQuantity}>
           <Text fontSize="md" fontWeight={'bold'} color="green.500">
             +
           </Text>
-        </Button>
+        </TouchableOpacity>
       </HStack>
     </Box>
   );

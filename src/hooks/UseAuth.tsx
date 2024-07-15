@@ -23,9 +23,12 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    console.log('useEffect is executing from authhook');
     const checkAuthentication = async () => {
       const userToken = await AsyncStorage.getItem('userToken');
+      console.log('User Token:', userToken);
       setIsAuthenticated(userToken !== null);
+      console.log('Is Authenticated:', userToken !== null);
     };
 
     checkAuthentication();

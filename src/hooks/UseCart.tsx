@@ -19,6 +19,7 @@ type CartContextType = {
   cart: CartItem[];
   cartId: string | null;
   setCartId: setCartIdType;
+  setCart: Dispatch<SetStateAction<any[]>>;
   addToCart: (item: CartItem) => void;
   removeFromCart: (itemId: string) => void;
 };
@@ -88,7 +89,7 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({
 
   return (
     <CartContext.Provider
-      value={{cart, cartId, setCartId, addToCart, removeFromCart}}>
+      value={{cart, setCart, cartId, setCartId, addToCart, removeFromCart}}>
       {children}
     </CartContext.Provider>
   );

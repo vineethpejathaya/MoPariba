@@ -65,9 +65,9 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
         ) : (
           <>
             <VStack space={3}>
-              {categoryState?.items?.map(category => (
+              {categoryState?.items?.map((category: any, index: number) => (
                 <>
-                  <HStack space={2} alignItems={'center'} mb={3}>
+                  <HStack key={index} space={2} alignItems={'center'} mb={3}>
                     <Text variant={'subTitle2'}>{category?.name}</Text>
                     <Divider />
                   </HStack>

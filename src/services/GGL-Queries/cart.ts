@@ -75,23 +75,7 @@ export const GET_CUSTOMER_CART = gql`
         code
         title
       }
-      billing_address {
-        city
-        company
-        country {
-          code
-          label
-        }
-        firstname
-        lastname
-        postcode
-        region {
-          code
-          label
-        }
-        street
-        telephone
-      }
+
       email
       gift_message {
         from
@@ -130,6 +114,48 @@ export const GET_CUSTOMER_CART = gql`
           image {
             url
             label
+          }
+          ... on ConfigurableProduct {
+            configurable_options {
+              attribute_code
+              values {
+                uid
+                label
+              }
+            }
+            variants {
+              product {
+                uid
+                sku
+                name
+                image {
+                  url
+                  label
+                }
+                price_range {
+                  minimum_price {
+                    discount {
+                      amount_off
+                      percent_off
+                    }
+                    final_price {
+                      value
+                      currency
+                    }
+                  }
+                  maximum_price {
+                    discount {
+                      amount_off
+                      percent_off
+                    }
+                    final_price {
+                      value
+                      currency
+                    }
+                  }
+                }
+              }
+            }
           }
         }
         quantity
@@ -182,6 +208,24 @@ export const GET_CUSTOMER_CART = gql`
   }
 `;
 
+// billing_address {
+//   city
+//   company
+//   country {
+//     code
+//     label
+//   }
+//   firstname
+//   lastname
+//   postcode
+//   region {
+//     code
+//     label
+//   }
+//   street
+//   telephone
+// }
+
 export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
   mutation AddConfigurableProductsToCart(
     $cartId: String!
@@ -197,14 +241,14 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
             name
             sku
             options_container
-          }
-          quantity
-          ... on ConfigurableCartItem {
-            configurable_options {
-              id
-              option_label
-              value_label
-              value_id
+            quantity
+            ... on ConfigurableCartItem {
+              configurable_options {
+                id
+                option_label
+                value_label
+                value_id
+              }
             }
           }
         }

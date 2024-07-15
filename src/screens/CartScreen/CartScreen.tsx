@@ -1,23 +1,33 @@
 import {useQuery} from '@apollo/client';
-import {Box, Button, Divider, HStack, Image, Text, VStack} from 'native-base';
-import {useState} from 'react';
-import {StyleSheet} from 'react-native';
+import {
+  Box,
+  Button,
+  Divider,
+  HStack,
+  Image,
+  ScrollView,
+  Text,
+  VStack,
+} from 'native-base';
+import {Dimensions, StyleSheet} from 'react-native';
 import {DeleteIcon} from '../../assets/icons/Icons';
 import QuantityButton from '../../components/QuantityButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
+import {useCart} from '../../hooks/UseCart';
 import {GET_CUSTOMER_CART} from '../../services/ggl-queries/cart';
 import theme from '../../themes/theme';
 
 function CartScreen() {
-  const [cartItems, setCartItems] = useState([]);
+  const {cartId, cart, setCart} = useCart();
   const {loading, error, data} = useQuery(GET_CUSTOMER_CART, {
     variables: {cart_id: 'CQdEumTZhCBXYAqP6K3jpVOGy4r3kBPY'},
     onCompleted: (res: any) => {
-      setCartItems(res?.cart?.items);
+      setCart(res?.cart?.items);
     },
   });
+  console.log(cart, 'cart from cart screen');
 
   if (loading) {
     return <SpinnerComponent />;
@@ -27,7 +37,7 @@ function CartScreen() {
       <ScreenHeader
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
-      <ScreenContent>
+      <ScreenContent style={{paddingBottom: 60}}>
         <VStack
           px={4}
           flex={1}
@@ -47,15 +57,19 @@ function CartScreen() {
               </Button>
             </HStack>
             <Divider />
-            <VStack space={4} mt={4} style={styles.container}>
-              {cartItems?.length > 0 ? (
-                <>
-                  {cartItems?.map((cartItem, index) => (
-                    <CartItem key={index} cartItem={cartItem} />
-                  ))}
-                </>
-              ) : null}
-            </VStack>
+            <Box style={styles.container}>
+              <ScrollView>
+                <VStack space={4} mt={4}>
+                  {cart?.length > 0 ? (
+                    <>
+                      {cart?.map((cartItem, index) => (
+                        <CartItem key={index} cartItem={cartItem} />
+                      ))}
+                    </>
+                  ) : null}
+                </VStack>
+              </ScrollView>
+            </Box>
           </VStack>
 
           <Button variant={'solid'}>Proceed</Button>
@@ -103,6 +117,8 @@ export const CartItem = ({cartItem}: {cartItem: any}) => {
 
 const styles = StyleSheet.create({
   container: {
+    height: Dimensions.get('window').height * 0.65,
+    overflow: 'scroll',
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,

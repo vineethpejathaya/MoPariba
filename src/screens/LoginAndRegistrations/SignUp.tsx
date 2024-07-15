@@ -88,6 +88,7 @@ export const SignUpForm = ({
           label={'First Name'}
           name={'firstName'}
           value={formData.firstName}
+          height={45}
           inputStyles={{backgroundColor: '#F5F8FA'}}
           onChangeText={e => {
             setFormData(s => ({
@@ -102,6 +103,7 @@ export const SignUpForm = ({
           label={'Last Name'}
           name={'lastName'}
           value={formData.lastName}
+          height={45}
           inputStyles={{backgroundColor: '#F5F8FA'}}
           onChangeText={e => {
             setFormData(s => ({
@@ -116,6 +118,7 @@ export const SignUpForm = ({
           label={'Email'}
           name={'email'}
           value={formData.email}
+          height={45}
           inputStyles={{backgroundColor: '#F5F8FA'}}
           onChangeText={e => {
             setFormData(s => ({
@@ -132,6 +135,7 @@ export const SignUpForm = ({
           inputStyles={{backgroundColor: '#F5F8FA', height: 90}}
           value={formData.password}
           type={show.password ? 'text' : 'password'}
+          height={45}
           onChangeText={e => {
             setFormData(s => ({
               ...s,
@@ -144,7 +148,7 @@ export const SignUpForm = ({
               <Icon
                 style={{marginRight: 15}}
                 name={show.password ? 'visibility' : 'visibility-off'}
-                size={25}
+                size={20}
                 color={theme.colors.gray[900]}
               />
             </Pressable>
@@ -164,6 +168,7 @@ export const SignUpForm = ({
               confirmPassword: e,
             }));
           }}
+          height={45}
           InputRightElement={
             <Pressable
               onPress={() =>
@@ -175,7 +180,7 @@ export const SignUpForm = ({
               <Icon
                 style={{marginRight: 15}}
                 name={show.confirmPassword ? 'visibility' : 'visibility-off'}
-                size={25}
+                size={20}
                 color={theme.colors.gray[900]}
               />
             </Pressable>

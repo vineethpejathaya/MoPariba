@@ -73,8 +73,12 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
         ) : (
           <>
             <Box style={productListStyles.productListContainer}>
-              {products?.map(product => (
-                <Product product={product} navigation={navigation} />
+              {products?.map((product: any, index: number) => (
+                <Product
+                  key={index}
+                  product={product}
+                  navigation={navigation}
+                />
               ))}
             </Box>
           </>
@@ -93,8 +97,8 @@ const Product = ({
   product: any;
   navigation: ProductListScreenNavigationProp;
 }) => {
-  const [qnt, setQnt] = useState(0);
   const price = product?.price_range?.maximum_price?.final_price?.value;
+
   return (
     <>
       <Box style={productListStyles.container}>
@@ -124,13 +128,11 @@ const Product = ({
             <Text variant="body2" style={productListStyles.prize}>
               ₹{price ?? 0}
             </Text>
+
             {product?.variants?.length > 0 ? (
               <ProductOptions product={product} />
             ) : (
               <Button
-                onPress={() => {
-                  setQnt(prev => prev++);
-                }}
                 variant={'outline'}
                 _text={{fontSize: 12}}
                 style={{
