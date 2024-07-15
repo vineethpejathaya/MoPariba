@@ -15,6 +15,7 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
       items {
         uid
         name
+        sku
         image {
           url
           label
@@ -83,6 +84,107 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
             }
           }
         }
+        url_key
+      }
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+    }
+  }
+`;
+
+export const GET_PRODUCT_DETAILS = gql`
+  query GetProductDetails($sku: String!, $pageSize: Int!, $currentPage: Int!) {
+    products(
+      filter: {sku: {eq: $sku}}
+      pageSize: $pageSize
+      currentPage: $currentPage
+    ) {
+      total_count
+      items {
+        uid
+        name
+        image {
+          url
+          label
+        }
+        sku
+        only_x_left_in_stock
+        rating_summary
+        meta_description
+        description {
+          html
+        }
+        short_description {
+          html
+        }
+        price_range {
+          minimum_price {
+            discount {
+              amount_off
+              percent_off
+            }
+            final_price {
+              value
+              currency
+            }
+          }
+          maximum_price {
+            discount {
+              amount_off
+              percent_off
+            }
+            final_price {
+              value
+              currency
+            }
+          }
+        }
+        ... on ConfigurableProduct {
+          configurable_options {
+            attribute_code
+            values {
+              uid
+              label
+            }
+          }
+          variants {
+            product {
+              uid
+              sku
+              name
+              image {
+                url
+                label
+              }
+              price_range {
+                minimum_price {
+                  discount {
+                    amount_off
+                    percent_off
+                  }
+                  final_price {
+                    value
+                    currency
+                  }
+                }
+                maximum_price {
+                  discount {
+                    amount_off
+                    percent_off
+                  }
+                  final_price {
+                    value
+                    currency
+                  }
+                }
+              }
+            }
+          }
+        }
+        review_count
         url_key
       }
       page_info {

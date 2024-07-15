@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Box, StatusBar, Text, theme} from 'native-base';
+import {Box, ScrollView, StatusBar, Text, theme} from 'native-base';
 import {ReactNode} from 'react';
 import {Dimensions, ImageBackground, StyleSheet} from 'react-native';
 import CustomIconButton from '../../../components/Buttons/IconButton';
@@ -18,28 +18,33 @@ function LoginScreenTemplate({
   const navigation = useNavigation();
   return (
     <>
-      <Box style={{flex: 1, backgroundColor: '#121223'}}>
+      <Box style={styles.container}>
         <ImageBackground
           source={require('../../../assets/images/pngs/LoginBackground.png')}
-          style={Styles.backgroundImage}>
+          style={styles.backgroundImage}>
           <StatusBar hidden />
           {!disableBackBtn && (
             <CustomIconButton
-              BtnStyles={Styles.backBtn}
+              BtnStyles={styles.backBtn}
               iconName={'chevron-left'}
               iconSize={25}
               onPress={() => navigation.goBack()}
             />
           )}
-          <Box style={Styles.header}>
-            <Text variant={'heading2'} style={Styles.title}>
+          <Box style={styles.header}>
+            <Text variant={'heading2'} style={styles.title}>
               {title}
             </Text>
-            <Text variant={'title2'} style={Styles.subTitle}>
+            <Text variant={'subTitle2'} fontSize={'xl'} style={styles.subTitle}>
               {subTitle}
             </Text>
           </Box>
-          <Box style={Styles.footer}>{children}</Box>
+
+          <Box style={styles.footer}>
+            <ScrollView contentContainerStyle={{flex: 1}}>
+              {children}
+            </ScrollView>
+          </Box>
         </ImageBackground>
       </Box>
     </>
@@ -48,17 +53,22 @@ function LoginScreenTemplate({
 
 export default LoginScreenTemplate;
 
-export const Styles = StyleSheet.create({
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121223',
+  },
+
   header: {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 0,
-    padding: 40,
+    paddingBottom: 40,
     height: Dimensions.get('window').height * 0.25,
   },
   backgroundImage: {
-    resizeMode: 'contain',
+    objectFit: 'contain',
+    width: '100%',
     height: Dimensions.get('window').height * 0.4,
   },
   title: {
@@ -71,14 +81,11 @@ export const Styles = StyleSheet.create({
 
   footer: {
     height: Dimensions.get('window').height * 0.75,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    width: '100%',
     backgroundColor: 'white',
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
-    paddingHorizontal: 22,
-    paddingVertical: 30,
+    padding: 25,
   },
 
   backBtn: {

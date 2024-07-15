@@ -1,8 +1,9 @@
 import {Box, Pressable} from 'native-base';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import theme from '../themes/theme';
 
-function FavoriteCheckbox() {
+function FavoriteCheckbox({iconSize = 25}: {iconSize?: number}) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const toggleFavorite = () => {
@@ -10,12 +11,13 @@ function FavoriteCheckbox() {
   };
 
   return (
-    <Box flex={1} justifyContent="center" alignItems="center">
+    <Box>
       <Pressable onPress={toggleFavorite}>
         <Icon
           name={isFavorite ? 'favorite' : 'favorite-border'}
-          size={25}
-          color={isFavorite ? 'red.500' : 'black'}
+          size={iconSize}
+          style={{borderColor: 'black'}}
+          color={isFavorite ? theme.colors.red[600] : theme.colors.gray[500]}
         />
       </Pressable>
     </Box>

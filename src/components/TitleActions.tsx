@@ -1,5 +1,6 @@
 import {Button, HStack, Text} from 'native-base';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {ReactNode} from 'react';
+import {StyleSheet} from 'react-native';
 import theme from '../themes/theme';
 
 const TitleActions = ({
@@ -7,24 +8,21 @@ const TitleActions = ({
   btnText,
   onPress,
 }: {
-  title: string;
+  title: string | ReactNode;
   btnText: string;
   onPress: () => void;
 }) => {
   return (
     <>
-      <HStack justifyContent="space-between" alignItems="center" mt={4}>
-        <Text variant={'header2'}>{title}</Text>
-        <Button
-          variant="link"
-          rightIcon={
-            <Icon
-              name="chevron-right"
-              size={20}
-              color={theme.colors.gray[900]}
-            />
-          }
-          onPress={onPress}>
+      <HStack style={style.container}>
+        {typeof title === 'string' ? (
+          <Text variant={'body2'} fontSize={'lg'}>
+            {title}
+          </Text>
+        ) : (
+          title
+        )}
+        <Button variant="ghost" onPress={onPress} _text={style.btn}>
           {btnText}
         </Button>
       </HStack>
@@ -33,3 +31,15 @@ const TitleActions = ({
 };
 
 export default TitleActions;
+
+const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  btn: {
+    color: theme.colors.blue[500],
+    fontSize: 14,
+  },
+});

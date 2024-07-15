@@ -5,7 +5,7 @@ import {useRef, useState} from 'react';
 import {View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
-import ResponsiveImage from '../../components/ResponsiveImage';
+import ImageComponent from '../../components/ImageComponent';
 import {Slide, slides} from '../../constants/OnBoardingSlides';
 import {RootStackParamList} from '../../navigations/types';
 import theme from '../../themes/theme';
@@ -48,11 +48,11 @@ function OnboardingScreen({navigation}: Props) {
         activeDot={<View style={onBoardingStyles.activeDot} />}>
         {slides.map((slide: Slide, index: number) => (
           <View key={slide.key} style={onBoardingStyles.slide}>
-            <ResponsiveImage source={slide.image} alt={slide.title} />
+            <ImageComponent source={slide?.image} alt={slide.title} />
             <View style={onBoardingStyles.textContainer}>
-              <Text variant="heading">{slide.title}</Text>
+              <Text variant="heading">{slide?.title}</Text>
               <Text variant={'body2'} style={onBoardingStyles.body}>
-                {slide.description}
+                {slide?.description}
               </Text>
             </View>
             <View style={onBoardingStyles.buttonContainer}>

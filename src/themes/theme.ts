@@ -1,5 +1,41 @@
 import {extendTheme} from 'native-base';
 
+const fontSize = {
+  xs: 10,
+  sm: 12,
+  md: 14,
+  lg: 15,
+  xl: 16,
+  '2xl': 18,
+  '3xl': 20,
+  '4xl': 25,
+  '5xl': 30,
+};
+
+const lineHeight = {
+  xs: 15,
+  sm: 16,
+  md: 18,
+  lg: 19,
+  xl: 20,
+  '2xl': 21,
+  '3xl': 22,
+  '4xl': 24,
+  '5xl': 27,
+  '6xl': 30,
+  '7xl': 36,
+  '8xl': 37,
+};
+
+const fontWeight = {
+  normal: 400,
+  medium: 500,
+  semiBold: 600,
+  bold: 700,
+  extraBold: 800,
+  black: 900,
+};
+
 const theme = extendTheme({
   colors: {
     primary: {
@@ -28,6 +64,15 @@ const theme = extendTheme({
       100: '#E8AD41',
       200: '#FFC107',
       700: '#FE585A',
+    },
+    blue: {
+      100: '#E9F5FA',
+      500: '#2382AA',
+    },
+    red: {
+      100: '#FEE4E4',
+      400: '#F56262',
+      600: '#FE585A',
     },
     white: '#FFFFFF',
   },
@@ -77,6 +122,9 @@ const theme = extendTheme({
     poppins: 'Poppins',
     sen: 'Sen',
   },
+  fontSizes: fontSize,
+  lineHeights: lineHeight,
+  fontWeights: fontWeight,
   components: {
     Text: {
       baseStyle: {
@@ -86,91 +134,91 @@ const theme = extendTheme({
       variants: {
         heading: {
           fontFamily: 'poppins',
-          fontWeight: 700,
-          fontSize: 25,
-          lineHeight: 37.5,
+          fontWeight: 'bold',
+          fontSize: '4xl',
+          lineHeight: '8xl',
         },
         heading2: {
           fontFamily: 'sen',
-          fontWeight: 700,
-          fontSize: 30,
-          lineHeight: 36,
+          fontWeight: 'bold',
+          fontSize: '5xl',
+          lineHeight: '7xl',
         },
         header1: {
           fontFamily: 'poppins',
-          fontWeight: 600,
-          fontSize: 20,
-          lineHeight: 30,
+          fontWeight: 'semiBold',
+          fontSize: '3xl',
+          lineHeight: '6xl',
         },
         header2: {
           fontFamily: 'sen',
-          fontWeight: 400,
-          fontSize: 20,
-          lineHeight: 24.06,
+          fontWeight: 'normal',
+          fontSize: '3xl',
+          lineHeight: '4xl',
         },
         subheader1: {
           fontFamily: 'poppins',
-          fontWeight: 500,
-          fontSize: 18,
-          lineHeight: 27,
+          fontWeight: 'semiBold',
+          fontSize: '2xl',
+          lineHeight: '5xl',
         },
         subheader2: {
           fontFamily: 'sen',
-          fontWeight: 700,
-          fontSize: 18,
-          lineHeight: 21.66,
+          fontWeight: 'semiBold',
+          fontSize: '2xl',
+          lineHeight: '2xl',
         },
         title1: {
           fontFamily: 'poppins',
-          fontWeight: 600,
-          fontSize: 15,
-          lineHeight: 22.5,
+          fontWeight: 'semiBold',
+          fontSize: 'lg',
+          lineHeight: '3xl',
         },
         title2: {
           fontFamily: 'sen',
-          fontWeight: 400,
-          fontSize: 16,
-          lineHeight: 19.25,
+          fontWeight: 'normal',
+          fontSize: 'xl',
+          lineHeight: 'lg',
         },
         subTitle1: {
           fontFamily: 'poppins',
-          fontWeight: 600,
-          fontSize: 12,
-          lineHeight: 18,
+          fontWeight: 'semiBold',
+          fontSize: 'sm',
+          lineHeight: 'sm',
         },
         subTitle2: {
           fontFamily: 'sen',
-          fontWeight: 400,
-          fontSize: 14,
-          lineHeight: 16.84,
+          fontWeight: 'normal',
+          fontSize: 'md',
+          lineHeight: 'xl',
         },
         label1: {
           fontFamily: 'poppins',
-          fontWeight: 400,
-          fontSize: 12,
-          lineHeight: 19.56,
+          fontWeight: 'normal',
+          fontSize: 'sm',
+          lineHeight: 'md',
         },
         label2: {
           fontFamily: 'sen',
-          fontWeight: 400,
-          fontSize: 13,
-          lineHeight: 15.64,
+          fontWeight: 'normal',
+          fontSize: 'md',
+          lineHeight: 'xl',
         },
         body1: {
           fontFamily: 'poppins',
-          fontWeight: 400,
-          fontSize: 12,
-          lineHeight: 18,
+          fontWeight: 'normal',
+          fontSize: 'sm',
+          lineHeight: 'md',
         },
         body2: {
           fontFamily: 'poppins',
-          fontWeight: 500,
-          fontSize: 10,
-          lineHeight: 15,
+          fontWeight: 'medium',
+          fontSize: 'xs',
+          lineHeight: 'xs',
         },
       },
       defaultProps: {
-        variant: 'poppins',
+        variant: 'body1',
       },
     },
     Button: {
@@ -216,7 +264,9 @@ const theme = extendTheme({
         },
         ghost: {
           bg: 'transparent',
+          padding: 0,
           _text: {
+            padding: 0,
             color: 'primary.700',
           },
         },

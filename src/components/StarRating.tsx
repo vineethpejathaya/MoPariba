@@ -1,6 +1,6 @@
 import {HStack, Text, useTheme} from 'native-base';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {FilledStarIcon, HalfStarIcon, StarIcon} from '../assets/icons/Icons';
 
 function StarRating({
   rating,
@@ -13,15 +13,15 @@ function StarRating({
 }) {
   const theme = useTheme();
   const renderStar = (index: number) => {
-    let iconName = 'star-o';
     if (index < rating) {
       if (rating - index === 0.5) {
-        iconName = 'star-half-o';
+        return <HalfStarIcon />;
       } else {
-        iconName = 'star';
+        return <FilledStarIcon />;
       }
+    } else {
+      return <StarIcon />;
     }
-    return iconName;
   };
 
   return (
@@ -32,16 +32,8 @@ function StarRating({
         </Text>
       )}
 
-      <HStack space={1}>
-        {Array.from({length: maxRating}, (_, index) => (
-          <Icon
-            name={renderStar(index)}
-            color={
-              index < rating ? theme.colors.orange[200] : theme.colors.white
-            }
-            size={15}
-          />
-        ))}
+      <HStack space={1} alignItems={'center'}>
+        {Array.from({length: maxRating}, (_, index) => renderStar(index))}
       </HStack>
     </HStack>
   );

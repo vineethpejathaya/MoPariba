@@ -20,6 +20,7 @@ import TextField from '../../components/Forms/TextInput';
 import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
 import {loginSchema} from '../../services/form-validations/ValidationSchema';
+import {CREATE_CART_MUTATION} from '../../services/ggl-queries/cart';
 import {LOGIN_MUTATION} from '../../services/ggl-queries/loginAndRegistartion';
 import {LoginFormData} from '../../services/interfaces/LoginAndRegistartions.interface';
 import theme from '../../themes/theme';
@@ -45,7 +46,9 @@ function LoginScreen({navigation}: Props) {
         <HStack
           direction={'row'}
           style={{alignItems: 'center', margin: 'auto'}}>
-          <Text variant={'title2'}>Don't have an account?</Text>
+          <Text variant={'subTitle2'} fontSize={'xl'}>
+            Don't have an account?
+          </Text>
           <Button
             variant={'ghost'}
             _text={{
@@ -55,7 +58,10 @@ function LoginScreen({navigation}: Props) {
             SIGN UP
           </Button>
         </HStack>
-        <Text variant={'title2'} style={{textAlign: 'center'}}>
+        <Text
+          variant={'subTitle2'}
+          fontSize={'xl'}
+          style={{textAlign: 'center'}}>
           Or
         </Text>
 
@@ -84,18 +90,22 @@ export const LoginForm = ({
   const [generateCustomerToken, {data, loading, error}] = useMutation(
     LOGIN_MUTATION,
     {
-      onCompleted: res => {
-        AsyncStorage.setItem(
+      onCompleted: async res => {
+        await AsyncStorage.setItem(
           'userToken',
           res?.generateCustomerToken?.token ?? '',
         );
+        await createCustomerCart();
         navigation.navigate('Home');
-      },
-      onError: err => {
-        toast.show({description: err.message});
       },
     },
   );
+
+  const [createCustomerCart] = useMutation(CREATE_CART_MUTATION, {
+    onCompleted: async res => {
+      await AsyncStorage.setItem('cartId', res?.createEmptyCart);
+    },
+  });
 
   const handleLogin = async () => {
     const result = await validate(formData);

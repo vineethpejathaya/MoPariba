@@ -1,6 +1,6 @@
 import {useMutation} from '@apollo/client';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Button, Pressable, ScrollView, VStack} from 'native-base';
+import {Button, Pressable, VStack} from 'native-base';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
@@ -25,11 +25,7 @@ function SignUpScreen({navigation}: Props) {
     <LoginScreenTemplate
       title={'Sign Up'}
       subTitle={'Please sign up to get started'}>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <VStack space={4} w="100%" px={4}>
-          <SignUpForm navigation={navigation} />
-        </VStack>
-      </ScrollView>
+      <SignUpForm navigation={navigation} />
     </LoginScreenTemplate>
   );
 }
@@ -133,7 +129,7 @@ export const SignUpForm = ({
         <TextField
           label={'Password'}
           name={'password'}
-          inputStyles={{backgroundColor: '#F5F8FA'}}
+          inputStyles={{backgroundColor: '#F5F8FA', height: 90}}
           value={formData.password}
           type={show.password ? 'text' : 'password'}
           onChangeText={e => {
@@ -171,7 +167,10 @@ export const SignUpForm = ({
           InputRightElement={
             <Pressable
               onPress={() =>
-                setShow(s => ({...s, confirmPassword: !show.confirmPassword}))
+                setShow(s => ({
+                  ...s,
+                  confirmPassword: !show.confirmPassword,
+                }))
               }>
               <Icon
                 style={{marginRight: 15}}

@@ -5,6 +5,8 @@ export type RootStackParamList = {
   SignUp: undefined;
   ForgotPassword: undefined;
   EmailVerification: undefined;
+  AuthStack: undefined;
+  NoNetwork: undefined;
   Home: undefined;
   Search: undefined;
   Category: {
@@ -18,9 +20,17 @@ export type RootStackParamList = {
     categoryImageUrl: string;
     totalProductCount: number;
   };
-  Product: undefined;
+  Product: {
+    productSku: string;
+  };
   Reviews: undefined;
+  Cart: undefined;
   Profile: undefined;
+  FavoritesScreen: undefined;
+  OrdersScreen: undefined;
+  AboutMeScreen: undefined;
+  AddressScreen: undefined;
   NotificationSettings: undefined;
   MyAddress: undefined;
+  MainTabs: undefined;
 };

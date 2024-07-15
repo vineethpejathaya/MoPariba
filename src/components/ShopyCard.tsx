@@ -3,11 +3,12 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import ResponsiveImage from './ResponsiveImage';
+import ImageComponent from './ImageComponent';
+
 const ShopCard = () => {
   return (
     <Box style={styles.card}>
-      <ResponsiveImage styles={styles.image} alt={'image'} />
+      <ImageComponent width={'100%'} height={137} alt={'image'} />
       <VStack p="4" space={2}>
         <Text variant={'header2'}>Grocery Shop</Text>
         <Text variant={'subTitle2'} style={styles.subtitle}>
@@ -41,10 +42,6 @@ const ShopCard = () => {
 export default ShopCard;
 
 const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: 137,
-  },
   subtitle: {
     lineHeight: 16.84,
     color: '#A0A5BA',

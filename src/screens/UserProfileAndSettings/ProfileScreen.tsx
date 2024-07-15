@@ -1,30 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {
-  Avatar,
-  Box,
-  Center,
-  FlatList,
-  HStack,
-  IconButton,
-  Text,
-  VStack,
-} from 'native-base';
+import {Avatar, Box, Center, FlatList, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
 import {Dimensions} from 'react-native';
 import {
-  CreditCardIcon,
   FavoriteIcon,
-  HomeIcon,
   LocationIcon,
   NotificationGreenIcon,
   OrderIcon,
   ProfileIcon,
   SignOutIcon,
-  TransactionIcon,
 } from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import NavigationItem from '../../components/NavigationItem';
+import {useAuth} from '../../hooks/UseAuth';
 import {RootStackParamList} from '../../navigations/types';
 import {Customer} from '../../services/interfaces/customer.interface';
 import theme from '../../themes/theme';
@@ -37,7 +26,15 @@ type Props = {
   navigation: ProfileScreenNavigationProp;
 };
 
-const navigationItems = [
+type NavigationItem = {
+  icon: string;
+  svgIcon: JSX.Element;
+  label: string;
+  navigateTo: keyof RootStackParamList;
+  onPress?: () => void;
+};
+
+const navigationItems: NavigationItem[] = [
   {
     icon: 'person',
     svgIcon: <ProfileIcon />,
@@ -63,18 +60,6 @@ const navigationItems = [
     navigateTo: 'AddressScreen',
   },
   {
-    icon: 'credit-card',
-    svgIcon: <CreditCardIcon />,
-    label: 'Credit Cards',
-    navigateTo: 'CreditCardScreen',
-  },
-  {
-    icon: 'attach-money',
-    svgIcon: <TransactionIcon />,
-    label: 'Transactions',
-    navigateTo: 'TransactionsScreen',
-  },
-  {
     icon: 'notifications',
     svgIcon: <NotificationGreenIcon />,
     label: 'Notifications',
@@ -92,9 +77,15 @@ const navigationItems = [
 ];
 
 function ProfileScreen({navigation}: Props) {
+  const {signOut} = useAuth();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const handleNavigation = (screen: any) => {
-    navigation.navigate(screen);
+    if (screen === 'Login') {
+      signOut();
+      navigation.navigate('AuthStack');
+    } else {
+      navigation.navigate(screen);
+    }
   };
 
   useEffect(() => {
@@ -106,6 +97,7 @@ function ProfileScreen({navigation}: Props) {
     };
     initialize();
   });
+
   return (
     <>
       <Center style={{height: Dimensions.get('window').height * 0.2}}>
@@ -115,10 +107,9 @@ function ProfileScreen({navigation}: Props) {
             bottom: -Dimensions.get('window').height * 0.2 * 0.5,
             zIndex: 1,
           }}>
-          <Avatar
-            size="2xl"
-            source={require('../../assets/images/pngs/ProfileImage.png')}
-          />
+          <Avatar size="2xl" source={{uri: 'https://bit.ly/broken-link'}}>
+            {'VR'}
+          </Avatar>
           <CustomIconButton
             iconName="photo-camera"
             size={14}
@@ -147,7 +138,6 @@ function ProfileScreen({navigation}: Props) {
                 svgIcon={item?.svgIcon}
                 label={item.label}
                 onPress={() => {
-                  item.onPress && item.onPress();
                   handleNavigation(item.navigateTo);
                 }}
               />
@@ -155,25 +145,8 @@ function ProfileScreen({navigation}: Props) {
           />
         </VStack>
       </Box>
-      <TabComponent navigation={navigation} />
     </>
   );
 }
 
 export default ProfileScreen;
-
-const TabComponent = ({navigation}: any) => {
-  return (
-    <Box
-      style={{elevation: 1, backgroundColor: 'white', padding: 4}}
-      justifyContent="center"
-      alignItems="center">
-      <HStack>
-        <IconButton
-          icon={<HomeIcon />}
-          onPress={() => navigation.navigate('Home')}
-        />
-      </HStack>
-    </Box>
-  );
-};

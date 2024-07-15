@@ -1,33 +1,38 @@
 import {useQuery} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {
-  Box,
-  FlatList,
-  Input,
-  Text,
-  VStack,
-  useTheme,
-  useToast,
-} from 'native-base';
+import {Box, HStack, Image, Text, VStack, useTheme} from 'native-base';
 import {useState} from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
+import Swiper from 'react-native-swiper';
+import {
+  CameraIcon,
+  FaceSavoringFood,
+  Fire,
+  MenuIcon,
+  NotificationIcon,
+} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
-import CategoryCard from '../../components/CategoryCard';
+import CategoryItem from '../../components/CategoryItem';
+import ProductCard from '../../components/ProductCard';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
-import ShopCard from '../../components/ShopyCard';
+import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
-import {baseUrl} from '../../constants/main';
+import {
+  ProductItemInterface,
+  banners,
+  baseUrl,
+  products,
+} from '../../constants/main';
 import {RootStackParamList} from '../../navigations/types';
 import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
-import {CategoryItem} from '../../services/interfaces/category.interface';
+import {CategoryItemInterface} from '../../services/interfaces/category.interface';
 import {
   GetHomeScreenDataResponse,
   HomeScreenState,
 } from '../../services/interfaces/home.interface';
+import HomeScreenStyles from './styles';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -43,15 +48,15 @@ const defaultState = {
   categoryItems: [],
   customer: null,
 };
+
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
-  const toast = useToast();
   const [homeScreenState, setHomeScreenState] =
     useState<HomeScreenState>(defaultState);
   const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
     GET_HOME_SCREEN_DATA,
     {
-      variables: {parentId: ['2'], pageSize: 10, currentPage: 1},
+      variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
       onCompleted: res => {
         AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
         setHomeScreenState(prev => ({
@@ -60,11 +65,9 @@ function HomeScreen({navigation}: Props) {
           categoryItems: res.categories.items,
         }));
       },
-      onError: err => {
-        toast.show({description: err.message});
-      },
     },
   );
+  const {customer, categoryItems} = homeScreenState;
 
   if (loading) {
     return <SpinnerComponent />;
@@ -82,14 +85,14 @@ function HomeScreen({navigation}: Props) {
               navigation.navigate('Profile');
             }}
           />,
-          <Box>
+          <VStack>
             <Text
               variant={'subheader2'}
               style={{color: theme.colors.primary[200], fontSize: 12}}>
               DELIVER TO
             </Text>
             <Text variant="subTitle2">Halal Lab office</Text>
-          </Box>,
+          </VStack>,
         ]}
         rightActions={[
           <CustomIconButton
@@ -103,39 +106,31 @@ function HomeScreen({navigation}: Props) {
         ]}
       />
       <ScreenContent flex={1}>
-        <VStack px={4} justifyContent={'space-between'}>
-          <Box>
-            <Text
-              mb={4}
-              variant={'title2'}
-              style={{textTransform: 'capitalize'}}>
-              Hey {homeScreenState?.customer?.firstname ?? '--'}{' '}
-              {homeScreenState?.customer?.lastname ?? '--'},{' '}
-              <Text style={{fontWeight: 700}}>How are you!</Text>
-            </Text>
-            <Input
-              onPress={() => {
-                navigation.navigate('Search');
-              }}
-              variant={'outline'}
-              InputLeftElement={
-                <Icon
-                  name="search"
-                  size={25}
-                  style={{
-                    padding: 10,
-                    color: theme.colors.gray[900],
-                    backgroundColor: '#F6F6F6',
-                  }}
-                />
-              }
-              placeholder="Search dishes, restaurants"
-            />
-          </Box>
-          {homeScreenState?.categoryItems?.length > 0 && (
+        <VStack space={3} px={2} justifyContent={'space-between'}>
+          <Text
+            variant={'subTitle2'}
+            fontSize={'xl'}
+            style={{textTransform: 'capitalize'}}>
+            Hey {customer?.firstname ?? '--'} {customer?.lastname ?? '--'},{' '}
+            <Text fontWeight={'bold'}>How are you!</Text>
+          </Text>
+
+          <SearchBar
+            onPress={() => {
+              navigation.navigate('Search');
+            }}
+            InputRightElement={
+              <Box style={{padding: 10}}>
+                <CameraIcon />
+              </Box>
+            }
+          />
+          <BannerSection />
+
+          {categoryItems?.length > 0 && (
             <CategoryList navigation={navigation} state={homeScreenState} />
           )}
-          <GroceryShopList />
+          <BestDeals products={products} />
         </VStack>
       </ScreenContent>
     </>
@@ -152,63 +147,106 @@ export const CategoryList = ({
   state: HomeScreenState;
 }) => {
   const {categoryItems, categories} = state;
+
+  const handleNavigation = (categoryItem: CategoryItemInterface) => {
+    if (categoryItem.children_count > 0) {
+      navigation.navigate('Category', {
+        categoryUid: categoryItem.uid,
+        categoryName: categoryItem.name,
+      });
+    } else {
+      navigation.navigate('ProductList', {
+        categoryId: categoryItem.uid,
+        categoryName: categoryItem.name,
+        categoryImageUrl: `${baseUrl}/${categoryItem.sw_menu_icon_img}`,
+        totalProductCount: categories?.total_count ?? 0,
+      });
+    }
+  };
+
   return (
     <>
-      <Box>
+      <VStack>
         <TitleActions
-          title="All Categories"
+          title={
+            <HStack alignItems={'center'} space={2}>
+              <Text variant={'body2'} lineHeight={'md'} fontSize={'xl'}>
+                Categories
+              </Text>
+              <FaceSavoringFood />
+            </HStack>
+          }
           btnText="See all"
           onPress={() => {
             navigation.navigate('Category', {parentId: 2});
           }}
         />
-        <Box>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={categoryItems}
-            renderItem={({item}: {item: CategoryItem}) => (
-              <CategoryCard
-                title={item.name}
-                imageUrl={item.sw_menu_icon_img}
-                onPress={() => {
-                  if (item.children_count > 0) {
-                    navigation.navigate('Category', {
-                      categoryUid: item.uid,
-                      categoryName: item.name,
-                    });
-                  } else {
-                    navigation.navigate('ProductList', {
-                      categoryId: item.uid,
-                      categoryName: item.name,
-                      categoryImageUrl: `${baseUrl}/${item.sw_menu_icon_img}`,
-                      totalProductCount: categories?.total_count ?? 0,
-                    });
-                  }
-                }}
+
+        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
+          {categoryItems?.map((category: CategoryItemInterface) => (
+            <>
+              <CategoryItem
+                key={category.uid}
+                title={category.name}
+                imageUrl={category.sw_menu_icon_img}
+                onPress={() => handleNavigation(category)}
               />
-            )}
-            contentContainerStyle={{
-              gap: 10,
-              paddingHorizontal: 5,
-            }}
-            keyExtractor={(item: any) => item.uid}
-          />
+            </>
+          ))}
         </Box>
-      </Box>
+      </VStack>
     </>
   );
 };
 
-export const GroceryShopList = () => {
+const BannerSection = () => {
+  return (
+    <Box style={HomeScreenStyles.container}>
+      <Swiper autoplay={true} loop={true}>
+        {banners.map((banner, index: number) => (
+          <Box key={index} style={HomeScreenStyles.slide}>
+            <Image
+              source={banner}
+              alt="banner"
+              style={HomeScreenStyles.bannerImage}
+            />
+          </Box>
+        ))}
+      </Swiper>
+    </Box>
+  );
+};
+
+export const BestDeals = ({products}: {products: ProductItemInterface[]}) => {
   return (
     <>
-      <TitleActions
-        title="Open Grocery Shop"
-        btnText="See all"
-        onPress={() => {}}
-      />
-      <ShopCard />
+      <VStack>
+        <TitleActions
+          title={
+            <HStack alignItems={'center'} space={2}>
+              <Text variant={'body2'} lineHeight={'md'} fontSize={'xl'}>
+                Best deals
+              </Text>
+              <Fire />
+            </HStack>
+          }
+          btnText="See all"
+          onPress={() => {}}
+        />
+
+        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
+          {products?.map((product: ProductItemInterface, index: number) => (
+            <ProductCard
+              key={index}
+              imgSource={product?.image}
+              discount={product.discount}
+              price={product.price}
+              originalPrice={product.originalPrice}
+              title={product.title}
+            />
+          ))}
+        </Box>
+      </VStack>
     </>
   );
 };

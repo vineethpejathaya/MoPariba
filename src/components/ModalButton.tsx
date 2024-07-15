@@ -1,12 +1,11 @@
-import {Box, IconButton, Modal, Text} from 'native-base';
+import {Box, Modal, Text} from 'native-base';
 import {ReactNode, useState} from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SCROLLBAR_DARK = {};
 interface ModalButtonProps {
   anchor: (props: {open: () => void}) => ReactNode;
   content: (props: {close: () => void}) => ReactNode;
-  title: string;
+  title?: string;
   dialogProps?: Omit<React.ComponentProps<typeof Modal>, 'isOpen'>;
   onDialogClose?: () => void;
 }
@@ -86,25 +85,5 @@ export const CustomDialog = ({
 const StyledDialogContent = ({children}: {children: ReactNode}) => (
   <Box width="100%" maxHeight={500} overflow="scroll" {...SCROLLBAR_DARK}>
     {children}
-  </Box>
-);
-
-const StyledDialogHeader = ({
-  title,
-  onClose,
-}: {
-  title: string;
-  onClose: () => void;
-}) => (
-  <Box
-    backgroundColor="#f7f7f7"
-    flexDirection="row"
-    justifyContent="space-between"
-    alignItems="center">
-    <Text fontSize="xl">{title}</Text>
-    <IconButton
-      onPress={onClose}
-      icon={<Icon name="close" size={18} color="black" />}
-    />
   </Box>
 );

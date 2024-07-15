@@ -1,6 +1,12 @@
 import {Box, Image, Text, VStack} from 'native-base';
 import React from 'react';
-import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
+import {
+  Dimensions,
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 import {baseUrl} from '../constants/main';
 import theme from '../themes/theme';
 
@@ -16,37 +22,37 @@ const CategoryCard = ({
   cardStyles?: StyleProp<ViewStyle>;
 }) => {
   return (
-    <Box>
-      <VStack style={[styles.card, cardStyles]}>
-        <TouchableOpacity onPress={onPress}>
-          <Box style={styles.imageContainer}>
-            {imageUrl && (
-              <Image
-                source={{uri: `${baseUrl}/${imageUrl}`}}
-                style={{width: '80%', height: '80%'}}
-                resizeMode="contain"
-                alt={''}
-              />
-            )}
-          </Box>
-        </TouchableOpacity>
-        <Text>{title}</Text>
-      </VStack>
-    </Box>
+    <VStack style={[styles.card, cardStyles]}>
+      <TouchableOpacity onPress={onPress}>
+        <Box style={styles.imageContainer}>
+          {imageUrl && (
+            <Image
+              source={{uri: `${baseUrl}/${imageUrl}`}}
+              style={{width: '80%', height: '80%'}}
+              resizeMode="contain"
+              alt={''}
+            />
+          )}
+        </Box>
+      </TouchableOpacity>
+      <Text variant={'body1'} textAlign={'center'}>
+        {title}
+      </Text>
+    </VStack>
   );
 };
 
+export default CategoryCard;
+
 const styles = StyleSheet.create({
-  image: {
-    height: 80,
-  },
   card: {
     gap: 2,
+    width: Dimensions.get('window').width / 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   imageContainer: {
-    height: 150,
+    height: 80,
     aspectRatio: 1,
     backgroundColor: theme.colors.gray[500],
     borderRadius: 10,
@@ -54,5 +60,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default CategoryCard;
