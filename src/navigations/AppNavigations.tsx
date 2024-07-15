@@ -118,7 +118,7 @@ function AuthStack() {
 
       if (isInitialLaunch === null) {
         await AsyncStorage.setItem('isInitialLaunch', 'false');
-        console.log('isInitialLaunch:', isInitialLaunch);
+
         setInitialPage('Onboarding');
       } else {
         if (userToken === null) {

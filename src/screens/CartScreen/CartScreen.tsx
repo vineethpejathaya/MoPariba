@@ -22,12 +22,11 @@ import theme from '../../themes/theme';
 function CartScreen() {
   const {cartId, cart, setCart} = useCart();
   const {loading, error, data} = useQuery(GET_CUSTOMER_CART, {
-    variables: {cart_id: 'CQdEumTZhCBXYAqP6K3jpVOGy4r3kBPY'},
+    variables: {cart_id: cartId},
     onCompleted: (res: any) => {
       setCart(res?.cart?.items);
     },
   });
-  console.log(cart, 'cart from cart screen');
 
   if (loading) {
     return <SpinnerComponent />;
