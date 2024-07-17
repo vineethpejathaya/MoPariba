@@ -43,7 +43,9 @@ const createApolloClient = (
             'Authorization Error',
           );
 
-          navigation.navigate('AuthStack');
+          navigation.navigate('Login');
+        } else {
+          showErrorToast(message);
         }
       });
     }

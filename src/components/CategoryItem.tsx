@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {baseUrl} from '../constants/main';
+import {baseUrl} from '../constants/config';
 import theme from '../themes/theme';
 
 function CategoryItem({
@@ -21,25 +21,23 @@ function CategoryItem({
   cardStyles?: StyleProp<ViewStyle>;
 }) {
   return (
-    <>
-      <VStack style={[styles.card, cardStyles]}>
-        <TouchableOpacity onPress={onPress}>
-          <Box style={styles.imageContainer}>
-            {imageUrl && (
-              <Image
-                source={{uri: `${baseUrl}/${imageUrl}`}}
-                style={{width: '80%', height: '80%'}}
-                alt={title}
-                resizeMode="contain"
-              />
-            )}
-          </Box>
-        </TouchableOpacity>
-        <Text variant={'body1'} textAlign={'center'}>
-          {title}
-        </Text>
-      </VStack>
-    </>
+    <VStack style={[styles.card, cardStyles]}>
+      <TouchableOpacity onPress={onPress}>
+        <Box style={styles.imageContainer}>
+          {imageUrl && (
+            <Image
+              source={{uri: `${baseUrl}/${imageUrl}`}}
+              style={{width: '80%', height: '80%'}}
+              alt={title}
+              resizeMode="contain"
+            />
+          )}
+        </Box>
+      </TouchableOpacity>
+      <Text variant={'body1'} textAlign={'center'}>
+        {title}
+      </Text>
+    </VStack>
   );
 }
 

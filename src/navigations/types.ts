@@ -1,14 +1,24 @@
 export type RootStackParamList = {
+  // Stacks
+  MainStack: undefined;
+  MainTabs: undefined;
+  AuthStack: undefined;
+
+  // Screens
+  // Authentication Screens
   Splash: undefined;
   Onboarding: undefined;
   Login: undefined;
   SignUp: undefined;
   ForgotPassword: undefined;
   EmailVerification: undefined;
-  AuthStack: undefined;
-  NoNetwork: undefined;
+
+  // Main screens
   Home: undefined;
   Search: undefined;
+
+  NoNetwork: undefined;
+  // Category
   Category: {
     categoryName?: string;
     categoryUid?: string;
@@ -20,18 +30,20 @@ export type RootStackParamList = {
     categoryImageUrl: string;
     totalProductCount: number;
   };
+  // Product
   Product: {
     productSku: string;
   };
   Reviews: undefined;
   Cart: undefined;
+
+  // Profile
   Profile: undefined;
-  FavoritesScreen: undefined;
-  OrdersScreen: undefined;
-  AboutMeScreen: undefined;
-  AddressScreen: undefined;
   NotificationSettings: undefined;
   MyAddress: undefined;
-  MainTabs: undefined;
+  AddressScreen: undefined;
+  AboutMeScreen: undefined;
+  FavoritesScreen: undefined;
+  OrdersScreen: undefined;
   Dummy: undefined;
 };

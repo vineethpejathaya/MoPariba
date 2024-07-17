@@ -28,6 +28,9 @@ function ProductVariant({
       onCompleted: res => {
         setCart(res?.addConfigurableProductsToCart?.cart?.items);
       },
+      onError: err => {
+        console.log(err, 'err');
+      },
     },
   );
 

@@ -1,12 +1,13 @@
 import {Box, Text} from 'native-base';
 import {ReactNode} from 'react';
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+import {bottomNavigatorHeight} from '../constants/config';
 
 function NoDataIllustration({message}: {message: string | ReactNode}) {
   return (
     <>
       <Box style={styles.container}>
-        <Text>{message}</Text>
+        {typeof message == 'string' ? <Text>{message}</Text> : <>{message}</>}
       </Box>
     </>
   );
@@ -16,6 +17,7 @@ export default NoDataIllustration;
 
 const styles = StyleSheet.create({
   container: {
+    height: Dimensions.get('screen').height - (bottomNavigatorHeight + 200),
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,5 +1,6 @@
 import {useMutation} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Button,
@@ -17,6 +18,7 @@ import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
+import {useCart} from '../../hooks/UseCart';
 import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
 import {loginSchema} from '../../services/form-validations/ValidationSchema';
@@ -30,18 +32,19 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
   'Login'
 >;
 
-type Props = {
-  navigation: LoginScreenNavigationProp;
-};
+// type Props = {
+//   navigation: LoginScreenNavigationProp;
+// };
 
-function LoginScreen({navigation}: Props) {
+function LoginScreen() {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   return (
     <LoginScreenTemplate
       title={'Log In'}
       subTitle={'Please sign in to your existing account'}
       disableBackBtn={true}>
       <VStack flex={1} px="3" style={{justifyContent: 'space-between'}}>
-        <LoginForm navigation={navigation} />
+        <LoginForm />
 
         <HStack
           direction={'row'}
@@ -73,12 +76,10 @@ function LoginScreen({navigation}: Props) {
 
 export default LoginScreen;
 
-export const LoginForm = ({
-  navigation,
-}: {
-  navigation: LoginScreenNavigationProp;
-}) => {
+export const LoginForm = () => {
   const toast = useToast();
+  const {setCartId} = useCart();
+  const navigation = useNavigation<any>();
   const {validate} = useValidation(loginSchema);
   const [show, setShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<LoginFormData>({
@@ -96,14 +97,21 @@ export const LoginForm = ({
           res?.generateCustomerToken?.token ?? '',
         );
         await createCustomerCart();
-        navigation.navigate('Home');
+        navigation.navigate('MainTabs', {screen: 'Home'});
+      },
+      onError: err => {
+        console.log(err, 'err');
       },
     },
   );
 
   const [createCustomerCart] = useMutation(CREATE_CART_MUTATION, {
     onCompleted: async res => {
+      setCartId(res?.createEmptyCart);
       await AsyncStorage.setItem('cartId', res?.createEmptyCart);
+    },
+    onError: err => {
+      console.log(err, 'err from login create customer cart');
     },
   });
 

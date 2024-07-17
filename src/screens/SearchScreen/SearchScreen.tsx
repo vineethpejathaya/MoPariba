@@ -113,26 +113,24 @@ export const SuggestedStoresSection = ({
         <Text variant={'header2'}>Suggested Stores</Text>
         <VStack space={3}>
           {suggestedStores?.map((store, index: number) => (
-            <>
-              <HStack key={index} style={searchScreenStyles.suggestedStoreItem}>
-                <ImageComponent
-                  styles={searchScreenStyles.suggestedStoreImage}
-                  source={store?.image ? store?.image : undefined}
-                  alt={store.name}
-                />
-                <VStack space={2}>
-                  <Text variant={'title2'}>{store?.name}</Text>
-                  <HStack space={1} alignItems="center">
-                    <Icon
-                      name="star"
-                      size={15}
-                      color={theme.colors.orange[700]}
-                    />
-                    <Text variant={'title2'}>{store?.rating}</Text>
-                  </HStack>
-                </VStack>
-              </HStack>
-            </>
+            <HStack key={index} style={searchScreenStyles.suggestedStoreItem}>
+              <ImageComponent
+                styles={searchScreenStyles.suggestedStoreImage}
+                source={store?.image ? store?.image : undefined}
+                alt={store.name}
+              />
+              <VStack space={2}>
+                <Text variant={'title2'}>{store?.name}</Text>
+                <HStack space={1} alignItems="center">
+                  <Icon
+                    name="star"
+                    size={15}
+                    color={theme.colors.orange[700]}
+                  />
+                  <Text variant={'title2'}>{store?.rating}</Text>
+                </HStack>
+              </VStack>
+            </HStack>
           ))}
         </VStack>
       </VStack>
@@ -152,26 +150,24 @@ export const PopularOffersSection = ({
       <VStack space={2}>
         <Text variant={'header2'}>Popular Offers</Text>
         <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {popularOffers?.map(offer => (
-            <>
-              <Box style={searchScreenStyles?.categoryContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                  <VStack space={2}>
-                    <ImageComponent
-                      styles={searchScreenStyles?.categoryImage}
-                      source={offer?.image ?? undefined}
-                      alt={offer?.name}
-                      height={120}
-                      width={122}
-                    />
-                    <Text variant={'subheader2'}>{offer?.name}</Text>
-                    <HStack space={3}>
-                      <Text>{offer?.discount}</Text>
-                    </HStack>
-                  </VStack>
-                </TouchableOpacity>
-              </Box>
-            </>
+          {popularOffers?.map((offer: any, index: number) => (
+            <Box key={index} style={searchScreenStyles?.categoryContainer}>
+              <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <VStack space={2}>
+                  <ImageComponent
+                    styles={searchScreenStyles?.categoryImage}
+                    source={offer?.image ?? undefined}
+                    alt={offer?.name}
+                    height={120}
+                    width={122}
+                  />
+                  <Text variant={'subheader2'}>{offer?.name}</Text>
+                  <HStack space={3}>
+                    <Text>{offer?.discount}</Text>
+                  </HStack>
+                </VStack>
+              </TouchableOpacity>
+            </Box>
           ))}
         </Box>
       </VStack>

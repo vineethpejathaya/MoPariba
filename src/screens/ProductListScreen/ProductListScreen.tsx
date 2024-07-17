@@ -2,9 +2,9 @@ import {useQuery} from '@apollo/client';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Badge, Box, Button, HStack, Image, Text, VStack} from 'native-base';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
-import {FilterIcon} from '../../assets/icons/Icons';
+import {FilterIcon, NoItemFound} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import {CategoryHeader} from '../../components/CategoryHeader';
 import FavoriteCheckbox from '../../components/FavoriteCheckBox';
@@ -33,19 +33,26 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
     route.params;
   const [products, setProducts] = useState<any[] | []>([]);
 
-  const {loading, error, data} = useQuery(GET_PRODUCTS_BY_CATEGORY_ID, {
-    variables: {
-      categoryUid: categoryId || null,
-      pageSize: 10,
-      currentPage: 1,
+  const {loading, error, data, refetch} = useQuery(
+    GET_PRODUCTS_BY_CATEGORY_ID,
+    {
+      variables: {
+        categoryUid: categoryId || null,
+        pageSize: 10,
+        currentPage: 1,
+      },
+      onCompleted: res => {
+        setProducts(res.products.items);
+      },
     },
-    onCompleted: res => {
-      setProducts(res.products.items);
-    },
-  });
+  );
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (loading) {
-    <SpinnerComponent />;
+    return <SpinnerComponent />;
   }
 
   return (
@@ -69,7 +76,19 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
       />
       <ScreenContent>
         {products.length == 0 ? (
-          <NoDataIllustration message={'No Products found'} />
+          <NoDataIllustration
+            message={
+              <Box
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <NoItemFound />
+                <Text variant={'title1'}>{'No Products Found!'}</Text>
+              </Box>
+            }
+          />
         ) : (
           <>
             <Box style={productListStyles.productListContainer}>

@@ -19,12 +19,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
-import {
-  ProductItemInterface,
-  banners,
-  baseUrl,
-  products,
-} from '../../constants/main';
+import {ProductItemInterface, banners, products} from '../../constants/main';
 import {RootStackParamList} from '../../navigations/types';
 import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
 import {CategoryItemInterface} from '../../services/interfaces/category.interface';
@@ -56,6 +51,7 @@ function HomeScreen({navigation}: Props) {
   const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
     GET_HOME_SCREEN_DATA,
     {
+      fetchPolicy: 'network-only',
       variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
       onCompleted: res => {
         AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
@@ -67,6 +63,7 @@ function HomeScreen({navigation}: Props) {
       },
     },
   );
+
   const {customer, categoryItems} = homeScreenState;
 
   if (loading) {
@@ -158,7 +155,7 @@ export const CategoryList = ({
       navigation.navigate('ProductList', {
         categoryId: categoryItem.uid,
         categoryName: categoryItem.name,
-        categoryImageUrl: `${baseUrl}/${categoryItem.sw_menu_icon_img}`,
+        categoryImageUrl: `${categoryItem.sw_menu_icon_img}`,
         totalProductCount: categories?.total_count ?? 0,
       });
     }
@@ -183,16 +180,16 @@ export const CategoryList = ({
         />
 
         <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {categoryItems?.map((category: CategoryItemInterface) => (
-            <>
+          {categoryItems?.map(
+            (category: CategoryItemInterface, index: number) => (
               <CategoryItem
                 key={category.uid}
                 title={category.name}
                 imageUrl={category.sw_menu_icon_img}
                 onPress={() => handleNavigation(category)}
               />
-            </>
-          ))}
+            ),
+          )}
         </Box>
       </VStack>
     </>

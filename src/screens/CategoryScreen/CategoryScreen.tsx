@@ -8,7 +8,7 @@ import NoDataIllustration from '../../components/NoDataIllustartion';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {baseUrl} from '../../constants/main';
+import {baseUrl} from '../../constants/config';
 import {RootStackParamList} from '../../navigations/types';
 import {GET_CATEGORIES_LIST} from '../../services/ggl-queries/category';
 import {

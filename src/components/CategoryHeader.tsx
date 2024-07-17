@@ -8,21 +8,25 @@ export const CategoryHeader = ({
   productsCount,
 }: {
   title: string;
-  categoryImageUrl: string;
+  categoryImageUrl?: string;
   productsCount: number;
 }) => {
+  console.log(categoryImageUrl, 'url');
   return (
     <>
       <HStack space={2}>
         <Box style={styles.container}>
-          {categoryImageUrl && (
-            <Image
-              source={{uri: `${categoryImageUrl}`}}
-              style={{width: '80%', height: '80%'}}
-              resizeMode="contain"
-              alt={''}
-            />
-          )}
+          {categoryImageUrl ? (
+            <>
+              {console.log('true')}
+              <Image
+                source={{uri: `${categoryImageUrl}`}}
+                style={{width: '80%', height: '80%'}}
+                resizeMode="contain"
+                alt={''}
+              />
+            </>
+          ) : null}
         </Box>
         <VStack>
           <Text variant={'subheader1'}>{title}</Text>

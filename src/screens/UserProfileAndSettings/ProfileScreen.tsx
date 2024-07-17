@@ -16,6 +16,7 @@ import NavigationItem from '../../components/NavigationItem';
 import {useAuth} from '../../hooks/UseAuth';
 import {RootStackParamList} from '../../navigations/types';
 import {Customer} from '../../services/interfaces/customer.interface';
+import {GetInitialLetterOfString} from '../../services/utlis';
 import theme from '../../themes/theme';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
@@ -76,13 +77,21 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+const defaultState = {
+  email: '',
+  firstname: '',
+  lastname: '',
+  suffix: '',
+  addresses: [],
+};
+
 function ProfileScreen({navigation}: Props) {
   const {signOut} = useAuth();
-  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [customer, setCustomer] = useState<Customer>(defaultState);
+
   const handleNavigation = (screen: any) => {
     if (screen === 'Login') {
       signOut();
-      navigation.navigate('AuthStack');
     } else {
       navigation.navigate(screen);
     }
@@ -107,8 +116,13 @@ function ProfileScreen({navigation}: Props) {
             bottom: -Dimensions.get('window').height * 0.2 * 0.5,
             zIndex: 1,
           }}>
-          <Avatar size="2xl" source={{uri: 'https://bit.ly/broken-link'}}>
-            {'VR'}
+          <Avatar
+            _text={{fontSize: 25, lineHeight: 27, textTransform: 'uppercase'}}
+            size="2xl"
+            bg="gray.700">
+            {GetInitialLetterOfString(
+              [customer.firstname, customer.lastname].join(' '),
+            )}
           </Avatar>
           <CustomIconButton
             iconName="photo-camera"

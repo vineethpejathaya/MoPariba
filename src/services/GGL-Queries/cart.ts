@@ -237,17 +237,14 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
       cart {
         items {
           id
+          quantity
           product {
             name
             sku
             options_container
-            quantity
-            ... on ConfigurableCartItem {
+            ... on ConfigurableProduct {
               configurable_options {
                 id
-                option_label
-                value_label
-                value_id
               }
             }
           }

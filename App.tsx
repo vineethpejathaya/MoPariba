@@ -8,6 +8,7 @@ const App: React.FC = () => {
       SplashScreen.hide();
     }, 500);
   });
+  console.log('app');
   return <AppNavigator />;
 };
 

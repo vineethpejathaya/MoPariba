@@ -4,6 +4,7 @@ import {Button, Pressable, VStack} from 'native-base';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
+import useToast from '../../hooks/UseToast';
 import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
 import {signUpSchema} from '../../services/form-validations/ValidationSchema';
@@ -37,6 +38,7 @@ export const SignUpForm = ({
 }: {
   navigation: SignUpNavigationProp;
 }) => {
+  const {showSuccessToast} = useToast();
   const {validate} = useValidation(signUpSchema);
   const [show, setShow] = useState({
     password: false,
@@ -56,9 +58,9 @@ export const SignUpForm = ({
     CREATE_CUSTOMER_MUTATION,
     {
       onCompleted: res => {
+        showSuccessToast('User Sign up', 'User created successfully');
         navigation.navigate('Login');
       },
-      onError: err => {},
     },
   );
 

@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {baseUrl} from '../constants/main';
+
+import {baseUrl} from '../constants/config';
 import theme from '../themes/theme';
 
 const CategoryCard = ({

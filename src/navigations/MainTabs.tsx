@@ -12,12 +12,11 @@ import {
   HomeIcon,
   ProfileTabIcon,
 } from '../assets/icons/Icons';
+import {bottomNavigatorHeight} from '../constants/config';
 import CartScreen from '../screens/CartScreen';
-import {
-  MainStack,
-  ProductNavigationStack,
-  ProfileNavigationStack,
-} from './AppNavigations';
+import CategoryScreen from '../screens/CategoryScreen';
+import HomeScreen from '../screens/HomeScreen';
+import ProfileScreen from '../screens/UserProfileAndSettings/ProfileScreen';
 import {RootStackParamList} from './types';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -35,13 +34,13 @@ export const TabArr: TabItem[] = [
     route: 'Home',
     label: 'Home',
     icon: <HomeIcon />,
-    component: MainStack,
+    component: HomeScreen,
   },
   {
     route: 'Category',
     label: 'Category',
     icon: <CategoryIcon />,
-    component: ProductNavigationStack,
+    component: CategoryScreen,
   },
   {
     route: 'Cart',
@@ -54,7 +53,7 @@ export const TabArr: TabItem[] = [
     route: 'Profile',
     label: 'Profile',
     icon: <ProfileTabIcon />,
-    component: ProfileNavigationStack,
+    component: ProfileScreen,
   },
 ];
 
@@ -81,7 +80,7 @@ export const TabButton = ({item, ...props}: any) => {
   );
 };
 
-export default function Tabs() {
+export default function MainTabs() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -116,6 +115,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 60,
+    height: bottomNavigatorHeight,
   },
 });

@@ -1,5 +1,3 @@
-export const baseUrl = `https://dev.mopariba.com`;
-
 export interface PopularOffer {
   id: string;
   name: string;
