@@ -10,11 +10,14 @@ import {CategoryHeader} from '../../components/CategoryHeader';
 import FavoriteCheckbox from '../../components/FavoriteCheckBox';
 import NoDataIllustration from '../../components/NoDataIllustartion';
 import ProductOptions from '../../components/ProductOptions';
+import QuantityButton from '../../components/QuantityButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
+import {useCart} from '../../hooks/UseCart';
 import {RootStackParamList} from '../../navigations/types';
 import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/ggl-queries/products';
+import {transformCartItemsToMap} from '../../services/utlis';
 import productListStyles from './styles';
 
 type ProductListScreenRouteProp = RouteProp<RootStackParamList, 'ProductList'>;
@@ -116,6 +119,22 @@ const Product = ({
   product: any;
   navigation: ProductListScreenNavigationProp;
 }) => {
+  const {cart} = useCart();
+  const [isProductInCart, setIsProductInCart] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const map = transformCartItemsToMap(cart);
+    const isProductInCart = map.has(product?.sku);
+    const productInCart = map.get(product?.sku);
+    const quantity = productInCart?.reduce(
+      (acc: any, curr: any) => curr?.quantity + acc,
+      0,
+    );
+    setQuantity(quantity);
+    setIsProductInCart(isProductInCart);
+  }, [cart, quantity, isProductInCart]);
+
   const price = product?.price_range?.maximum_price?.final_price?.value;
 
   return (
@@ -147,20 +166,33 @@ const Product = ({
             <Text variant="body2" style={productListStyles.prize}>
               ₹{price ?? 0}
             </Text>
-
-            {product?.variants?.length > 0 ? (
-              <ProductOptions product={product} />
+            {isProductInCart ? (
+              <VStack alignItems={'center'} space={2}>
+                <QuantityButton quantity={quantity ?? 0} />
+                {product?.variants?.length > 0 && (
+                  <ProductOptions
+                    product={product}
+                    btn={<Text variant={'body2'}>View Options</Text>}
+                  />
+                )}
+              </VStack>
             ) : (
-              <Button
-                variant={'outline'}
-                _text={{fontSize: 12}}
-                style={{
-                  height: 40,
-                  width: 100,
-                  alignSelf: 'flex-end',
-                }}>
-                Add
-              </Button>
+              <>
+                {product?.variants?.length > 0 ? (
+                  <ProductOptions product={product} />
+                ) : (
+                  <Button
+                    variant={'outline'}
+                    _text={{fontSize: 12}}
+                    style={{
+                      height: 40,
+                      width: 100,
+                      alignSelf: 'flex-end',
+                    }}>
+                    Add
+                  </Button>
+                )}
+              </>
             )}
           </HStack>
         </VStack>

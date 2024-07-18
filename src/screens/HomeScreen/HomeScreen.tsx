@@ -1,8 +1,8 @@
-import {useQuery} from '@apollo/client';
+import {useApolloClient} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Box, HStack, Image, Text, VStack, useTheme} from 'native-base';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Swiper from 'react-native-swiper';
 import {
   CameraIcon,
@@ -20,7 +20,13 @@ import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import TitleActions from '../../components/TitleActions';
 import {ProductItemInterface, banners, products} from '../../constants/main';
+import {useAuth} from '../../hooks/UseAuth';
+import {useCart} from '../../hooks/UseCart';
 import {RootStackParamList} from '../../navigations/types';
+import {
+  CREATE_CART_MUTATION,
+  GET_CUSTOMER_CART,
+} from '../../services/ggl-queries/cart';
 import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
 import {CategoryItemInterface} from '../../services/interfaces/category.interface';
 import {
@@ -46,23 +52,80 @@ const defaultState = {
 
 function HomeScreen({navigation}: Props) {
   const theme = useTheme();
+  const {isAuthenticated} = useAuth();
+  const [loading, setLoading] = useState(false);
+  const {setCartId, setCart, cart} = useCart();
   const [homeScreenState, setHomeScreenState] =
     useState<HomeScreenState>(defaultState);
-  const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
-    GET_HOME_SCREEN_DATA,
-    {
-      fetchPolicy: 'network-only',
-      variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
-      onCompleted: res => {
-        AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
+  const client = useApolloClient();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const homeScreenDataResponse =
+          await client.query<GetHomeScreenDataResponse>({
+            query: GET_HOME_SCREEN_DATA,
+            variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
+            fetchPolicy: 'network-only',
+          });
+
+        const {categories, customer} = homeScreenDataResponse.data;
+
+        await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
+
         setHomeScreenState(prev => ({
-          categories: res.categories,
-          customer: res.customer,
-          categoryItems: res.categories.items,
+          ...prev,
+          categories,
+          customer,
+          categoryItems: categories.items,
         }));
-      },
-    },
-  );
+
+        // Create a customer cart
+        const createCartResponse = await client.mutate({
+          mutation: CREATE_CART_MUTATION,
+        });
+
+        const cartId = createCartResponse.data.createEmptyCart;
+        setCartId(cartId);
+        // Fetch customer cart details
+        const customerCartResponse = await client.query({
+          query: GET_CUSTOMER_CART,
+          variables: {cart_id: cartId},
+        });
+
+        const cart = customerCartResponse.data.cart?.items;
+        setCart(cart);
+        await AsyncStorage.setItem('cart', JSON.stringify(cart));
+
+        setHomeScreenState(prev => ({
+          ...prev,
+        }));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.error('Error fetching data:', error);
+      }
+    };
+    if (isAuthenticated) fetchData();
+  }, [client]);
+
+  // const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
+  //   GET_HOME_SCREEN_DATA,
+  //   {
+  //     fetchPolicy: 'network-only',
+  //     variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
+  //     onCompleted: res => {
+  //       AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
+  //       setHomeScreenState(prev => ({
+  //         categories: res.categories,
+  //         customer: res.customer,
+  //         categoryItems: res.categories.items,
+  //       }));
+  //     },
+  //   },
+  // );
 
   const {customer, categoryItems} = homeScreenState;
 

@@ -23,28 +23,28 @@ import {RootStackParamList} from './types';
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  console.log('rootNavigator');
   const {isAuthenticated} = useAuth();
-
+  console.log(isAuthenticated, 'isAuthentiucation');
   const [initialPage, setInitialPage] = useState<
     keyof RootStackParamList | null
   >(null);
 
   const checkForInitialPage = async () => {
     try {
-      console.log('called');
       const isInitialLaunch = await AsyncStorage.getItem('isInitialLaunch');
       const userToken = await AsyncStorage.getItem('userToken');
 
-      if (isInitialLaunch === null) {
-        console.log('called onboarding');
-        await AsyncStorage.setItem('isInitialLaunch', 'false');
+      if (isInitialLaunch === null || isInitialLaunch == 'true') {
+        await AsyncStorage.setItem('isInitialLaunch', 'true');
         setInitialPage('Onboarding');
       } else {
-        if (userToken === null) {
-          console.log('called login');
+        if (!isAuthenticated) {
           setInitialPage('Login');
+        }
+        if (userToken === null && !isAuthenticated) {
+          console.log('true in login');
         } else {
+          console.log('went to else fro login');
           setInitialPage('Home');
         }
       }
@@ -58,34 +58,44 @@ function RootNavigator() {
       await checkForInitialPage();
     };
     initialize();
-  }, []);
-  console.log(initialPage, 'initialPage');
+  }, [isAuthenticated, initialPage]);
+
   if (initialPage === null) {
     return null;
   }
+  console.log(initialPage, 'initialPage');
 
   return (
     <>
       <Stack.Navigator
         screenOptions={{headerShown: false}}
         initialRouteName={initialPage}>
-        <Stack.Screen name="MainTabs" component={MainTabs} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="ProductList" component={ProductListScreen} />
-        <Stack.Screen name="Product" component={ProductScreen} />
-        <Stack.Screen name="Reviews" component={ReviewsScreen} />
-        <Stack.Screen name="NoNetwork" component={NoNetworkScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="ProductList" component={ProductListScreen} />
+            <Stack.Screen name="Product" component={ProductScreen} />
+            <Stack.Screen name="Reviews" component={ReviewsScreen} />
+            <Stack.Screen name="NoNetwork" component={NoNetworkScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </>
   );
 }
 
 function AppNavigator() {
-  console.log('appnavigator');
   return (
     <SafeAreaView style={{flex: 1}}>
       <NativeBaseProvider theme={theme}>

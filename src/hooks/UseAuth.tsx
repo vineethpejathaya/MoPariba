@@ -1,6 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {
   Dispatch,
   SetStateAction,
@@ -9,7 +7,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {RootStackParamList} from '../navigations/types';
 
 type SetIsAuthenticatedType = Dispatch<SetStateAction<boolean>>;
 type AuthContextType = {
@@ -19,18 +16,15 @@ type AuthContextType = {
   signOut: () => void;
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
-  const navigation = useNavigation<NavigationProp>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuthentication = async () => {
       const userToken = await AsyncStorage.getItem('userToken');
-      console.log(userToken, 'token');
       setIsAuthenticated(!!userToken);
     };
 
@@ -45,7 +39,6 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
   const signOut = async (): Promise<void> => {
     await AsyncStorage.removeItem('userToken');
     setIsAuthenticated(false);
-    navigation.navigate('Login');
   };
 
   return (

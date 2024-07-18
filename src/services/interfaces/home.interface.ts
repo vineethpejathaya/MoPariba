@@ -1,4 +1,4 @@
-import {Categories, CategoryItem} from './category.interface';
+import {Categories, CategoryItemInterface} from './category.interface';
 import {Customer} from './customer.interface';
 
 export interface GetHomeScreenDataResponse {
@@ -8,6 +8,6 @@ export interface GetHomeScreenDataResponse {
 
 export interface HomeScreenState {
   categories: Categories | null;
-  categoryItems: CategoryItem[] | [];
+  categoryItems: CategoryItemInterface[] | [];
   customer: Customer | null;
 }

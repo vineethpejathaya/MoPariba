@@ -1,3 +1,4 @@
+import {useApolloClient, useMutation} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {
   Dispatch,
@@ -7,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import {CREATE_CART_MUTATION} from '../services/ggl-queries/cart';
 
 type CartItem = {
   id: string;
@@ -18,10 +20,13 @@ type setCartIdType = Dispatch<SetStateAction<string | null>>;
 type CartContextType = {
   cart: CartItem[];
   cartId: string | null;
+  loading: boolean;
   setCartId: setCartIdType;
   setCart: Dispatch<SetStateAction<any[]>>;
   addToCart: (item: CartItem) => void;
   removeFromCart: (itemId: string) => void;
+  getCustomerCartDetails: () => Promise<void>;
+  createCustomerCart: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,42 +34,56 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{children: React.ReactNode}> = ({
   children,
 }) => {
+  const client = useApolloClient();
   const [cart, setCart] = useState<any[]>([]);
   const [cartId, setCartId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const cartData = await AsyncStorage.getItem('cart');
-        const storedCartId = await AsyncStorage.getItem('cartId');
-        if (cartData !== null) {
-          setCart(JSON.parse(cartData));
-        }
-        if (storedCartId !== null) {
-          setCartId(storedCartId);
-        }
-      } catch (error) {
-        console.error('Error fetching cart:', error);
+  const [createCustomerCartMutation] = useMutation(CREATE_CART_MUTATION, {
+    onCompleted: async data => {
+      const newCartId = data.createCustomerCart.id;
+      setCartId(newCartId);
+      await getCustomerCartDetails(newCartId);
+      // await AsyncStorage.setItem('cartId', newCartId);
+    },
+    onError: error => {
+      console.error('Failed to create customer cart:', error);
+    },
+  });
+
+  const createCustomerCart = async () => {
+    try {
+      await createCustomerCartMutation();
+    } catch (error) {
+      console.error('Error creating customer cart:', error);
+    }
+  };
+
+  const getCustomerCartDetails = async (providedCartId?: string) => {
+    try {
+      setLoading(true);
+      const userToken = await AsyncStorage.getItem('userToken');
+      const idToUse = providedCartId || cartId;
+
+      if (!idToUse) {
+        throw new Error('No cart ID available');
       }
-    };
 
-    fetchCart();
-  }, []);
+      // const {data} = await client.query({
+      //   query: GET_CUSTOMER_CART,
+      //   variables: {cartId: idToUse},
+      //   fetchPolicy: 'network-only',
+      // });
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const cartData = await AsyncStorage.getItem('cart');
-        if (cartData !== null) {
-          setCart(JSON.parse(cartData));
-        }
-      } catch (error) {
-        console.error('Error fetching cart:', error);
-      }
-    };
-
-    fetchCart();
-  }, []);
+      // const fetchedCart = data?.getCustomerCart?.items || [];
+      // setCart(fetchedCart);
+      // await AsyncStorage.setItem('cart', JSON.stringify(fetchedCart));
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch customer cart details:', error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const saveCart = async () => {
@@ -78,18 +97,29 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({
     saveCart();
   }, [cart]);
 
-  const addToCart = (item: any) => {
-    setCart([...cart, item]);
+  const addToCart = (item: CartItem) => {
+    const updatedCart = [...cart, item];
+    setCart(updatedCart);
   };
 
-  const removeFromCart = (itemId: any) => {
+  const removeFromCart = (itemId: string) => {
     const updatedCart = cart.filter(item => item.id !== itemId);
     setCart(updatedCart);
   };
 
   return (
     <CartContext.Provider
-      value={{cart, setCart, cartId, setCartId, addToCart, removeFromCart}}>
+      value={{
+        cart,
+        setCart,
+        cartId,
+        setCartId,
+        loading,
+        addToCart,
+        removeFromCart,
+        getCustomerCartDetails,
+        createCustomerCart,
+      }}>
       {children}
     </CartContext.Provider>
   );

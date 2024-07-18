@@ -71,109 +71,60 @@ export const GET_CUSTOMER_CART = gql`
       applied_coupons {
         code
       }
-      available_payment_methods {
-        code
-        title
-      }
 
       email
-      gift_message {
-        from
-        to
-        message
-      }
+
       id
       is_virtual
       items {
-        errors {
-          code
-          message
-        }
         uid
-        prices {
-          price {
-            value
-            currency
-          }
-          row_total {
-            value
-            currency
-          }
-          discounts {
-            amount {
-              value
-              currency
-            }
-          }
-        }
+        quantity
         product {
-          id
           name
           sku
-          url_key
           image {
             url
             label
           }
-          ... on ConfigurableProduct {
-            configurable_options {
-              attribute_code
-              values {
-                uid
-                label
-              }
-            }
-            variants {
-              product {
-                uid
-                sku
-                name
-                image {
-                  url
-                  label
-                }
-                price_range {
-                  minimum_price {
-                    discount {
-                      amount_off
-                      percent_off
-                    }
-                    final_price {
-                      value
-                      currency
-                    }
-                  }
-                  maximum_price {
-                    discount {
-                      amount_off
-                      percent_off
-                    }
-                    final_price {
-                      value
-                      currency
-                    }
-                  }
+        }
+        prices {
+          row_total_including_tax {
+            value
+            currency
+          }
+
+          total_item_discount {
+            value
+            currency
+          }
+        }
+        ... on ConfigurableCartItem {
+          configured_variant {
+            sku
+            name
+            price_range {
+              minimum_price {
+                final_price {
+                  value
+                  currency
                 }
               }
             }
           }
+          configurable_options {
+            option_label
+            value_label
+          }
         }
-        quantity
       }
       prices {
         grand_total {
           value
           currency
         }
-        subtotal_including_tax {
+        subtotal_excluding_tax {
           value
           currency
-        }
-        applied_taxes {
-          amount {
-            value
-            currency
-          }
         }
         discounts {
           amount {
@@ -181,28 +132,14 @@ export const GET_CUSTOMER_CART = gql`
             currency
           }
         }
-      }
-      selected_payment_method {
-        code
-        title
-      }
-      shipping_addresses {
-        city
-        company
-        country {
-          code
-          label
+        applied_taxes {
+          amount {
+            value
+            currency
+          }
         }
-        firstname
-        lastname
-        postcode
-        region {
-          code
-          label
-        }
-        street
-        telephone
       }
+
       total_quantity
     }
   }
@@ -236,16 +173,43 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
     ) {
       cart {
         items {
-          id
+          uid
           quantity
           product {
             name
             sku
-            options_container
-            ... on ConfigurableProduct {
-              configurable_options {
-                id
+            image {
+              url
+              label
+            }
+          }
+          prices {
+            row_total_including_tax {
+              value
+              currency
+            }
+
+            total_item_discount {
+              value
+              currency
+            }
+          }
+          ... on ConfigurableCartItem {
+            configured_variant {
+              sku
+              name
+              price_range {
+                minimum_price {
+                  final_price {
+                    value
+                    currency
+                  }
+                }
               }
+            }
+            configurable_options {
+              option_label
+              value_label
             }
           }
         }

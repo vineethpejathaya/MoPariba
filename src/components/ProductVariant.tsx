@@ -1,9 +1,9 @@
 import {useMutation} from '@apollo/client';
 import {Box, Button, HStack, Image, Text, VStack} from 'native-base';
-import {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {useCart} from '../hooks/UseCart';
 import {ADD_CONFIGURABLE_PRODUCTS_TO_CART} from '../services/ggl-queries/cart';
+import {getVariantFromCart, transformCartItemsToMap} from '../services/utlis';
 import theme from '../themes/theme';
 import QuantityButton from './QuantityButton';
 
@@ -14,14 +14,21 @@ function ProductVariant({
   variant: any;
   parentSku?: string;
 }) {
-  const [qnt, setQnt] = useState(0);
-  const {cartId, cart, setCart} = useCart();
+  const {cartId, setCart, cart} = useCart();
+
+  let variantInCart = undefined;
+  const map = transformCartItemsToMap(cart);
+  const isProductInCart = map.has(parentSku);
+  const productInCart = map.get(parentSku);
+  variantInCart = productInCart?.length
+    ? getVariantFromCart(variant, productInCart)
+    : undefined;
+
   const variantName = variant?.product?.name;
   const price =
-    variant?.product?.price_range?.maximum_price?.final_price?.value?.value;
+    variant?.product?.price_range?.maximum_price?.final_price?.value;
   const sku = variant?.product?.sku;
 
-  const cartItem = null;
   const [addToCartFn, {loading, error, data}] = useMutation(
     ADD_CONFIGURABLE_PRODUCTS_TO_CART,
     {
@@ -74,14 +81,16 @@ function ProductVariant({
             </Text>
           </VStack>
         </HStack>
-        {qnt > 0 ? (
+        {variantInCart ? (
           <>
-            <QuantityButton quantity={qnt} handleAdd={handleAdd} />
+            <QuantityButton
+              quantity={variantInCart?.quantity ?? 0}
+              handleAdd={handleAdd}
+            />
           </>
         ) : (
           <Button
             onPress={() => {
-              setQnt(prev => ++prev);
               addToCartFn({
                 variables: {
                   cartId: cartId,

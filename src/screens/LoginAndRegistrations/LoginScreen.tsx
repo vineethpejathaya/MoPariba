@@ -18,6 +18,7 @@ import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
+import {useAuth} from '../../hooks/UseAuth';
 import {useCart} from '../../hooks/UseCart';
 import useValidation from '../../hooks/UseValidation';
 import {RootStackParamList} from '../../navigations/types';
@@ -79,6 +80,7 @@ export default LoginScreen;
 export const LoginForm = () => {
   const toast = useToast();
   const {setCartId} = useCart();
+  const {signIn} = useAuth();
   const navigation = useNavigation<any>();
   const {validate} = useValidation(loginSchema);
   const [show, setShow] = useState<boolean>(false);
@@ -96,8 +98,7 @@ export const LoginForm = () => {
           'userToken',
           res?.generateCustomerToken?.token ?? '',
         );
-        await createCustomerCart();
-        navigation.navigate('MainTabs', {screen: 'Home'});
+        await signIn(res?.generateCustomerToken?.token);
       },
       onError: err => {
         console.log(err, 'err');

@@ -38,11 +38,11 @@ const createApolloClient = (
       graphQLErrors.forEach(({message}) => {
         if (message === "The current customer isn't authorized.") {
           AsyncStorage.removeItem('userToken');
+          setIsAuthenticated(false);
           showErrorToast(
             'Session expired. Please login again.',
             'Authorization Error',
           );
-
           navigation.navigate('Login');
         } else {
           showErrorToast(message);

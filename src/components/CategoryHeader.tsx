@@ -11,14 +11,12 @@ export const CategoryHeader = ({
   categoryImageUrl?: string;
   productsCount: number;
 }) => {
-  console.log(categoryImageUrl, 'url');
   return (
     <>
       <HStack space={2}>
         <Box style={styles.container}>
           {categoryImageUrl ? (
             <>
-              {console.log('true')}
               <Image
                 source={{uri: `${categoryImageUrl}`}}
                 style={{width: '80%', height: '80%'}}

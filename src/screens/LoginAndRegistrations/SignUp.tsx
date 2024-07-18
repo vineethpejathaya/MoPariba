@@ -59,7 +59,7 @@ export const SignUpForm = ({
     {
       onCompleted: res => {
         showSuccessToast('User Sign up', 'User created successfully');
-        navigation.navigate('Login');
+        navigation.goBack();
       },
     },
   );

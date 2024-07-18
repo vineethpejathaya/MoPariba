@@ -1,25 +1,31 @@
 import {Button, Text, VStack} from 'native-base';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import {useCart} from '../hooks/UseCart';
 import ModalButton from './ModalButton';
 import ProductVariant from './ProductVariant';
 
-function ProductOptions({product}: any) {
+function ProductOptions({product, btn}: any) {
   const {cartId, setCartId, addToCart, cart, setCart} = useCart();
   const sku = product?.sku;
-  const cartItem = cart?.find(item => item?.product?.sku == sku);
   const totalOptions = product?.variants?.length;
   return (
     <>
       <ModalButton
         anchor={({open}) => (
-          <Button
-            variant={'outline'}
-            _text={{fontSize: 12}}
-            style={styles.btn}
-            onPress={open}>
-            {`${totalOptions ?? 0} options`}
-          </Button>
+          <>
+            {btn ? (
+              React.cloneElement(btn, {onPress: open})
+            ) : (
+              <Button
+                variant={'outline'}
+                _text={{fontSize: 12}}
+                style={styles.btn}
+                onPress={open}>
+                {`${totalOptions ?? 0} options`}
+              </Button>
+            )}
+          </>
         )}
         content={({close}) => (
           <>

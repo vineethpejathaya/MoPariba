@@ -1,4 +1,4 @@
-import {useQuery} from '@apollo/client';
+import {useMutation, useQuery} from '@apollo/client';
 import {
   Box,
   Button,
@@ -9,24 +9,43 @@ import {
   Text,
   VStack,
 } from 'native-base';
+import {useEffect} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
-import {DeleteIcon} from '../../assets/icons/Icons';
 import QuantityButton from '../../components/QuantityButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {useCart} from '../../hooks/UseCart';
-import {GET_CUSTOMER_CART} from '../../services/ggl-queries/cart';
+import {
+  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+  GET_CUSTOMER_CART,
+} from '../../services/ggl-queries/cart';
 import theme from '../../themes/theme';
 
 function CartScreen() {
-  const {cartId, cart, setCart} = useCart();
-  const {loading, error, data} = useQuery(GET_CUSTOMER_CART, {
+  const {cart, cartId, setCart} = useCart();
+  const {loading, error, data, refetch} = useQuery(GET_CUSTOMER_CART, {
     variables: {cart_id: cartId},
     onCompleted: (res: any) => {
       setCart(res?.cart?.items);
     },
   });
+
+  const [addToCartFn, {data: cartData}] = useMutation(
+    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.addConfigurableProductsToCart?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    },
+  );
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (loading) {
     return <SpinnerComponent />;
@@ -36,33 +55,32 @@ function CartScreen() {
       <ScreenHeader
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
-      <ScreenContent style={{paddingBottom: 60}}>
-        <VStack
-          px={4}
-          flex={1}
-          space={2}
-          height={'100%'}
-          justifyContent={'space-between'}>
+      <ScreenContent>
+        <VStack px={4} flex={1} space={2} justifyContent={'space-between'}>
           <VStack>
             <HStack justifyContent={'space-between'} alignItems={'center'}>
               <Text variant={'subheader2'} fontSize={'lg'}>
                 Review Items
               </Text>
-              <Button
+              {/* <Button
                 variant={'unstyled'}
                 _text={{color: 'black'}}
                 rightIcon={<DeleteIcon />}>
                 Clear cart
-              </Button>
+              </Button> */}
             </HStack>
             <Divider />
             <Box style={styles.container}>
               <ScrollView>
-                <VStack space={4} mt={4}>
+                <VStack space={4}>
                   {cart?.length > 0 ? (
                     <>
                       {cart?.map((cartItem, index) => (
-                        <CartItem key={index} cartItem={cartItem} />
+                        <CartItem
+                          key={index}
+                          cartItem={cartItem}
+                          addToCartFn={addToCartFn}
+                        />
                       ))}
                     </>
                   ) : null}
@@ -80,7 +98,33 @@ function CartScreen() {
 
 export default CartScreen;
 
-export const CartItem = ({cartItem}: {cartItem: any}) => {
+export const CartItem = ({
+  cartItem,
+  addToCartFn,
+}: {
+  cartItem: any;
+  addToCartFn: any;
+}) => {
+  const {cartId} = useCart();
+  const price = cartItem?.prices?.row_total_including_tax?.value;
+  const parentSku = cartItem?.product?.sku;
+  const sku = cartItem?.configured_variant?.sku;
+  const handleAdd = () => {
+    addToCartFn({
+      variables: {
+        cartId: cartId,
+        cartItems: [
+          {
+            parent_sku: parentSku,
+            data: {
+              quantity: 1,
+              sku: sku,
+            },
+          },
+        ],
+      },
+    });
+  };
   return (
     <>
       <HStack
@@ -104,10 +148,10 @@ export const CartItem = ({cartItem}: {cartItem: any}) => {
             </Text>
           </VStack>
         </HStack>
-        <QuantityButton quantity={cartItem?.quantity} />
+        <QuantityButton quantity={cartItem?.quantity} handleAdd={handleAdd} />
 
         <Text variant="body2" fontSize={'sm'}>
-          ₹{cartItem?.prices?.price?.value ?? 0}
+          ₹{price ?? 0}
         </Text>
       </HStack>
     </>
@@ -116,7 +160,7 @@ export const CartItem = ({cartItem}: {cartItem: any}) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height * 0.65,
+    maxHeight: Dimensions.get('window').height * 0.65,
     overflow: 'scroll',
     backgroundColor: '#fff',
     borderRadius: 8,
