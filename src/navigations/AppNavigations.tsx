@@ -7,9 +7,10 @@ import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
 import {CartProvider} from '../hooks/UseCart';
-import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPassword';
+import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
+import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
-import SignUpScreen from '../screens/LoginAndRegistrations/SignUp';
+import SignUpScreen from '../screens/LoginAndRegistrations/SignUpScreen';
 import NoNetworkScreen from '../screens/NoNetworkScreen';
 import OnboardingScreen from '../screens/OnBoardingScreens/OnBoardingScreen';
 import ProductListScreen from '../screens/ProductListScreen';
@@ -24,7 +25,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const {isAuthenticated} = useAuth();
-  console.log(isAuthenticated, 'isAuthentiucation');
   const [initialPage, setInitialPage] = useState<
     keyof RootStackParamList | null
   >(null);
@@ -33,7 +33,6 @@ function RootNavigator() {
     try {
       const isInitialLaunch = await AsyncStorage.getItem('isInitialLaunch');
       const userToken = await AsyncStorage.getItem('userToken');
-
       if (isInitialLaunch === null || isInitialLaunch == 'true') {
         await AsyncStorage.setItem('isInitialLaunch', 'true');
         setInitialPage('Onboarding');
@@ -42,9 +41,8 @@ function RootNavigator() {
           setInitialPage('Login');
         }
         if (userToken === null && !isAuthenticated) {
-          console.log('true in login');
+          setInitialPage('Login');
         } else {
-          console.log('went to else fro login');
           setInitialPage('Home');
         }
       }
@@ -63,7 +61,6 @@ function RootNavigator() {
   if (initialPage === null) {
     return null;
   }
-  console.log(initialPage, 'initialPage');
 
   return (
     <>
@@ -87,6 +84,10 @@ function RootNavigator() {
             <Stack.Screen
               name="ForgotPassword"
               component={ForgotPasswordScreen}
+            />
+            <Stack.Screen
+              name="EmailVerification"
+              component={EmailVerificationScreen}
             />
           </>
         )}

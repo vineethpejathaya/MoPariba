@@ -1,41 +1,23 @@
 import {useMutation} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {
-  Button,
-  Checkbox,
-  HStack,
-  IconButton,
-  Pressable,
-  Stack,
-  Text,
-  VStack,
-  useToast,
-} from 'native-base';
-import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import {Button, Checkbox, HStack, Pressable, Text, VStack} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
+import PressableText from '../../components/Pressable/PressableText';
 import {useAuth} from '../../hooks/UseAuth';
-import {useCart} from '../../hooks/UseCart';
 import useValidation from '../../hooks/UseValidation';
-import {RootStackParamList} from '../../navigations/types';
 import {loginSchema} from '../../services/form-validations/ValidationSchema';
-import {CREATE_CART_MUTATION} from '../../services/ggl-queries/cart';
-import {LOGIN_MUTATION} from '../../services/ggl-queries/loginAndRegistartion';
-import {LoginFormData} from '../../services/interfaces/LoginAndRegistartions.interface';
+import {LOGIN_MUTATION} from '../../services/ggl-queries/LoginAndRegistration/LoginAndRegistration.queries';
 import theme from '../../themes/theme';
+import {
+  LoginFormData,
+  LoginScreenNavigationProp,
+  defaultLoginFormState,
+} from './LoginAndRegistrations.types';
 import LoginScreenTemplate from './components/ScreenTemplate';
-type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Login'
->;
-
-// type Props = {
-//   navigation: LoginScreenNavigationProp;
-// };
+import SocialMediaList from './components/SocialMediaList';
 
 function LoginScreen() {
   const navigation = useNavigation<LoginScreenNavigationProp>();
@@ -44,31 +26,21 @@ function LoginScreen() {
       title={'Log In'}
       subTitle={'Please sign in to your existing account'}
       disableBackBtn={true}>
-      <VStack flex={1} px="3" style={{justifyContent: 'space-between'}}>
+      <VStack flex={1} px="3" justifyContent={'space-between'}>
         <LoginForm />
 
-        <HStack
-          direction={'row'}
-          style={{alignItems: 'center', margin: 'auto'}}>
-          <Text variant={'subTitle2'} fontSize={'xl'}>
+        <HStack space={2} style={{alignItems: 'center', margin: 'auto'}}>
+          <Text variant={'label2'} fontSize={'xl'}>
             Don't have an account?
           </Text>
-          <Button
-            variant={'ghost'}
-            _text={{
-              color: theme.colors.orange[500],
-            }}
-            onPress={() => navigation.navigate('SignUp')}>
-            SIGN UP
-          </Button>
+          <PressableText
+            onPress={() => navigation.navigate('SignUp')}
+            text={'SIGN UP'}
+          />
         </HStack>
-        <Text
-          variant={'subTitle2'}
-          fontSize={'xl'}
-          style={{textAlign: 'center'}}>
+        <Text variant={'label2'} fontSize={'xl'} style={{textAlign: 'center'}}>
           Or
         </Text>
-
         <SocialMediaList />
       </VStack>
     </LoginScreenTemplate>
@@ -78,17 +50,14 @@ function LoginScreen() {
 export default LoginScreen;
 
 export const LoginForm = () => {
-  const toast = useToast();
-  const {setCartId} = useCart();
   const {signIn} = useAuth();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   const {validate} = useValidation(loginSchema);
   const [show, setShow] = useState<boolean>(false);
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-    rememberMe: false,
-  });
+  const [areFieldsFilled, setAreFieldsFilled] = useState<boolean>(false);
+  const [formData, setFormData] = useState<LoginFormData>(
+    defaultLoginFormState,
+  );
 
   const [generateCustomerToken, {data, loading, error}] = useMutation(
     LOGIN_MUTATION,
@@ -106,16 +75,6 @@ export const LoginForm = () => {
     },
   );
 
-  const [createCustomerCart] = useMutation(CREATE_CART_MUTATION, {
-    onCompleted: async res => {
-      setCartId(res?.createEmptyCart);
-      await AsyncStorage.setItem('cartId', res?.createEmptyCart);
-    },
-    onError: err => {
-      console.log(err, 'err from login create customer cart');
-    },
-  });
-
   const handleLogin = async () => {
     const result = await validate(formData);
     if (result.isValid) {
@@ -130,9 +89,18 @@ export const LoginForm = () => {
     }
   };
 
+  useEffect(() => {
+    const checkFields = () => {
+      const {email, password} = formData;
+      setAreFieldsFilled(email !== '' && password !== '');
+    };
+
+    checkFields();
+  }, [formData]);
+
   return (
     <>
-      <VStack space={3} w="100%">
+      <VStack space={7} w="100%">
         <TextField
           label={'Email'}
           name={'email'}
@@ -173,9 +141,7 @@ export const LoginForm = () => {
           placeholder="Password"
         />
 
-        <HStack
-          direction={'row'}
-          style={{alignItems: 'center', justifyContent: 'space-between'}}>
+        <HStack style={{alignItems: 'center', justifyContent: 'space-between'}}>
           <Checkbox
             value={'rememberMe'}
             isChecked={formData.rememberMe}
@@ -185,58 +151,22 @@ export const LoginForm = () => {
                 rememberMe: !formData.rememberMe,
               }));
             }}>
-            <Text>Remember me</Text>
+            <Text style={{fontFamily: 'Sen-Regular'}}>Remember me</Text>
           </Checkbox>
-          <Button
-            variant={'ghost'}
-            _text={{
-              color: theme.colors.orange[400],
-            }}
-            onPress={() => navigation.navigate('ForgotPassword')}>
-            Forgot Password
-          </Button>
+          <PressableText
+            onPress={() => navigation.navigate('ForgotPassword')}
+            text={'Forgot Password'}
+          />
         </HStack>
+        <Button
+          isDisabled={!areFieldsFilled}
+          isLoading={loading}
+          spinnerPlacement="end"
+          isLoadingText="Submitting"
+          onPress={handleLogin}>
+          LOG IN
+        </Button>
       </VStack>
-      <Button
-        isLoading={loading}
-        spinnerPlacement="end"
-        isLoadingText="Submitting"
-        onPress={handleLogin}>
-        LOG IN
-      </Button>
     </>
   );
 };
-
-export const SocialMediaList = () => {
-  return (
-    <>
-      <Stack direction={'row'} space={4} style={{margin: 'auto'}}>
-        <IconButton
-          icon={<FontAwesomeIcon name="facebook" size={35} color="white" />}
-          style={[iconStyle.style, {backgroundColor: '#395998'}]}
-        />
-        <IconButton
-          icon={<FontAwesomeIcon name="twitter" size={35} color="white" />}
-          style={[iconStyle.style, {backgroundColor: '#169CE8'}]}
-        />
-        <IconButton
-          icon={<FontAwesomeIcon name="apple" size={35} color="white" />}
-          style={[iconStyle.style, {backgroundColor: '#1B1F2F'}]}
-        />
-      </Stack>
-    </>
-  );
-};
-
-const iconStyle = StyleSheet.create({
-  style: {
-    color: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 62,
-    height: 62,
-    borderRadius: 100,
-  },
-});

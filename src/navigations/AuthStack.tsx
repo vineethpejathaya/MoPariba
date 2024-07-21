@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPassword';
+import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
-import SignUpScreen from '../screens/LoginAndRegistrations/SignUp';
+import SignUpScreen from '../screens/LoginAndRegistrations/SignUpScreen';
 import OnboardingScreen from '../screens/OnBoardingScreens/OnBoardingScreen';
 import {RootStackParamList} from './types';
 

@@ -7,22 +7,24 @@ const TitleActions = ({
   title,
   btnText,
   onPress,
+  titleIcon,
 }: {
   title: string | ReactNode;
   btnText: string;
   onPress: () => void;
+  titleIcon?: ReactNode;
 }) => {
   return (
     <>
       <HStack style={style.container}>
-        {typeof title === 'string' ? (
-          <Text variant={'body2'} fontSize={'lg'}>
+        <HStack alignItems={'center'} space={2}>
+          <Text variant={'subTitle2'} lineHeight={'md'} fontSize={'md'}>
             {title}
           </Text>
-        ) : (
-          title
-        )}
-        <Button variant="ghost" onPress={onPress} _text={style.btn}>
+          {titleIcon}
+        </HStack>
+
+        <Button variant="ghost" onPress={onPress} _text={style.btnText}>
           {btnText}
         </Button>
       </HStack>
@@ -38,8 +40,9 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  btn: {
+  btnText: {
     color: theme.colors.blue[500],
     fontSize: 14,
+    fontWeight: 500,
   },
 });

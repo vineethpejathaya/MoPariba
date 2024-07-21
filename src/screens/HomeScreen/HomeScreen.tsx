@@ -1,62 +1,39 @@
 import {useApolloClient} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Box, HStack, Image, Text, VStack, useTheme} from 'native-base';
+import {Box, Text, VStack, useTheme} from 'native-base';
 import {useEffect, useState} from 'react';
-import Swiper from 'react-native-swiper';
-import {
-  CameraIcon,
-  FaceSavoringFood,
-  Fire,
-  MenuIcon,
-  NotificationIcon,
-} from '../../assets/icons/Icons';
+import {CameraIcon, MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
-import CategoryItem from '../../components/CategoryItem';
-import ProductCard from '../../components/ProductCard';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import TitleActions from '../../components/TitleActions';
-import {ProductItemInterface, banners, products} from '../../constants/main';
+import {banners, products} from '../../constants/main';
 import {useAuth} from '../../hooks/UseAuth';
 import {useCart} from '../../hooks/UseCart';
-import {RootStackParamList} from '../../navigations/types';
+import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/HomeScreen/Home.queries';
+import {GetHomeScreenDataResponse} from '../../services/ggl-queries/HomeScreen/Home.type';
 import {
   CREATE_CART_MUTATION,
   GET_CUSTOMER_CART,
 } from '../../services/ggl-queries/cart';
-import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/home';
-import {CategoryItemInterface} from '../../services/interfaces/category.interface';
 import {
-  GetHomeScreenDataResponse,
+  HomeScreenProps,
   HomeScreenState,
-} from '../../services/interfaces/home.interface';
-import HomeScreenStyles from './styles';
+  defaultHomeScreenState,
+} from './HomeScreen.types';
+import BestDeals from './components/BestDeals';
+import HomeCategoryList from './components/CategoryList';
+import HomeBanner from './components/HomeBanner';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Home'
->;
-
-type Props = {
-  navigation: HomeScreenNavigationProp;
-};
-
-const defaultState = {
-  categories: null,
-  categoryItems: [],
-  customer: null,
-};
-
-function HomeScreen({navigation}: Props) {
+function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
   const {setCartId, setCart, cart} = useCart();
-  const [homeScreenState, setHomeScreenState] =
-    useState<HomeScreenState>(defaultState);
+  const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
+    defaultHomeScreenState,
+  );
   const client = useApolloClient();
 
   useEffect(() => {
@@ -75,7 +52,7 @@ function HomeScreen({navigation}: Props) {
 
         await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
 
-        setHomeScreenState(prev => ({
+        setHomeScreenState((prev: any) => ({
           ...prev,
           categories,
           customer,
@@ -99,7 +76,7 @@ function HomeScreen({navigation}: Props) {
         setCart(cart);
         await AsyncStorage.setItem('cart', JSON.stringify(cart));
 
-        setHomeScreenState(prev => ({
+        setHomeScreenState((prev: any) => ({
           ...prev,
         }));
         setLoading(false);
@@ -110,22 +87,6 @@ function HomeScreen({navigation}: Props) {
     };
     if (isAuthenticated) fetchData();
   }, [client]);
-
-  // const {loading, error, data} = useQuery<GetHomeScreenDataResponse>(
-  //   GET_HOME_SCREEN_DATA,
-  //   {
-  //     fetchPolicy: 'network-only',
-  //     variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
-  //     onCompleted: res => {
-  //       AsyncStorage.setItem('userDetails', JSON.stringify(res.customer));
-  //       setHomeScreenState(prev => ({
-  //         categories: res.categories,
-  //         customer: res.customer,
-  //         categoryItems: res.categories.items,
-  //       }));
-  //     },
-  //   },
-  // );
 
   const {customer, categoryItems} = homeScreenState;
 
@@ -185,10 +146,10 @@ function HomeScreen({navigation}: Props) {
               </Box>
             }
           />
-          <BannerSection />
+          <HomeBanner banners={banners} />
 
           {categoryItems?.length > 0 && (
-            <CategoryList navigation={navigation} state={homeScreenState} />
+            <HomeCategoryList navigation={navigation} state={homeScreenState} />
           )}
           <BestDeals products={products} />
         </VStack>
@@ -198,115 +159,3 @@ function HomeScreen({navigation}: Props) {
 }
 
 export default HomeScreen;
-
-export const CategoryList = ({
-  navigation,
-  state,
-}: {
-  navigation: HomeScreenNavigationProp;
-  state: HomeScreenState;
-}) => {
-  const {categoryItems, categories} = state;
-
-  const handleNavigation = (categoryItem: CategoryItemInterface) => {
-    if (categoryItem.children_count > 0) {
-      navigation.navigate('Category', {
-        categoryUid: categoryItem.uid,
-        categoryName: categoryItem.name,
-      });
-    } else {
-      navigation.navigate('ProductList', {
-        categoryId: categoryItem.uid,
-        categoryName: categoryItem.name,
-        categoryImageUrl: `${categoryItem.sw_menu_icon_img}`,
-        totalProductCount: categories?.total_count ?? 0,
-      });
-    }
-  };
-
-  return (
-    <>
-      <VStack>
-        <TitleActions
-          title={
-            <HStack alignItems={'center'} space={2}>
-              <Text variant={'body2'} lineHeight={'md'} fontSize={'xl'}>
-                Categories
-              </Text>
-              <FaceSavoringFood />
-            </HStack>
-          }
-          btnText="See all"
-          onPress={() => {
-            navigation.navigate('Category', {parentId: 2});
-          }}
-        />
-
-        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {categoryItems?.map(
-            (category: CategoryItemInterface, index: number) => (
-              <CategoryItem
-                key={category.uid}
-                title={category.name}
-                imageUrl={category.sw_menu_icon_img}
-                onPress={() => handleNavigation(category)}
-              />
-            ),
-          )}
-        </Box>
-      </VStack>
-    </>
-  );
-};
-
-const BannerSection = () => {
-  return (
-    <Box style={HomeScreenStyles.container}>
-      <Swiper autoplay={true} loop={true}>
-        {banners.map((banner, index: number) => (
-          <Box key={index} style={HomeScreenStyles.slide}>
-            <Image
-              source={banner}
-              alt="banner"
-              style={HomeScreenStyles.bannerImage}
-            />
-          </Box>
-        ))}
-      </Swiper>
-    </Box>
-  );
-};
-
-export const BestDeals = ({products}: {products: ProductItemInterface[]}) => {
-  return (
-    <>
-      <VStack>
-        <TitleActions
-          title={
-            <HStack alignItems={'center'} space={2}>
-              <Text variant={'body2'} lineHeight={'md'} fontSize={'xl'}>
-                Best deals
-              </Text>
-              <Fire />
-            </HStack>
-          }
-          btnText="See all"
-          onPress={() => {}}
-        />
-
-        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {products?.map((product: ProductItemInterface, index: number) => (
-            <ProductCard
-              key={index}
-              imgSource={product?.image}
-              discount={product.discount}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              title={product.title}
-            />
-          ))}
-        </Box>
-      </VStack>
-    </>
-  );
-};

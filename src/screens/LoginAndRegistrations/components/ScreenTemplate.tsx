@@ -41,7 +41,9 @@ function LoginScreenTemplate({
           </Box>
 
           <Box style={styles.footer}>
-            <ScrollView contentContainerStyle={{flex: 1}}>
+            <ScrollView
+              contentContainerStyle={{flexGrow: 1}}
+              showsVerticalScrollIndicator={false}>
               {children}
             </ScrollView>
           </Box>
@@ -73,10 +75,12 @@ export const styles = StyleSheet.create({
   },
   title: {
     color: theme.colors.white,
+    fontFamily: 'Sen-Bold',
   },
   subTitle: {
     color: theme.colors.white,
     lineHeight: 26,
+    fontFamily: 'Sen-Regular',
   },
 
   footer: {

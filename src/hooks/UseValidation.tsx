@@ -13,7 +13,10 @@ const useValidation = <T extends object>(schema: ObjectSchema<T>) => {
   const {showErrorToast} = useToast();
 
   const validate = useCallback(
-    async (formData: T): Promise<ValidationResult<T>> => {
+    async (
+      formData: T,
+      showToast: boolean = true,
+    ): Promise<ValidationResult<T>> => {
       try {
         const validatedData = (await schema.validate(formData, {
           abortEarly: false,
@@ -26,7 +29,9 @@ const useValidation = <T extends object>(schema: ObjectSchema<T>) => {
             validationErrors[error.path as string] = error.message;
           });
           const errorMessages = Object.values(validationErrors).join('\n');
-          showErrorToast(errorMessages, 'Validation Errors');
+          if (showToast) {
+            showErrorToast(errorMessages, 'Validation Errors');
+          }
           return {isValid: false, errors: validationErrors};
         }
 

@@ -20,7 +20,6 @@
     "graphql": "^16.9.0",
     "native-base": "^3.4.28",
     "react": "18.2.0",
-    "react-hook-form": "^7.52.0",
     "react-native": "0.74.2",
     "react-native-gesture-handler": "^2.17.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",

@@ -32,8 +32,6 @@ const fontWeight = {
   medium: 500,
   semiBold: 600,
   bold: 700,
-  extraBold: 800,
-  black: 900,
 };
 
 const theme = extendTheme({
@@ -90,12 +88,6 @@ const theme = extendTheme({
       700: {
         normal: 'Poppins-Bold',
       },
-      800: {
-        normal: 'Poppins-ExtraBold',
-      },
-      900: {
-        normal: 'Poppins-Black',
-      },
     },
     Sen: {
       400: {
@@ -104,22 +96,29 @@ const theme = extendTheme({
       500: {
         normal: 'Sen-Medium',
       },
-      600: {
-        normal: 'Sen-SemiBold',
-      },
+
       700: {
         normal: 'Sen-Bold',
       },
-      800: {
-        normal: 'Sen-ExtraBold',
+    },
+    DMSans: {
+      400: {
+        normal: 'DMSans-Regular',
       },
-      900: {
-        normal: 'Sen-Black',
+      500: {
+        normal: 'DMSans-Medium',
+      },
+      600: {
+        normal: 'DMSans-SemiBold',
+      },
+      700: {
+        normal: 'DMSans-Bold',
       },
     },
   },
   fonts: {
     poppins: 'Poppins',
+    dmSans: 'DMSans',
     sen: 'Sen',
   },
   fontSizes: fontSize,
@@ -128,7 +127,7 @@ const theme = extendTheme({
   components: {
     Text: {
       baseStyle: {
-        fontFamily: 'sen',
+        fontFamily: 'dmSans',
         color: 'black',
       },
       variants: {
@@ -139,20 +138,20 @@ const theme = extendTheme({
           lineHeight: '8xl',
         },
         heading2: {
-          fontFamily: 'sen',
+          fontFamily: 'dmSans',
           fontWeight: 'bold',
           fontSize: '5xl',
           lineHeight: '7xl',
         },
         header1: {
           fontFamily: 'poppins',
-          fontWeight: 'semiBold',
+          fontWeight: 'bold',
           fontSize: '3xl',
           lineHeight: '6xl',
         },
         header2: {
-          fontFamily: 'sen',
-          fontWeight: 'normal',
+          fontFamily: 'dmSans',
+          fontWeight: 'bold',
           fontSize: '3xl',
           lineHeight: '4xl',
         },
@@ -163,7 +162,7 @@ const theme = extendTheme({
           lineHeight: '5xl',
         },
         subheader2: {
-          fontFamily: 'sen',
+          fontFamily: 'dmSans',
           fontWeight: 'semiBold',
           fontSize: '2xl',
           lineHeight: '2xl',
@@ -175,20 +174,20 @@ const theme = extendTheme({
           lineHeight: '3xl',
         },
         title2: {
-          fontFamily: 'sen',
-          fontWeight: 'normal',
+          fontFamily: 'dmSans',
+          fontWeight: 'semiBold',
           fontSize: 'xl',
           lineHeight: 'lg',
         },
         subTitle1: {
           fontFamily: 'poppins',
-          fontWeight: 'semiBold',
+          fontWeight: 'medium',
           fontSize: 'sm',
           lineHeight: 'sm',
         },
         subTitle2: {
-          fontFamily: 'sen',
-          fontWeight: 'normal',
+          fontFamily: 'dmSans',
+          fontWeight: 'medium',
           fontSize: 'md',
           lineHeight: 'xl',
         },
@@ -199,7 +198,7 @@ const theme = extendTheme({
           lineHeight: 'md',
         },
         label2: {
-          fontFamily: 'sen',
+          fontFamily: 'dmSans',
           fontWeight: 'normal',
           fontSize: 'md',
           lineHeight: 'xl',
@@ -211,8 +210,8 @@ const theme = extendTheme({
           lineHeight: 'md',
         },
         body2: {
-          fontFamily: 'poppins',
-          fontWeight: 'medium',
+          fontFamily: 'dmSans',
+          fontWeight: 'normal',
           fontSize: 'xs',
           lineHeight: 'xs',
         },
@@ -243,6 +242,12 @@ const theme = extendTheme({
           _pressed: {
             bg: 'secondary',
           },
+          _disabled: {
+            bg: 'gray.700',
+            _text: {
+              color: 'gray.900',
+            },
+          },
         },
         outline: {
           bg: 'transparent',
@@ -255,11 +260,22 @@ const theme = extendTheme({
             bg: 'transparent',
             borderColor: 'secondary',
           },
+          _disabled: {
+            borderColor: 'gray.400',
+            _text: {
+              color: 'gray.700',
+            },
+          },
         },
         link: {
           bg: 'transparent',
           _text: {
             color: 'primary.700',
+          },
+          _disabled: {
+            _text: {
+              color: 'gray.700',
+            },
           },
         },
         ghost: {
@@ -268,6 +284,11 @@ const theme = extendTheme({
           _text: {
             padding: 0,
             color: 'primary.700',
+          },
+          _disabled: {
+            _text: {
+              color: 'gray.700',
+            },
           },
         },
       },

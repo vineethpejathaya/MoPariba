@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Button, Text} from 'native-base';
 import {useRef, useState} from 'react';
 import {View} from 'react-native';
@@ -7,20 +6,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import ImageComponent from '../../components/ImageComponent';
 import {Slide, slides} from '../../constants/OnBoardingSlides';
-import {RootStackParamList} from '../../navigations/types';
 import theme from '../../themes/theme';
-import onBoardingStyles from './styles';
+import onBoardingStyles from './OnBoardingScreen.styles';
+import {OnBoardingScreenProps} from './OnBoardingScreen.types';
 
-type OnBoardingScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Onboarding'
->;
-
-type Props = {
-  navigation: OnBoardingScreenNavigationProp;
-};
-
-function OnboardingScreen({navigation}: Props) {
+function OnboardingScreen({navigation}: OnBoardingScreenProps) {
   const swiperRef: any = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 

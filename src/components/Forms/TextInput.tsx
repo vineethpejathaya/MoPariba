@@ -1,4 +1,4 @@
-import {Box, IBoxProps, Input, useTheme} from 'native-base';
+import {Box, IBoxProps, Input, Text, useTheme} from 'native-base';
 import {InterfaceInputProps} from 'native-base/lib/typescript/components/primitives/Input/types';
 import {InterfaceTextProps} from 'native-base/lib/typescript/components/primitives/Text/types';
 import {StyleProp, StyleSheet, TextStyle, ViewStyle} from 'react-native';
@@ -11,7 +11,14 @@ export type ITextFieldProps = {
   labelProps?: InterfaceTextProps;
   labelStyles?: StyleProp<TextStyle>;
   inputStyles?: StyleProp<ViewStyle>;
+  error?: string;
 } & InterfaceInputProps;
+
+const errorInputStyle: ViewStyle = {
+  borderColor: 'red',
+  borderWidth: 2,
+  borderRadius: 10,
+};
 
 export default function TextField({
   name,
@@ -23,6 +30,7 @@ export default function TextField({
   labelProps,
   labelStyles,
   inputStyles,
+  error,
   ...rest
 }: ITextFieldProps) {
   const theme = useTheme();
@@ -30,7 +38,11 @@ export default function TextField({
     backgroundColor: theme.colors.gray[200],
     borderRadius: 10,
   };
-  const combinedStyles = StyleSheet.flatten([defaultStyles, inputStyles]);
+  const combinedStyles = StyleSheet.flatten([
+    defaultStyles,
+    error ? errorInputStyle : null,
+    inputStyles,
+  ]);
   return (
     <Box width="100%" {...containerProps}>
       <FieldLabel
@@ -48,6 +60,8 @@ export default function TextField({
         {...rest}
         style={combinedStyles}
       />
+
+      {error && <Text style={{color: 'red', marginTop: 5}}>{error}</Text>}
     </Box>
   );
 }
