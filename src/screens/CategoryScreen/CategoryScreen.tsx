@@ -4,7 +4,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {Box, Divider, HStack, Text, VStack} from 'native-base';
 import {useState} from 'react';
 import CategoryCard from '../../components/CategoryCard';
-import NoDataIllustration from '../../components/NoDataIllustartion';
+import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';

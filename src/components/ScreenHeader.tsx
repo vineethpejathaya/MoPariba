@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {Box, HStack, IconButton, Text} from 'native-base';
+import {InterfaceHStackProps} from 'native-base/lib/typescript/components/primitives/Stack/HStack';
 import React, {ReactElement, ReactNode} from 'react';
 import {StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -10,15 +11,17 @@ function ScreenHeader({
   leftActions,
   rightActions,
   disableNavigateBack = false,
+  hStackProps,
 }: {
   title?: string | ReactNode;
   leftActions?: ReactElement[];
   rightActions?: ReactElement[];
   disableNavigateBack?: boolean;
+  hStackProps?: InterfaceHStackProps;
 }) {
   const navigation = useNavigation();
   return (
-    <HStack style={styles.container}>
+    <HStack shadow={3} style={styles.container} {...hStackProps}>
       <HStack space={2} alignItems="center">
         {!disableNavigateBack && (
           <IconButton
@@ -56,6 +59,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     backgroundColor: theme.colors.white,
-    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

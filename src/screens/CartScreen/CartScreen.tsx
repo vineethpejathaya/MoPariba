@@ -1,28 +1,21 @@
 import {useMutation, useQuery} from '@apollo/client';
-import {
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Image,
-  ScrollView,
-  Text,
-  VStack,
-} from 'native-base';
+import {Button, Divider, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useEffect} from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
-import {DeleteIcon} from '../../assets/icons/Icons';
-import QuantityButton from '../../components/QuantityButton';
-import ScreenContent from '../../components/ScreenContent';
+import {Dimensions} from 'react-native';
+import {CartBag, DeleteIcon} from '../../assets/icons/Icons';
+import NoDataIllustration from '../../components/NoDataIllustration';
+import PressableContainer from '../../components/Pressable/PressableContainer';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {useCart} from '../../hooks/UseCart';
 import {
-  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+  CLEAR_CUSTOMER_CART,
   GET_CUSTOMER_CART,
-  REMOVE_ITEM_FROM_CART,
 } from '../../services/ggl-queries/cart';
 import theme from '../../themes/theme';
+import CartScreenStyles from './CartScreen.styles';
+import {CartItem} from './components/CartItem';
+import CouponSection from './components/CouponSection';
 
 function CartScreen() {
   const {cart, cartId, setCart} = useCart();
@@ -33,6 +26,27 @@ function CartScreen() {
     },
   });
 
+  const [
+    clearCustomerCart,
+    {loading: clearingCart, data: cartData, error: cartError},
+  ] = useMutation(CLEAR_CUSTOMER_CART, {
+    onCompleted: res => {},
+  });
+
+  const handleClear = () => {
+    clearCustomerCart({
+      variables: {
+        cartId: cartId,
+      },
+    });
+  };
+
+  const shippingCharges = 0;
+  const subTotal = cart?.reduce(
+    (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
+    0,
+  );
+  const total = subTotal + shippingCharges;
   useEffect(() => {
     refetch();
   }, []);
@@ -40,173 +54,106 @@ function CartScreen() {
   if (loading) {
     return <SpinnerComponent />;
   }
+
   return (
     <>
       <ScreenHeader
+        hStackProps={{shadow: 3}}
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
-      <ScreenContent>
-        <VStack px={4} flex={1} space={2} justifyContent={'space-between'}>
-          <VStack>
-            <HStack justifyContent={'space-between'} alignItems={'center'}>
-              <Text variant={'subheader2'} fontSize={'lg'}>
-                Review Items
-              </Text>
-              <Button
-                variant={'unstyled'}
-                _text={{color: 'black'}}
-                rightIcon={<DeleteIcon />}>
-                Clear cart
-              </Button>
-            </HStack>
-            <Divider />
-            <Box style={styles.container}>
+      {cart.length == 0 ? (
+        <NoDataIllustration
+          message={
+            <VStack alignItems={'center'}>
+              <CartBag />
+              <Text variant={'title1'}>{'No Products in the cart!'}</Text>
+            </VStack>
+          }
+        />
+      ) : (
+        <>
+          <VStack style={CartScreenStyles.mainContainer}>
+            <VStack>
+              <HStack style={CartScreenStyles.cartReviewContainer}>
+                <Text style={CartScreenStyles.cartReviewHeading}>
+                  Review Items
+                </Text>
+                <PressableContainer onPress={() => {}}>
+                  <HStack space={2} alignItems={'center'}>
+                    <Text
+                      style={CartScreenStyles.cartReviewHeading}
+                      fontSize={'sm'}
+                      onPress={handleClear}>
+                      Clear cart
+                    </Text>
+                    <DeleteIcon />
+                  </HStack>
+                </PressableContainer>
+              </HStack>
+
               <ScrollView>
-                <VStack space={4}>
-                  {cart?.length > 0 ? (
-                    <>
-                      {cart?.map((cartItem, index) => (
+                <VStack height={Dimensions.get('window').height * 0.35}>
+                  <ScrollView flex={1}>
+                    <VStack>
+                      {cart?.map((cartItem: any, index: number) => (
                         <CartItem key={index} cartItem={cartItem} />
                       ))}
-                    </>
-                  ) : null}
+                    </VStack>
+                  </ScrollView>
                 </VStack>
               </ScrollView>
-            </Box>
+            </VStack>
+            <CouponSection />
+            <CartSummary
+              subTotal={subTotal}
+              total={total}
+              shippingCharges={shippingCharges}
+            />
+            <Button mx={5}>Proceed to pay</Button>
           </VStack>
-
-          <Button variant={'solid'}>Proceed</Button>
-        </VStack>
-      </ScreenContent>
+        </>
+      )}
     </>
   );
 }
 
 export default CartScreen;
 
-export const CartItem = ({cartItem}: {cartItem: any}) => {
-  const {cartId, setCart} = useCart();
-  const price = cartItem?.prices?.row_total_including_tax?.value;
-  const parentSku = cartItem?.product?.sku;
-  const sku = cartItem?.configured_variant?.sku;
-
-  const [addToCartFn, {data: cartData}] = useMutation(
-    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.addConfigurableProductsToCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
-
-  const [removeFromCartFn, {loading: removing, error: removeErr}] = useMutation(
-    REMOVE_ITEM_FROM_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.removeItemFromCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
-
-  const handleAdd = () => {
-    addToCartFn({
-      variables: {
-        cartId: cartId,
-        cartItems: [
-          {
-            parent_sku: parentSku,
-            data: {
-              quantity: 1,
-              sku: sku,
-            },
-          },
-        ],
-      },
-    });
-  };
-
-  const handleRemove = () => {
-    removeFromCartFn({
-      variables: {
-        cartId: cartId,
-        cartItemId: cartItem?.id,
-      },
-    });
-  };
-
+const CartSummary = ({
+  subTotal,
+  total,
+  shippingCharges,
+}: {
+  subTotal: number;
+  total: number;
+  shippingCharges: number;
+}) => {
   return (
     <>
-      <HStack
-        alignItems={'center'}
-        justifyContent={'space-between'}
-        width={'100%'}>
-        <HStack alignItems={'center'} space={2}>
-          <Box style={styles.imageContainer}>
-            {cartItem?.product?.image?.url && (
-              <Image
-                source={{uri: `${cartItem?.product?.image?.url}`}}
-                style={{width: '80%', height: '80%'}}
-                resizeMode="contain"
-                alt={cartItem?.product?.image?.label}
-              />
-            )}
-          </Box>
-          <VStack>
-            <Text variant="body2" fontSize={'sm'}>
-              {cartItem?.product?.name ?? '--'}
-            </Text>
-          </VStack>
+      <VStack space={2} padding={5}>
+        <HStack justifyContent="space-between" my="2">
+          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+            Subtotal
+          </Text>
+          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+            ₹ {subTotal ?? 0}
+          </Text>
         </HStack>
-        <QuantityButton
-          quantity={cartItem?.quantity}
-          handleAdd={handleAdd}
-          handleRemove={handleRemove}
-        />
+        <HStack justifyContent="space-between" mb="2">
+          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+            Shipping charges
+          </Text>
+          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+            ₹ {shippingCharges ?? 0}
+          </Text>
+        </HStack>
 
-        <Text variant="body2" fontSize={'sm'}>
-          ₹{price ?? 0}
-        </Text>
-      </HStack>
+        <Divider />
+        <HStack justifyContent={'space-between'}>
+          <Text variant={'subheader1'}>Total</Text>
+          <Text variant={'subheader1'}>₹ {total ?? 0}</Text>
+        </HStack>
+      </VStack>
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    maxHeight: Dimensions.get('window').height * 0.65,
-    overflow: 'scroll',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  imageContainer: {
-    height: 60,
-    width: 60,
-    aspectRatio: 1,
-    backgroundColor: theme.colors.gray[500],
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnText: {
-    fontSize: 14,
-    fontWeight: 700,
-  },
-  btn: {
-    height: 40,
-    width: 100,
-  },
-});

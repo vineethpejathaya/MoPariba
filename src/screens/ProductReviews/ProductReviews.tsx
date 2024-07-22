@@ -1,4 +1,3 @@
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   Avatar,
   Divider,
@@ -13,9 +12,9 @@ import {Dimensions, StyleSheet} from 'react-native';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenHeader from '../../components/ScreenHeader';
 import StarRating from '../../components/StarRating';
-import {RootStackParamList} from '../../navigations/types';
+import {ProductReviewScreenProps, Review} from './ProductReviews.types';
 
-const reviews = [
+const reviews: Review[] = [
   {
     id: 1,
     name: 'Haylie Aminoff',
@@ -50,16 +49,7 @@ const reviews = [
   },
 ];
 
-type ReviewsScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Reviews'
->;
-
-type Props = {
-  navigation: ReviewsScreenNavigationProp;
-};
-
-const ReviewsScreen = ({navigation}: Props) => (
+const ReviewsScreen = ({navigation}: ProductReviewScreenProps) => (
   <>
     <ScreenHeader
       title={'Reviews'}
@@ -74,7 +64,7 @@ const ReviewsScreen = ({navigation}: Props) => (
     />
     <ScrollView>
       <VStack space={3} alignItems={'center'} flex={1} py={4}>
-        {reviews.map((review, index: number) => (
+        {reviews.map((review: Review, index: number) => (
           <ReviewItem key={index} {...review} />
         ))}
       </VStack>

@@ -234,7 +234,7 @@ const theme = extendTheme({
         solid: {
           bg: 'primary.900',
           _text: {
-            fontFamily: 'sen',
+            fontFamily: 'Sen-Bold',
             color: 'white',
             fontSize: 18,
             fontWeight: 700,

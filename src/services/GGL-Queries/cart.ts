@@ -270,3 +270,11 @@ export const REMOVE_ITEM_FROM_CART = gql`
     }
   }
 `;
+
+export const CLEAR_CUSTOMER_CART = gql`
+  mutation ClearCustomerCart($cartUid: String!) {
+    clearCustomerCart(cartUid: $cartUid) {
+      status
+    }
+  }
+`;
