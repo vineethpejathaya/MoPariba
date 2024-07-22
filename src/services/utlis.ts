@@ -12,7 +12,7 @@ export function GetInitialLetterOfString(str: string) {
 export const transformCartItemsToMap = (cartItemsArray: any) => {
   const productMap = new Map();
 
-  cartItemsArray.forEach((item: any) => {
+  cartItemsArray?.forEach((item: any) => {
     const productSku = item.product.sku;
     if (!productMap.has(productSku)) {
       productMap.set(productSku, []);
@@ -24,7 +24,7 @@ export const transformCartItemsToMap = (cartItemsArray: any) => {
 
 export const getVariantFromCart = (variant: any, productItems: any[]) => {
   const map = new Map();
-  productItems.forEach((item: any) => {
+  productItems?.forEach((item: any) => {
     map.set(item?.configured_variant?.sku, item);
   });
   return map.get(variant?.product?.sku);

@@ -2,7 +2,10 @@ import {useMutation} from '@apollo/client';
 import {Box, Button, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import {useCart} from '../hooks/UseCart';
-import {ADD_CONFIGURABLE_PRODUCTS_TO_CART} from '../services/ggl-queries/cart';
+import {
+  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+  REMOVE_ITEM_FROM_CART,
+} from '../services/ggl-queries/cart';
 import {getVariantFromCart, transformCartItemsToMap} from '../services/utlis';
 import theme from '../themes/theme';
 import QuantityButton from './QuantityButton';
@@ -16,7 +19,7 @@ function ProductVariant({
 }) {
   const {cartId, setCart, cart} = useCart();
 
-  let variantInCart = undefined;
+  let variantInCart: {id: any; quantity: any} | undefined = undefined;
   const map = transformCartItemsToMap(cart);
   const isProductInCart = map.has(parentSku);
   const productInCart = map.get(parentSku);
@@ -41,6 +44,18 @@ function ProductVariant({
     },
   );
 
+  const [removeFromCartFn, {loading: removing, error: removeErr}] = useMutation(
+    REMOVE_ITEM_FROM_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.removeItemFromCart?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    },
+  );
+
   const handleAdd = () => {
     addToCartFn({
       variables: {
@@ -54,6 +69,15 @@ function ProductVariant({
             },
           },
         ],
+      },
+    });
+  };
+
+  const handleRemove = () => {
+    removeFromCartFn({
+      variables: {
+        cartId: cartId,
+        cartItemId: Number(variantInCart?.id),
       },
     });
   };
@@ -86,6 +110,7 @@ function ProductVariant({
             <QuantityButton
               quantity={variantInCart?.quantity ?? 0}
               handleAdd={handleAdd}
+              handleRemove={handleRemove}
             />
           </>
         ) : (

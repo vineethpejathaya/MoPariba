@@ -6,10 +6,12 @@ const QuantityButton = ({
   quantity,
   refetch,
   handleAdd,
+  handleRemove,
 }: {
   quantity: number;
   refetch?: () => void;
   handleAdd?: () => void;
+  handleRemove?: () => void;
 }) => {
   const [qnt, setQnt] = useState(quantity);
 
@@ -20,6 +22,7 @@ const QuantityButton = ({
 
   const decreaseQuantity = () => {
     if (qnt > 1) {
+      handleRemove && handleRemove();
       setQnt(prevQuantity => prevQuantity - 1);
     }
   };

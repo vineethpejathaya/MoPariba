@@ -130,10 +130,13 @@ function HomeScreen({navigation}: HomeScreenProps) {
         <VStack space={3} px={2} justifyContent={'space-between'}>
           <Text
             variant={'subTitle2'}
+            fontFamily={'Sen-Regular'}
             fontSize={'xl'}
             style={{textTransform: 'capitalize'}}>
             Hey {customer?.firstname ?? '--'} {customer?.lastname ?? '--'},{' '}
-            <Text fontWeight={'bold'}>How are you!</Text>
+            <Text fontFamily={'Sen-Bold'} fontWeight={'bold'}>
+              How are you!
+            </Text>
           </Text>
 
           <SearchBar

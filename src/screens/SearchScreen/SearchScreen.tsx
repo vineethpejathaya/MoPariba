@@ -12,9 +12,7 @@ import SearchBar from '../../components/SearchBar';
 import {
   PopularOffer,
   SuggestedStore,
-  popularOffers,
   recentKeywords,
-  suggestedStores,
 } from '../../constants/main';
 import {RootStackParamList} from '../../navigations/types';
 import theme from '../../themes/theme';
@@ -62,11 +60,11 @@ function SearchScreen({navigation}: Props) {
         <VStack space={5} justifyContent={'space-between'} px={5}>
           <SearchBar placeholder="Search dishes, restaurants" />
           <RecentSearchSection recentKeywords={recentKeywords} />
-          <SuggestedStoresSection suggestedStores={suggestedStores} />
-          <PopularOffersSection
+          {/* <SuggestedStoresSection suggestedStores={suggestedStores} /> */}
+          {/* <PopularOffersSection
             navigation={navigation}
             popularOffers={popularOffers}
-          />
+          /> */}
         </VStack>
       </ScreenContent>
     </>

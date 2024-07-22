@@ -77,6 +77,7 @@ export const GET_CUSTOMER_CART = gql`
       id
       is_virtual
       items {
+        id
         uid
         quantity
         product {
@@ -173,6 +174,58 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
     ) {
       cart {
         items {
+          id
+          uid
+          quantity
+          product {
+            name
+            sku
+            image {
+              url
+              label
+            }
+          }
+          prices {
+            row_total_including_tax {
+              value
+              currency
+            }
+
+            total_item_discount {
+              value
+              currency
+            }
+          }
+          ... on ConfigurableCartItem {
+            configured_variant {
+              sku
+              name
+              price_range {
+                minimum_price {
+                  final_price {
+                    value
+                    currency
+                  }
+                }
+              }
+            }
+            configurable_options {
+              option_label
+              value_label
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const REMOVE_ITEM_FROM_CART = gql`
+  mutation RemoveItemFromCart($cartId: String!, $cartItemId: Int!) {
+    removeItemFromCart(input: {cart_id: $cartId, cart_item_id: $cartItemId}) {
+      cart {
+        items {
+          id
           uid
           quantity
           product {

@@ -15,7 +15,7 @@ import CustomIconButton from '../../components/Buttons/IconButton';
 import NavigationItem from '../../components/NavigationItem';
 import {useAuth} from '../../hooks/UseAuth';
 import {RootStackParamList} from '../../navigations/types';
-import {Customer} from '../../services/interfaces/customer.interface';
+import {Customer} from '../../services/ggl-queries/HomeScreen/Home.type';
 import {GetInitialLetterOfString} from '../../services/utlis';
 import theme from '../../themes/theme';
 

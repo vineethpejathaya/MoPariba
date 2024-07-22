@@ -11,6 +11,7 @@ import {
 } from 'native-base';
 import {useEffect} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
+import {DeleteIcon} from '../../assets/icons/Icons';
 import QuantityButton from '../../components/QuantityButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -19,6 +20,7 @@ import {useCart} from '../../hooks/UseCart';
 import {
   ADD_CONFIGURABLE_PRODUCTS_TO_CART,
   GET_CUSTOMER_CART,
+  REMOVE_ITEM_FROM_CART,
 } from '../../services/ggl-queries/cart';
 import theme from '../../themes/theme';
 
@@ -30,18 +32,6 @@ function CartScreen() {
       setCart(res?.cart?.items);
     },
   });
-
-  const [addToCartFn, {data: cartData}] = useMutation(
-    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.addConfigurableProductsToCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
 
   useEffect(() => {
     refetch();
@@ -62,12 +52,12 @@ function CartScreen() {
               <Text variant={'subheader2'} fontSize={'lg'}>
                 Review Items
               </Text>
-              {/* <Button
+              <Button
                 variant={'unstyled'}
                 _text={{color: 'black'}}
                 rightIcon={<DeleteIcon />}>
                 Clear cart
-              </Button> */}
+              </Button>
             </HStack>
             <Divider />
             <Box style={styles.container}>
@@ -76,11 +66,7 @@ function CartScreen() {
                   {cart?.length > 0 ? (
                     <>
                       {cart?.map((cartItem, index) => (
-                        <CartItem
-                          key={index}
-                          cartItem={cartItem}
-                          addToCartFn={addToCartFn}
-                        />
+                        <CartItem key={index} cartItem={cartItem} />
                       ))}
                     </>
                   ) : null}
@@ -98,17 +84,36 @@ function CartScreen() {
 
 export default CartScreen;
 
-export const CartItem = ({
-  cartItem,
-  addToCartFn,
-}: {
-  cartItem: any;
-  addToCartFn: any;
-}) => {
-  const {cartId} = useCart();
+export const CartItem = ({cartItem}: {cartItem: any}) => {
+  const {cartId, setCart} = useCart();
   const price = cartItem?.prices?.row_total_including_tax?.value;
   const parentSku = cartItem?.product?.sku;
   const sku = cartItem?.configured_variant?.sku;
+
+  const [addToCartFn, {data: cartData}] = useMutation(
+    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.addConfigurableProductsToCart?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    },
+  );
+
+  const [removeFromCartFn, {loading: removing, error: removeErr}] = useMutation(
+    REMOVE_ITEM_FROM_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.removeItemFromCart?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    },
+  );
+
   const handleAdd = () => {
     addToCartFn({
       variables: {
@@ -125,6 +130,16 @@ export const CartItem = ({
       },
     });
   };
+
+  const handleRemove = () => {
+    removeFromCartFn({
+      variables: {
+        cartId: cartId,
+        cartItemId: cartItem?.id,
+      },
+    });
+  };
+
   return (
     <>
       <HStack
@@ -148,7 +163,11 @@ export const CartItem = ({
             </Text>
           </VStack>
         </HStack>
-        <QuantityButton quantity={cartItem?.quantity} handleAdd={handleAdd} />
+        <QuantityButton
+          quantity={cartItem?.quantity}
+          handleAdd={handleAdd}
+          handleRemove={handleRemove}
+        />
 
         <Text variant="body2" fontSize={'sm'}>
           ₹{price ?? 0}
