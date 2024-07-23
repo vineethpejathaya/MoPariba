@@ -21,6 +21,7 @@ function CategoryProduct({product}: {product: any}) {
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
+    console.log('product useEffect called');
     const map = transformCartItemsToMap(cart);
     const isProductInCart = map.has(product?.sku);
     const productInCart = map.get(product?.sku);
@@ -32,6 +33,7 @@ function CategoryProduct({product}: {product: any}) {
     setIsProductInCart(isProductInCart);
   }, [cart, quantity, isProductInCart]);
 
+  console.log(quantity, 'quantity');
   const price = product?.price_range?.maximum_price?.final_price?.value;
 
   return (

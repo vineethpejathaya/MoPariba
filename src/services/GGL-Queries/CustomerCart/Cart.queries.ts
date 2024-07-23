@@ -215,6 +215,30 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
             }
           }
         }
+        prices {
+          grand_total {
+            value
+            currency
+          }
+          subtotal_excluding_tax {
+            value
+            currency
+          }
+          discounts {
+            amount {
+              value
+              currency
+            }
+          }
+          applied_taxes {
+            amount {
+              value
+              currency
+            }
+          }
+        }
+
+        total_quantity
       }
     }
   }
@@ -266,6 +290,30 @@ export const REMOVE_ITEM_FROM_CART = gql`
             }
           }
         }
+        prices {
+          grand_total {
+            value
+            currency
+          }
+          subtotal_excluding_tax {
+            value
+            currency
+          }
+          discounts {
+            amount {
+              value
+              currency
+            }
+          }
+          applied_taxes {
+            amount {
+              value
+              currency
+            }
+          }
+        }
+
+        total_quantity
       }
     }
   }
@@ -320,6 +368,30 @@ export const UPDATE_CART_ITEMS = gql`
             }
           }
         }
+        prices {
+          grand_total {
+            value
+            currency
+          }
+          subtotal_excluding_tax {
+            value
+            currency
+          }
+          discounts {
+            amount {
+              value
+              currency
+            }
+          }
+          applied_taxes {
+            amount {
+              value
+              currency
+            }
+          }
+        }
+
+        total_quantity
       }
     }
   }

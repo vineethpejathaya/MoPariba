@@ -9,11 +9,13 @@ import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
+import {useCart} from '../../hooks/UseCart';
 import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/GGL-Queries/products';
 import {ProductListScreenProps} from './ProductListScreen.types';
 import productListStyles from './styles';
 
 function ProductListScreen({route, navigation}: ProductListScreenProps) {
+  const {cart} = useCart();
   const {categoryName, categoryId, categoryImageUrl} = route.params;
   const [products, setProducts] = useState<any[] | []>([]);
 
@@ -26,15 +28,18 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
         currentPage: 1,
       },
       onCompleted: res => {
+        console.log('onSuccess');
         setProducts(res.products.items);
       },
     },
   );
 
   useEffect(() => {
+    console.log('useEffect called');
     refetch();
-  }, []);
+  }, [cart]);
 
+  console.log(loading, 'loading');
   if (loading) {
     return <SpinnerComponent />;
   }

@@ -27,6 +27,7 @@ export const GET_CUSTOMER_ADDRESSES = gql`
       addresses {
         id
         region {
+          region_id
           region_code
           region
         }
@@ -49,6 +50,28 @@ export const UPDATE_CUSTOMER_ADDRESS = gql`
     updateCustomerAddress(id: $id, input: $input) {
       id
       region {
+        region_code
+        region
+      }
+      country_code
+      street
+      telephone
+      postcode
+      city
+      firstname
+      lastname
+      default_shipping
+      default_billing
+    }
+  }
+`;
+
+export const CREATE_CUSTOMER_ADDRESS = gql`
+  mutation CreateCustomerAddress($input: CustomerAddressInput!) {
+    createCustomerAddress(input: $input) {
+      id
+      region {
+        region_id
         region_code
         region
       }

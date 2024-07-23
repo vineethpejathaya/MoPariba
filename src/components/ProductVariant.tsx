@@ -5,6 +5,7 @@ import {useCart} from '../hooks/UseCart';
 import {
   ADD_CONFIGURABLE_PRODUCTS_TO_CART,
   REMOVE_ITEM_FROM_CART,
+  UPDATE_CART_ITEMS,
 } from '../services/GGL-Queries/CustomerCart/Cart.queries';
 import {getVariantFromCart, transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
@@ -44,6 +45,18 @@ function ProductVariant({
     },
   );
 
+  const [updateCartFn, {loading: updating, error: updateErr}] = useMutation(
+    UPDATE_CART_ITEMS,
+    {
+      onCompleted: res => {
+        setCart(res?.updateCartItems?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    },
+  );
+
   const [removeFromCartFn, {loading: removing, error: removeErr}] = useMutation(
     REMOVE_ITEM_FROM_CART,
     {
@@ -74,12 +87,29 @@ function ProductVariant({
   };
 
   const handleRemove = () => {
-    removeFromCartFn({
-      variables: {
-        cartId: cartId,
-        cartItemId: Number(variantInCart?.id),
-      },
-    });
+    console.log(variantInCart?.quantity, 'q');
+    if (variantInCart?.quantity > 1) {
+      console.log(variantInCart?.quantity, 'quantity more than 1');
+      updateCartFn({
+        variables: {
+          cartId: cartId,
+          cartItems: [
+            {
+              cart_item_id: variantInCart?.id,
+              quantity: Number(variantInCart?.quantity) - 1,
+            },
+          ],
+        },
+      });
+    } else {
+      console.log(variantInCart?.quantity, 'less than 1');
+      removeFromCartFn({
+        variables: {
+          cartId: cartId,
+          cartItemId: Number(variantInCart?.id),
+        },
+      });
+    }
   };
 
   return (
