@@ -16,7 +16,7 @@ import {
   Text,
   VStack,
 } from 'native-base';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {AddressIcon, ExpandLess} from '../../../assets/icons/Icons';
 import NoDataIllustration from '../../../components/NoDataIllustration';
@@ -48,17 +48,12 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
   const {loading, error, data, refetch} =
     useQuery<GetCustomerAddressesResponse>(GET_CUSTOMER_ADDRESSES, {
       onCompleted: res => {
-        console.log(res, 'res');
         setAddresses(res?.customer?.addresses);
       },
     });
 
   const handleEdit = (id: number) => {
     setEditingAddressId(editingAddressId === id ? null : id);
-  };
-
-  const handleAddAddress = () => {
-    // Logic to add a new address
   };
 
   if (loading || fetchingCountries) {
@@ -71,7 +66,7 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
         title={'My Address'}
         rightActions={[
           <IconButton
-            onPress={handleAddAddress}
+            onPress={() => {}}
             style={styles.addBtn}
             icon={<AddIcon size={4} color={theme.colors.black} />}
           />,
@@ -153,35 +148,63 @@ const AddressForm = ({
   countries,
   formType,
 }: {
-  address: any;
+  address?: any;
   countries: any[];
   formType: 'Add' | 'Edit';
 }) => {
-  const [userAddress, setUserAddress] = useState(address);
+  const [userAddress, setUserAddress] = useState({
+    name: '',
+    firstname: '',
+    lastname: '',
+    street: '',
+    city: address?.city,
+    postcode: '',
+    country_code: '',
+    default_billing: false,
+    telephone: '',
+    region_id: '',
+  });
+
+  useEffect(() => {
+    setUserAddress({
+      name: address?.firstname + address?.lastname,
+      firstname: address?.firstname,
+      lastname: address?.lastname,
+      street: address?.street.join(','),
+      city: address?.city,
+      postcode: address?.postcode,
+      country_code: address?.country_code,
+      default_billing: address?.default_billing,
+      telephone: address?.telephone,
+      region_id: '',
+    });
+  }, [address]);
 
   const [updateCustomerAddress, {data, loading, error}] = useMutation<
     UpdateCustomerAddressResponse,
     UpdateCustomerAddressVariables
   >(UPDATE_CUSTOMER_ADDRESS);
 
-  const handleUpdateAddress = () => {
+  const handleSubmit = () => {
+    const nameArr = userAddress.name.split(' ');
+
     updateCustomerAddress({
       variables: {
-        id: 1,
+        id: address.id,
         input: {
           region: {
             region_code: 'CA',
             region: 'California',
           },
-          country_code: 'US',
-          street: ['456 Main St'],
-          telephone: '9876543210',
-          postcode: '90002',
-          city: 'San Francisco',
-          firstname: 'Jane',
-          lastname: 'Smith',
-          default_shipping: false,
-          default_billing: false,
+          country_code: userAddress.country_code,
+          street: [userAddress.street],
+          telephone: userAddress.telephone,
+          postcode: userAddress.postcode,
+          city: userAddress.city,
+          firstname: nameArr[0],
+          lastname: nameArr[1],
+          default_shipping: userAddress.default_billing,
+          default_billing: userAddress.default_billing,
         },
       },
     });
@@ -204,7 +227,7 @@ const AddressForm = ({
         </FormControl>
         <FormControl>
           <Input
-            value={userAddress.street?.join(',')}
+            value={userAddress.street}
             placeholder="Address"
             onChange={(e: any) =>
               setUserAddress((prev: any) => ({
