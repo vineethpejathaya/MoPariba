@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {CREATE_CART_MUTATION} from '../services/ggl-queries/CustomerCart/Cart.queries';
+import {CREATE_CART_MUTATION} from '../services/GGL-Queries/CustomerCart/Cart.queries';
 
 type CartItem = {
   id: string;

@@ -4,7 +4,7 @@ import {
   Categories,
   CategoryItemInterface,
   Customer,
-} from '../../services/ggl-queries/HomeScreen/Home.type';
+} from '../../services/GGL-Queries/HomeScreen/Home.type';
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,

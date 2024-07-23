@@ -11,7 +11,7 @@ import {useCart} from '../../hooks/UseCart';
 import {
   CLEAR_CUSTOMER_CART,
   GET_CUSTOMER_CART,
-} from '../../services/ggl-queries/CustomerCart/Cart.queries';
+} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 import theme from '../../themes/theme';
 import CartScreenStyles from './CartScreen.styles';
 import {CartItem} from './components/CartItem';

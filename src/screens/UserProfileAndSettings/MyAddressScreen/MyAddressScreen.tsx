@@ -25,13 +25,13 @@ import {
   GET_COUNTRIES,
   GET_CUSTOMER_ADDRESSES,
   UPDATE_CUSTOMER_ADDRESS,
-} from '../../../services/ggl-queries/CustomerAddress/CustomerAddress.queries';
+} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
   GetCountriesData,
   GetCustomerAddressesResponse,
   UpdateCustomerAddressResponse,
   UpdateCustomerAddressVariables,
-} from '../../../services/ggl-queries/CustomerAddress/CustomerAddress.type';
+} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
 import {MYAddressScreenProps} from './MyAddress.types';
 

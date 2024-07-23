@@ -9,7 +9,7 @@ import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/ggl-queries/products';
+import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/GGL-Queries/products';
 import {ProductListScreenProps} from './ProductListScreen.types';
 import productListStyles from './styles';
 

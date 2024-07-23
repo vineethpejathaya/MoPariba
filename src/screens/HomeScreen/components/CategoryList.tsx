@@ -2,7 +2,7 @@ import {Box, VStack} from 'native-base';
 import {FaceSavoringFood} from '../../../assets/icons/Icons';
 import CategoryItem from '../../../components/CategoryItem';
 import TitleActions from '../../../components/TitleActions';
-import {CategoryItemInterface} from '../../../services/ggl-queries/HomeScreen/Home.type';
+import {CategoryItemInterface} from '../../../services/GGL-Queries/HomeScreen/Home.type';
 import {HomeScreenNavigationProp, HomeScreenState} from '../HomeScreen.types';
 
 function HomeCategoryList({

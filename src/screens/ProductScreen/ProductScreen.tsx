@@ -21,7 +21,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import StarRating from '../../components/StarRating';
 import {RootStackParamList} from '../../navigations/types';
-import {GET_PRODUCT_DETAILS} from '../../services/ggl-queries/products';
+import {GET_PRODUCT_DETAILS} from '../../services/GGL-Queries/products';
 import theme from '../../themes/theme';
 import productStyles from './styles';
 

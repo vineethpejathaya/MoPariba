@@ -5,8 +5,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
 import useToast from '../../hooks/UseToast';
 import useValidation from '../../hooks/UseValidation';
+import {CREATE_CUSTOMER_MUTATION} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
 import {signUpSchema} from '../../services/form-validations/ValidationSchema';
-import {CREATE_CUSTOMER_MUTATION} from '../../services/ggl-queries/LoginAndRegistration/LoginAndRegistration.queries';
 import theme from '../../themes/theme';
 import {
   Field,

@@ -8,8 +8,8 @@ import TextField from '../../components/Forms/TextInput';
 import PressableText from '../../components/Pressable/PressableText';
 import {useAuth} from '../../hooks/UseAuth';
 import useValidation from '../../hooks/UseValidation';
+import {LOGIN_MUTATION} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
 import {loginSchema} from '../../services/form-validations/ValidationSchema';
-import {LOGIN_MUTATION} from '../../services/ggl-queries/LoginAndRegistration/LoginAndRegistration.queries';
 import theme from '../../themes/theme';
 import {
   LoginFormData,

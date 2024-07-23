@@ -10,11 +10,11 @@ import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {baseUrl} from '../../constants/config';
 import {RootStackParamList} from '../../navigations/types';
-import {GET_CATEGORIES_LIST} from '../../services/ggl-queries/category';
 import {
   Categories,
   CategoryItemInterface,
-} from '../../services/interfaces/category.interface';
+} from '../../services/GGL-Queries/HomeScreen/Home.type';
+import {GET_CATEGORIES_LIST} from '../../services/GGL-Queries/category';
 
 type CategoryScreenRouteProp = RouteProp<RootStackParamList, 'Category'>;
 type CategoryScreenNavigationProp = StackNavigationProp<
