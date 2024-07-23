@@ -132,12 +132,14 @@ function AddressForm({
   };
   return (
     <>
-      <VStack p={4}>
+      <VStack p={4} paddingBottom={5}>
         <ScrollView>
           <VStack space={2}>
             <Divider />
             <FormControl>
               <Input
+                height={38}
+                size={'md'}
                 value={userAddress.name}
                 placeholder="Name"
                 onChangeText={(value: any) => {
@@ -150,6 +152,8 @@ function AddressForm({
             </FormControl>
             <FormControl>
               <Input
+                height={38}
+                size={'md'}
                 value={userAddress.street}
                 placeholder="Address"
                 onChangeText={(value: any) =>
@@ -163,6 +167,8 @@ function AddressForm({
             <HStack space={2}>
               <FormControl flex={1}>
                 <Input
+                  height={38}
+                  size={'md'}
                   value={userAddress.city}
                   placeholder="City"
                   onChangeText={(value: any) =>
@@ -175,6 +181,8 @@ function AddressForm({
               </FormControl>
               <FormControl flex={1}>
                 <Input
+                  height={38}
+                  size={'md'}
                   value={userAddress.postcode}
                   placeholder="Zip Code"
                   onChangeText={(value: any) =>
@@ -189,6 +197,8 @@ function AddressForm({
 
             <FormControl>
               <Select
+                height={38}
+                size={'md'}
                 selectedValue={userAddress?.country_code}
                 placeholder="Country"
                 onValueChange={(itemValue: any) => {
@@ -207,6 +217,8 @@ function AddressForm({
             </FormControl>
             <FormControl>
               <Select
+                height={38}
+                size={'md'}
                 selectedValue={userAddress?.region_id}
                 placeholder="Region"
                 onValueChange={(itemValue: any) => {
@@ -228,6 +240,8 @@ function AddressForm({
             </FormControl>
             <FormControl>
               <Input
+                height={38}
+                size={'md'}
                 value={userAddress.telephone}
                 placeholder="Phone number"
                 onChangeText={(value: any) =>
