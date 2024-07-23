@@ -5,8 +5,8 @@ import {useCart} from '../hooks/UseCart';
 import {
   ADD_CONFIGURABLE_PRODUCTS_TO_CART,
   REMOVE_ITEM_FROM_CART,
-} from '../services/ggl-queries/cart';
-import {getVariantFromCart, transformCartItemsToMap} from '../services/utlis';
+} from '../services/ggl-queries/CustomerCart/Cart.queries';
+import {getVariantFromCart, transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
 import QuantityButton from './QuantityButton';
 

@@ -11,12 +11,12 @@ import SpinnerComponent from '../../components/SpinnerComponent';
 import {banners, products} from '../../constants/main';
 import {useAuth} from '../../hooks/UseAuth';
 import {useCart} from '../../hooks/UseCart';
-import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/HomeScreen/Home.queries';
-import {GetHomeScreenDataResponse} from '../../services/ggl-queries/HomeScreen/Home.type';
 import {
   CREATE_CART_MUTATION,
   GET_CUSTOMER_CART,
-} from '../../services/ggl-queries/cart';
+} from '../../services/ggl-queries/CustomerCart/Cart.queries';
+import {GET_HOME_SCREEN_DATA} from '../../services/ggl-queries/HomeScreen/Home.queries';
+import {GetHomeScreenDataResponse} from '../../services/ggl-queries/HomeScreen/Home.type';
 import {
   HomeScreenProps,
   HomeScreenState,

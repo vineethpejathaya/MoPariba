@@ -17,6 +17,7 @@ import ProductListScreen from '../screens/ProductListScreen';
 import ReviewsScreen from '../screens/ProductReviews/ProductReviews';
 import ProductScreen from '../screens/ProductScreen/ProductScreen';
 import SearchScreen from '../screens/SearchScreen';
+import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
 import theme from '../themes/theme';
 import MainTabs from './MainTabs';
 import {RootStackParamList} from './types';
@@ -75,6 +76,7 @@ function RootNavigator() {
             <Stack.Screen name="Product" component={ProductScreen} />
             <Stack.Screen name="Reviews" component={ReviewsScreen} />
             <Stack.Screen name="NoNetwork" component={NoNetworkScreen} />
+            <Stack.Screen name="AddressScreen" component={MyAddressScreen} />
           </>
         ) : (
           <>

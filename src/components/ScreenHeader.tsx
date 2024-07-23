@@ -26,11 +26,7 @@ function ScreenHeader({
         {!disableNavigateBack && (
           <IconButton
             icon={
-              <Icon
-                name="arrow-back"
-                size={25}
-                color={theme.colors.gray[900]}
-              />
+              <Icon name="arrow-back" size={25} color={theme.colors.black} />
             }
             onPress={() => navigation.goBack()}
           />

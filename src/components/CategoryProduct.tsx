@@ -5,7 +5,7 @@ import {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {useCart} from '../hooks/UseCart';
 import {RootStackParamList} from '../navigations/types';
-import {transformCartItemsToMap} from '../services/utlis';
+import {transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
 import FavoriteCheckbox from './FavoriteCheckBox';
 import PressableContainer from './Pressable/PressableContainer';

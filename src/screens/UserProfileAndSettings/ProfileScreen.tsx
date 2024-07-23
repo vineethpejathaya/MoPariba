@@ -16,7 +16,7 @@ import NavigationItem from '../../components/NavigationItem';
 import {useAuth} from '../../hooks/UseAuth';
 import {RootStackParamList} from '../../navigations/types';
 import {Customer} from '../../services/ggl-queries/HomeScreen/Home.type';
-import {GetInitialLetterOfString} from '../../services/utlis';
+import {GetInitialLetterOfString} from '../../services/utils';
 import theme from '../../themes/theme';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<

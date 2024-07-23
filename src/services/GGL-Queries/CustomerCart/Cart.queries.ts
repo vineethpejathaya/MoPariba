@@ -271,6 +271,60 @@ export const REMOVE_ITEM_FROM_CART = gql`
   }
 `;
 
+export const UPDATE_CART_ITEMS = gql`
+  mutation UpdateCartItems(
+    $cartId: String!
+    $cartItems: [CartItemUpdateInput!]!
+  ) {
+    updateCartItems(input: {cart_id: $cartId, cart_items: $cartItems}) {
+      cart {
+        items {
+          id
+          uid
+          quantity
+          product {
+            name
+            sku
+            image {
+              url
+              label
+            }
+          }
+          prices {
+            row_total_including_tax {
+              value
+              currency
+            }
+
+            total_item_discount {
+              value
+              currency
+            }
+          }
+          ... on ConfigurableCartItem {
+            configured_variant {
+              sku
+              name
+              price_range {
+                minimum_price {
+                  final_price {
+                    value
+                    currency
+                  }
+                }
+              }
+            }
+            configurable_options {
+              option_label
+              value_label
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const CLEAR_CUSTOMER_CART = gql`
   mutation ClearCustomerCart($cartUid: String!) {
     clearCustomerCart(cartUid: $cartUid) {

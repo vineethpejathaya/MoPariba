@@ -3,7 +3,10 @@ import React, {useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {NotificationsList} from '../../../constants/NotificationsList';
-import {NotificationSettingsType} from '../../../services/interfaces/NotificationSettings.interface';
+import {
+  NotificationItem,
+  NotificationSettingsType,
+} from './NotificationSettings.types';
 
 const NotificationSettings = () => {
   const [notifications, setNotifications] = useState<NotificationSettingsType>({
@@ -18,8 +21,9 @@ const NotificationSettings = () => {
       <ScreenHeader title={'Notifications'} />
       <VStack flex={1} justifyContent={'space-between'} p={4}>
         <VStack space={3} alignItems={'center'}>
-          {NotificationsList.map(item => (
+          {NotificationsList.map((item: NotificationItem, index: number) => (
             <NotificationItem
+              key={index}
               title={item.title}
               description={item.description}
               notificationKey={item.key}
@@ -28,9 +32,7 @@ const NotificationSettings = () => {
             />
           ))}
         </VStack>
-        <Button mt={4} colorScheme="green">
-          Save settings
-        </Button>
+        <Button mt={4}>Save settings</Button>
       </VStack>
     </>
   );
