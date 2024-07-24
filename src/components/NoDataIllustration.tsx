@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   container: {
     height: Dimensions.get('screen').height - (bottomNavigatorHeight + 200),
     flex: 1,
+
     justifyContent: 'center',
     alignItems: 'center',
   },

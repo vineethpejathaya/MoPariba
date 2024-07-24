@@ -12,6 +12,10 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {Dispatch, SetStateAction} from 'react';
 import {RootStackParamList} from './src/navigations/types';
 
+const authorizationMessages = [
+  'The current user cannot perform operations on cart',
+  "The current customer isn't authorized.",
+];
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type SetIsAuthenticatedType = Dispatch<SetStateAction<boolean>>;
 const createApolloClient = (
@@ -35,8 +39,10 @@ const createApolloClient = (
 
   const errorLink = onError(({graphQLErrors, networkError}) => {
     if (graphQLErrors) {
-      graphQLErrors.forEach(({message}) => {
-        if (message === "The current customer isn't authorized.") {
+      graphQLErrors.forEach(({message, extensions}) => {
+        const statusCode = extensions?.code || extensions?.status || null;
+
+        if (authorizationMessages.includes(message)) {
           AsyncStorage.removeItem('userToken');
           setIsAuthenticated(false);
           showErrorToast(

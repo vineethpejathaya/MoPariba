@@ -5,6 +5,7 @@
     "lastname",
     "minu",
     "Navigations",
-    "Pressable"
+    "Pressable",
+    "zustand"
   ]
 }

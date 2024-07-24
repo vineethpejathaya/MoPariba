@@ -1,6 +1,6 @@
 import {Box, Image} from 'native-base';
 import Swiper from 'react-native-swiper';
-import HomeScreenStyles from '../HomeScreen.styles';
+import HomeScreenStyles from '../Home.styles';
 
 function HomeBanner({banners}: {banners: any}) {
   return (

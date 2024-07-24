@@ -6,7 +6,6 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
-import {CartProvider} from '../hooks/UseCart';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
@@ -105,9 +104,7 @@ function AppNavigator() {
         <NavigationContainer>
           <AuthProvider>
             <ApolloWrapper>
-              <CartProvider>
-                <RootNavigator />
-              </CartProvider>
+              <RootNavigator />
             </ApolloWrapper>
           </AuthProvider>
         </NavigationContainer>

@@ -7,18 +7,18 @@ import NoDataIllustration from '../../components/NoDataIllustration';
 import PressableContainer from '../../components/Pressable/PressableContainer';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {useCart} from '../../hooks/UseCart';
+import {useCartStore} from '../../hooks/UseCartStore';
 import {
   CLEAR_CUSTOMER_CART,
   GET_CUSTOMER_CART,
 } from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 import theme from '../../themes/theme';
-import CartScreenStyles from './CartScreen.styles';
+import CartScreenStyles from './Cart.styles';
 import {CartItem} from './components/CartItem';
 import CouponSection from './components/CouponSection';
 
 function CartScreen() {
-  const {cart, cartId, setCart} = useCart();
+  const {cartId, setCart, cart} = useCartStore(state => state);
   const {loading, error, data, refetch} = useQuery(GET_CUSTOMER_CART, {
     variables: {cart_id: cartId},
     onCompleted: (res: any) => {
@@ -30,9 +30,14 @@ function CartScreen() {
     clearCustomerCart,
     {loading: clearingCart, data: cartData, error: cartError},
   ] = useMutation(CLEAR_CUSTOMER_CART, {
-    onCompleted: res => {},
+    onCompleted: res => {
+      console.log(res, 'res');
+    },
+    onError: err => {
+      console.log(err, 'err');
+    },
   });
-
+  console.log(cart, 'cart');
   const handleClear = () => {
     clearCustomerCart({
       variables: {
@@ -47,9 +52,12 @@ function CartScreen() {
     0,
   );
   const total = subTotal + shippingCharges;
+
   useEffect(() => {
     refetch();
   }, []);
+
+  console.log(cart, 'cart');
 
   if (loading) {
     return <SpinnerComponent />;

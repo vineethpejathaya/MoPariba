@@ -1,3 +1,4 @@
+import {useMutation} from '@apollo/client';
 import {
   AddIcon,
   Center,
@@ -6,56 +7,111 @@ import {
   MinusIcon,
   Text,
 } from 'native-base';
-import React, {useState} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import {useCartStore} from '../hooks/UseCartStore';
+import {
+  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+  REMOVE_ITEM_FROM_CART,
+  UPDATE_CART_ITEMS,
+} from '../services/GGL-Queries/CustomerCart/Cart.queries';
 import theme from '../themes/theme';
-import PressableText from './Pressable/PressableText';
 
 interface QuantityComponentProps {
   quantity: number;
-  refetch?: () => void;
-  handleAdd?: () => void;
-  handleRemove?: () => void;
+  cartItemId?: number;
+  sku?: string;
+  parentSku?: string;
   isNative?: boolean;
 }
 
 interface QuantityBtnProps {
-  decreaseQuantity: () => void;
-  increaseQuantity: () => void;
+  removeItem: () => Promise<void>;
+  addItem: () => Promise<void>;
   quantity: number;
 }
 const QuantityButton = ({
   quantity,
-  refetch,
-  handleAdd,
-  handleRemove,
+  cartItemId,
+  parentSku,
+  sku,
   isNative = true,
 }: QuantityComponentProps) => {
-  const [qnt, setQnt] = useState(quantity);
+  const {setCart, cartId} = useCartStore();
 
-  const increaseQuantity = () => {
-    setQnt(prevQuantity => prevQuantity + 1);
-    handleAdd && handleAdd();
+  const [addToCartFn] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_CART, {
+    onCompleted: res => {
+      setCart(res?.addConfigurableProductsToCart?.cart?.items);
+    },
+  });
+
+  const [removeFromCartFn] = useMutation(REMOVE_ITEM_FROM_CART, {
+    onCompleted: res => {
+      setCart(res?.removeItemFromCart?.cart?.items);
+    },
+    onError: err => {
+      console.log(err, 'err');
+    },
+  });
+
+  const [updateCartFn] = useMutation(UPDATE_CART_ITEMS, {
+    onCompleted: res => {
+      setCart(res?.updateCartItems?.cart?.items);
+    },
+  });
+
+  const handleAddToCart = async () => {
+    addToCartFn({
+      variables: {
+        cartId: cartId,
+        cartItems: [
+          {
+            parent_sku: parentSku,
+            data: {
+              quantity: 1,
+              sku: sku,
+            },
+          },
+        ],
+      },
+    });
   };
 
-  const decreaseQuantity = () => {
-    if (qnt > 1) {
-      handleRemove && handleRemove();
-      setQnt(prevQuantity => prevQuantity - 1);
+  const handleRemoveFromCart = async () => {
+    if (quantity > 1) {
+      updateCartFn({
+        variables: {
+          cartId: cartId,
+          cartItems: [
+            {
+              cart_item_id: cartItemId,
+              quantity: Number(quantity) - 1,
+            },
+          ],
+        },
+      });
+    } else {
+      removeFromCartFn({
+        variables: {
+          cartId: cartId,
+          cartItemId: cartItemId,
+        },
+      });
     }
   };
 
   return isNative ? (
     <NativeQuantityBtn
-      decreaseQuantity={decreaseQuantity}
-      increaseQuantity={increaseQuantity}
-      quantity={qnt}
+      removeItem={handleRemoveFromCart}
+      addItem={handleAddToCart}
+      quantity={quantity}
     />
   ) : (
     <CustomQuantityBtn
-      decreaseQuantity={decreaseQuantity}
-      increaseQuantity={increaseQuantity}
-      quantity={qnt}
+      removeItem={handleRemoveFromCart}
+      addItem={handleAddToCart}
+      quantity={quantity}
     />
   );
 };
@@ -63,33 +119,25 @@ const QuantityButton = ({
 export default QuantityButton;
 
 const NativeQuantityBtn = ({
-  decreaseQuantity,
-  increaseQuantity,
+  removeItem,
+  addItem,
   quantity,
 }: QuantityBtnProps) => {
   return (
     <>
-      <HStack
-        space={4}
-        alignItems="center"
-        p={3}
-        borderWidth={1}
-        borderColor="gray.300"
-        borderRadius="md">
-        <PressableText
-          text={'-'}
-          styles={{color: theme.colors.primary[900]}}
-          onPress={decreaseQuantity}
+      <HStack style={styles.qtnContainer}>
+        <IconButton
+          icon={<FontAwesomeIcon name={'minus'} size={18} color={'green'} />}
+          onPress={removeItem}
         />
         <Center>
           <Text fontSize="md" fontWeight={'bold'} color="green.500">
             {quantity}
           </Text>
         </Center>
-        <PressableText
-          text={'+'}
-          styles={{color: theme.colors.primary[900]}}
-          onPress={increaseQuantity}
+        <IconButton
+          icon={<FontAwesomeIcon name={'plus'} size={18} color={'green'} />}
+          onPress={addItem}
         />
       </HStack>
     </>
@@ -97,15 +145,15 @@ const NativeQuantityBtn = ({
 };
 
 const CustomQuantityBtn = ({
-  decreaseQuantity,
-  increaseQuantity,
+  removeItem,
+  addItem,
   quantity,
 }: QuantityBtnProps) => {
   return (
     <>
       <HStack alignItems="center" space={3}>
         <IconButton
-          onPress={decreaseQuantity}
+          onPress={removeItem}
           style={[styles.bth]}
           icon={<MinusIcon size={3} style={{color: 'black'}} />}
         />
@@ -113,7 +161,7 @@ const CustomQuantityBtn = ({
         <Text variant={'subheader2'}>{quantity}</Text>
 
         <IconButton
-          onPress={increaseQuantity}
+          onPress={addItem}
           style={[styles.bth, styles.addBtn]}
           icon={<AddIcon size={3} color={theme.colors.white} />}
         />
@@ -123,6 +171,15 @@ const CustomQuantityBtn = ({
 };
 
 const styles = StyleSheet.create({
+  qtnContainer: {
+    gap: 4,
+    alignItems: 'center',
+    padding: 5,
+    borderWidth: 1,
+    borderColor: theme.colors.gray[300],
+    borderRadius: 10,
+  },
+  qtnBtn: {},
   bth: {
     width: 30,
     height: 30,

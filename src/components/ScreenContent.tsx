@@ -1,4 +1,4 @@
-import {Box, theme} from 'native-base';
+import {Box} from 'native-base';
 import {InterfaceBoxProps} from 'native-base/lib/typescript/components/primitives/Box';
 import {ScrollView, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 import {bottomNavigatorHeight} from '../constants/config';
@@ -12,14 +12,14 @@ function ScreenContent({containerStyles, ...rest}: ScreenContentProps) {
     paddingHorizontal: 10,
     paddingTop: 5,
     flex: 1,
-    backgroundColor: theme.colors.white,
+
     paddingBottom: bottomNavigatorHeight + 5,
   };
 
   const combinedStyles = StyleSheet.flatten([defaultStyles, containerStyles]);
   return (
     <Box style={combinedStyles}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Box {...rest}>{rest.children}</Box>
       </ScrollView>
     </Box>

@@ -7,7 +7,6 @@ import {
   HStack,
   IconButton,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from 'native-base';
@@ -17,6 +16,7 @@ import {AddressIcon, ExpandLess} from '../../../assets/icons/Icons';
 import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
+import SpinnerComponent from '../../../components/SpinnerComponent';
 import {
   GET_COUNTRIES,
   GET_CUSTOMER_ADDRESSES,
@@ -51,10 +51,8 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
   };
 
   if (loading || fetchingCountries) {
-    return <Spinner />;
+    return <SpinnerComponent onlySpinner />;
   }
-
-  console.log(addresses, 'address');
 
   return (
     <>

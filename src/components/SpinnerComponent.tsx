@@ -2,7 +2,7 @@ import {Spinner, Text, VStack} from 'native-base';
 import {quotes} from '../constants/quotes';
 import theme from '../themes/theme';
 
-function SpinnerComponent() {
+function SpinnerComponent({onlySpinner = false}: {onlySpinner?: boolean}) {
   return (
     <>
       <VStack
@@ -11,16 +11,19 @@ function SpinnerComponent() {
         alignItems={'center'}
         space={3}
         px={6}>
-        <Text
-          variant={'body2'}
-          style={{
-            textAlign: 'center',
-            fontSize: 15,
-            lineHeight: 25,
-            color: theme.colors.gray[900],
-          }}>
-          {quotes[Math.floor(Math.random() * 10)]}
-        </Text>
+        {!onlySpinner && (
+          <Text
+            variant={'body2'}
+            style={{
+              textAlign: 'center',
+              fontSize: 15,
+              lineHeight: 25,
+              color: theme.colors.gray[900],
+            }}>
+            {quotes[Math.floor(Math.random() * 10)]}
+          </Text>
+        )}
+
         <Spinner size="lg" color={theme.colors.primary[900]} />
       </VStack>
     </>

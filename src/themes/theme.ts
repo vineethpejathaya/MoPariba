@@ -250,14 +250,14 @@ const theme = extendTheme({
           },
         },
         outline: {
-          bg: 'transparent',
+          bg: 'white',
           borderColor: 'primary.900',
           borderWidth: 1,
           _text: {
             color: 'primary.900',
           },
           _pressed: {
-            bg: 'transparent',
+            bg: 'white',
             borderColor: 'secondary',
           },
           _disabled: {

@@ -1,12 +1,6 @@
-import {useMutation} from '@apollo/client';
 import {Box, Button, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
-import {useCart} from '../hooks/UseCart';
-import {
-  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-  REMOVE_ITEM_FROM_CART,
-  UPDATE_CART_ITEMS,
-} from '../services/GGL-Queries/CustomerCart/Cart.queries';
+import {useCartStore} from '../hooks/UseCartStore';
 import {getVariantFromCart, transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
 import QuantityButton from './QuantityButton';
@@ -18,11 +12,11 @@ function ProductVariant({
   variant: any;
   parentSku?: string;
 }) {
-  const {cartId, setCart, cart} = useCart();
+  const {cartId, setCart, cart} = useCartStore(state => state);
 
   let variantInCart: {id: any; quantity: any} | undefined = undefined;
   const map = transformCartItemsToMap(cart);
-  const isProductInCart = map.has(parentSku);
+
   const productInCart = map.get(parentSku);
   variantInCart = productInCart?.length
     ? getVariantFromCart(variant, productInCart)
@@ -32,85 +26,6 @@ function ProductVariant({
   const price =
     variant?.product?.price_range?.maximum_price?.final_price?.value;
   const sku = variant?.product?.sku;
-
-  const [addToCartFn, {loading, error, data}] = useMutation(
-    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.addConfigurableProductsToCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
-
-  const [updateCartFn, {loading: updating, error: updateErr}] = useMutation(
-    UPDATE_CART_ITEMS,
-    {
-      onCompleted: res => {
-        setCart(res?.updateCartItems?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
-
-  const [removeFromCartFn, {loading: removing, error: removeErr}] = useMutation(
-    REMOVE_ITEM_FROM_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.removeItemFromCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    },
-  );
-
-  const handleAdd = () => {
-    addToCartFn({
-      variables: {
-        cartId: cartId,
-        cartItems: [
-          {
-            parent_sku: parentSku,
-            data: {
-              quantity: 1,
-              sku: sku,
-            },
-          },
-        ],
-      },
-    });
-  };
-
-  const handleRemove = () => {
-    console.log(variantInCart?.quantity, 'q');
-    if (variantInCart?.quantity > 1) {
-      console.log(variantInCart?.quantity, 'quantity more than 1');
-      updateCartFn({
-        variables: {
-          cartId: cartId,
-          cartItems: [
-            {
-              cart_item_id: variantInCart?.id,
-              quantity: Number(variantInCart?.quantity) - 1,
-            },
-          ],
-        },
-      });
-    } else {
-      console.log(variantInCart?.quantity, 'less than 1');
-      removeFromCartFn({
-        variables: {
-          cartId: cartId,
-          cartItemId: Number(variantInCart?.id),
-        },
-      });
-    }
-  };
 
   return (
     <>
@@ -139,28 +54,13 @@ function ProductVariant({
           <>
             <QuantityButton
               quantity={variantInCart?.quantity ?? 0}
-              handleAdd={handleAdd}
-              handleRemove={handleRemove}
+              parentSku={parentSku}
+              sku={sku}
             />
           </>
         ) : (
           <Button
-            onPress={() => {
-              addToCartFn({
-                variables: {
-                  cartId: cartId,
-                  cartItems: [
-                    {
-                      parent_sku: parentSku,
-                      data: {
-                        quantity: 1,
-                        sku: sku,
-                      },
-                    },
-                  ],
-                },
-              });
-            }}
+            onPress={() => {}}
             variant={'ghost'}
             _text={styles.btnText}
             style={styles.btn}>

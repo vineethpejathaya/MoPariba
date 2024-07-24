@@ -10,19 +10,19 @@ import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {banners, products} from '../../constants/main';
 import {useAuth} from '../../hooks/UseAuth';
-import {useCart} from '../../hooks/UseCart';
 import {
   CREATE_CART_MUTATION,
   GET_CUSTOMER_CART,
 } from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 
+import {useCartStore} from '../../hooks/UseCartStore';
 import {GET_HOME_SCREEN_DATA} from '../../services/GGL-Queries/HomeScreen/Home.queries';
 import {GetHomeScreenDataResponse} from '../../services/GGL-Queries/HomeScreen/Home.type';
 import {
   HomeScreenProps,
   HomeScreenState,
   defaultHomeScreenState,
-} from './HomeScreen.types';
+} from './Home.types';
 import BestDeals from './components/BestDeals';
 import HomeCategoryList from './components/CategoryList';
 import HomeBanner from './components/HomeBanner';
@@ -31,7 +31,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
-  const {setCartId, setCart, cart} = useCart();
+  const {cartId, setCart, cart, setCartId} = useCartStore(state => state);
   const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
     defaultHomeScreenState,
   );
@@ -86,6 +86,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
         console.error('Error fetching data:', error);
       }
     };
+
     if (isAuthenticated) fetchData();
   }, [client]);
 
@@ -127,8 +128,10 @@ function HomeScreen({navigation}: HomeScreenProps) {
           />,
         ]}
       />
-      <ScreenContent flex={1}>
-        <VStack space={3} px={2} justifyContent={'space-between'}>
+      <ScreenContent
+        flex={1}
+        containerStyles={{backgroundColor: theme.colors.white}}>
+        <VStack space={2} px={2} justifyContent={'space-between'}>
           <Text
             variant={'subTitle2'}
             fontFamily={'Sen-Regular'}
@@ -150,6 +153,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
               </Box>
             }
           />
+
           <HomeBanner banners={banners} />
 
           {categoryItems?.length > 0 && (

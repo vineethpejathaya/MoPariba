@@ -7,8 +7,8 @@ import Swiper from 'react-native-swiper';
 import ImageComponent from '../../components/ImageComponent';
 import {Slide, slides} from '../../constants/OnBoardingSlides';
 import theme from '../../themes/theme';
-import onBoardingStyles from './OnBoardingScreen.styles';
-import {OnBoardingScreenProps} from './OnBoardingScreen.types';
+import onBoardingStyles from './OnBoarding.styles';
+import {OnBoardingScreenProps} from './OnBoarding.types';
 
 function OnboardingScreen({navigation}: OnBoardingScreenProps) {
   const swiperRef: any = useRef(null);
