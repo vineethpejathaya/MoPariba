@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   qtnContainer: {
     gap: 4,
     alignItems: 'center',
+
     backgroundColor: theme.colors.white,
     borderColor: theme.colors.gray[700],
     borderWidth: 1,
@@ -105,8 +106,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1.5,
     elevation: 3,
     width: 70,
+    height: 35,
     borderRadius: 10,
-    padding: 10,
+    paddingHorizontal: 10,
   },
 
   qtnText: {
