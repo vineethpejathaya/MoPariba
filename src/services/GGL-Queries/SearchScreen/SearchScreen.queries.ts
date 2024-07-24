@@ -16,30 +16,9 @@ export const SEARCH_PRODUCTS = gql`
       sort: $sort
     ) {
       items {
-        id
         name
-        description
-        price
+
         sku
-        short_description
-        category_uid
-      }
-      aggregations {
-        attribute_code
-        label
-        options {
-          value
-          count
-        }
-      }
-      page_info {
-        currentPage
-        totalPages
-      }
-      total_count
-      suggestions {
-        query
-        suggestion
       }
     }
   }

@@ -42,6 +42,24 @@ const searchScreenStyles = StyleSheet.create({
     objectFit: 'contain',
     zIndex: 1,
   },
+
+  dropdown: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    maxHeight: 200,
+    zIndex: 1,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+  },
 });
 
 export default searchScreenStyles;

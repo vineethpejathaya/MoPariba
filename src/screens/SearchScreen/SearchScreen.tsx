@@ -1,32 +1,62 @@
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useQuery} from '@apollo/client';
 import {Badge, Box, FlatList, HStack, Text, VStack} from 'native-base';
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
-import ImageComponent from '../../components/ImageComponent';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SearchBar from '../../components/SearchBar';
-import {
-  PopularOffer,
-  SuggestedStore,
-  recentKeywords,
-} from '../../constants/main';
-import {RootStackParamList} from '../../navigations/types';
-import theme from '../../themes/theme';
-import searchScreenStyles from './styles';
+import SpinnerComponent from '../../components/SpinnerComponent';
+import {recentKeywords} from '../../constants/main';
+import {SEARCH_PRODUCTS} from '../../services/GGL-Queries/SearchScreen/SearchScreen.queries';
+import searchScreenStyles from './SearchScreen.styles';
+import {SearchScreenProps} from './SearchScreen.type';
+import {debounce} from './service';
 
-type SearchScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Search'
->;
-type Props = {
-  navigation: SearchScreenNavigationProp;
-};
+function SearchScreen({navigation}: SearchScreenProps) {
+  const [search, setSearch] = useState('');
+  const [products, setProducts] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const {loading, error, data} = useQuery(SEARCH_PRODUCTS, {
+    variables: {search, pageSize: 20, currentPage: 1},
+    skip: !search,
+    onCompleted: res => {
+      setProducts(res?.products?.items);
+    },
+  });
 
-function SearchScreen({navigation}: Props) {
+  useEffect(() => {
+    if (data && data.products && data.products.items) {
+      setProducts(data.products.items);
+    }
+  }, [data]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => setSearch(value), 300),
+    [],
+  );
+
+  const handleSearchChange = (value: string) => {
+    debouncedSearch(value);
+    setDropdownVisible(true);
+  };
+
+  const handleFocus = () => {
+    setDropdownVisible(true);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setDropdownVisible(false), 100);
+  };
+
+  const renderDropdownItem = ({item}: any) => (
+    <TouchableOpacity onPress={() => setDropdownVisible(false)}>
+      <Text style={searchScreenStyles.dropdownItem}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
+  console.log(products, 'products');
   return (
     <>
       <ScreenHeader
@@ -56,9 +86,34 @@ function SearchScreen({navigation}: Props) {
           />,
         ]}
       />
-      <ScreenContent flex={1}>
+      <ScreenContent flex={1} containerStyles={{backgroundColor: 'white'}}>
         <VStack space={5} justifyContent={'space-between'} px={5}>
-          <SearchBar placeholder="Search dishes, restaurants" />
+          <SearchBar
+            placeholder="Search dishes, restaurants"
+            onChangeText={handleSearchChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />
+          {dropdownVisible && (
+            <>
+              {loading ? (
+                <SpinnerComponent onlySpinner />
+              ) : (
+                <>
+                  <Box style={searchScreenStyles.dropdown}>
+                    {products.length ? (
+                      <FlatList
+                        data={products}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={renderDropdownItem}
+                      />
+                    ) : null}
+                  </Box>
+                </>
+              )}
+            </>
+          )}
+
           <RecentSearchSection recentKeywords={recentKeywords} />
           {/* <SuggestedStoresSection suggestedStores={suggestedStores} /> */}
           {/* <PopularOffersSection
@@ -95,79 +150,6 @@ export const RecentSearchSection = ({
           )}
           keyExtractor={(item: any) => item}
         />
-      </VStack>
-    </>
-  );
-};
-
-export const SuggestedStoresSection = ({
-  suggestedStores,
-}: {
-  suggestedStores: SuggestedStore[];
-}) => {
-  return (
-    <>
-      <VStack space={2}>
-        <Text variant={'header2'}>Suggested Stores</Text>
-        <VStack space={3}>
-          {suggestedStores?.map((store, index: number) => (
-            <HStack key={index} style={searchScreenStyles.suggestedStoreItem}>
-              <ImageComponent
-                styles={searchScreenStyles.suggestedStoreImage}
-                source={store?.image ? store?.image : undefined}
-                alt={store.name}
-              />
-              <VStack space={2}>
-                <Text variant={'title2'}>{store?.name}</Text>
-                <HStack space={1} alignItems="center">
-                  <Icon
-                    name="star"
-                    size={15}
-                    color={theme.colors.orange[700]}
-                  />
-                  <Text variant={'title2'}>{store?.rating}</Text>
-                </HStack>
-              </VStack>
-            </HStack>
-          ))}
-        </VStack>
-      </VStack>
-    </>
-  );
-};
-
-export const PopularOffersSection = ({
-  navigation,
-  popularOffers,
-}: {
-  navigation: SearchScreenNavigationProp;
-  popularOffers: PopularOffer[];
-}) => {
-  return (
-    <>
-      <VStack space={2}>
-        <Text variant={'header2'}>Popular Offers</Text>
-        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {popularOffers?.map((offer: any, index: number) => (
-            <Box key={index} style={searchScreenStyles?.categoryContainer}>
-              <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                <VStack space={2}>
-                  <ImageComponent
-                    styles={searchScreenStyles?.categoryImage}
-                    source={offer?.image ?? undefined}
-                    alt={offer?.name}
-                    height={120}
-                    width={122}
-                  />
-                  <Text variant={'subheader2'}>{offer?.name}</Text>
-                  <HStack space={3}>
-                    <Text>{offer?.discount}</Text>
-                  </HStack>
-                </VStack>
-              </TouchableOpacity>
-            </Box>
-          ))}
-        </Box>
       </VStack>
     </>
   );
