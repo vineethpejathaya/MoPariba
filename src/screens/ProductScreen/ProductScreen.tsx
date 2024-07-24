@@ -1,7 +1,8 @@
 import {useQuery} from '@apollo/client';
 import {Badge, Box, Button, HStack, Image, Text, VStack} from 'native-base';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import FavoriteCheckbox from '../../components/FavoriteCheckBox';
+import ProductOptions from '../../components/ProductOptions';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
@@ -14,7 +15,7 @@ import {ProductScreenProps} from './ProductScreen.types';
 function ProductScreen({route, navigation}: ProductScreenProps) {
   const {productSku} = route.params;
   const [product, setProduct] = useState<any | null>(null);
-  const {loading, error, data} = useQuery(GET_PRODUCT_DETAILS, {
+  const {loading, error, data, refetch} = useQuery(GET_PRODUCT_DETAILS, {
     variables: {
       sku: productSku || null,
       pageSize: 1,
@@ -24,6 +25,10 @@ function ProductScreen({route, navigation}: ProductScreenProps) {
       setProduct(res.products.items[0]);
     },
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (loading) {
     <SpinnerComponent />;
@@ -85,16 +90,32 @@ export const ProductBrief = ({navigation, product}: any) => {
           <Text variant={'title1'} style={ProductStyles.prize}>
             {`${currency ?? ''} ${value ?? 0}`}
           </Text>
-          <HStack space={1} alignItems={'center'}>
-            <StarRating rating={product?.rating_summary ?? 0} maxRating={5} />
-            <Button
-              variant={'link'}
-              _text={{
-                color: theme.colors.gray[900],
-              }}
-              onPress={() => navigation.navigate('Reviews')}>
-              {`(${product?.review_count ?? 0} reviews)`}
-            </Button>
+          <HStack alignItems={'center'} justifyContent={'space-between'}>
+            <HStack space={1} alignItems={'center'}>
+              <StarRating rating={product?.rating_summary ?? 0} maxRating={5} />
+              <Button
+                variant={'link'}
+                _text={{
+                  color: theme.colors.gray[900],
+                }}
+                onPress={() => navigation.navigate('Reviews')}>
+                {`(${product?.review_count ?? 0} reviews)`}
+              </Button>
+            </HStack>
+            {product?.variants?.length > 0 ? (
+              <ProductOptions product={product} />
+            ) : (
+              <Button
+                variant={'outline'}
+                _text={{fontSize: 10, lineHeight: 10}}
+                style={{
+                  height: 35,
+                  width: 100,
+                  alignSelf: 'flex-end',
+                }}>
+                Add
+              </Button>
+            )}
           </HStack>
         </VStack>
       </VStack>

@@ -12,32 +12,42 @@ import {
   CLEAR_CUSTOMER_CART,
   GET_CUSTOMER_CART,
 } from '../../services/GGL-Queries/CustomerCart/Cart.queries';
+import {
+  CartItem,
+  GetCustomerCartResponse,
+} from '../../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../../themes/theme';
 import CartScreenStyles from './Cart.styles';
-import {CartItem} from './components/CartItem';
 import CouponSection from './components/CouponSection';
+import ProductInCart from './components/ProductInCart';
 
 function CartScreen() {
-  const {cartId, setCart, cart} = useCartStore(state => state);
-  const {loading, error, data, refetch} = useQuery(GET_CUSTOMER_CART, {
-    variables: {cart_id: cartId},
-    onCompleted: (res: any) => {
-      setCart(res?.cart?.items);
+  const {cartId, setCart, cartItems} = useCartStore(state => state);
+  const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
+    GET_CUSTOMER_CART,
+    {
+      variables: {cart_id: cartId},
+      onCompleted: res => {
+        setCart(res?.cart?.items);
+      },
     },
-  });
+  );
+  const shippingCharges = 0;
+  const subTotal = cartItems?.reduce(
+    (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
+    0,
+  );
+  const total = subTotal + shippingCharges;
 
-  const [
-    clearCustomerCart,
-    {loading: clearingCart, data: cartData, error: cartError},
-  ] = useMutation(CLEAR_CUSTOMER_CART, {
+  const [clearCustomerCart] = useMutation(CLEAR_CUSTOMER_CART, {
     onCompleted: res => {
-      console.log(res, 'res');
+      setCart([]);
     },
     onError: err => {
       console.log(err, 'err');
     },
   });
-  console.log(cart, 'cart');
+
   const handleClear = () => {
     clearCustomerCart({
       variables: {
@@ -46,18 +56,11 @@ function CartScreen() {
     });
   };
 
-  const shippingCharges = 0;
-  const subTotal = cart?.reduce(
-    (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
-    0,
-  );
-  const total = subTotal + shippingCharges;
-
   useEffect(() => {
     refetch();
   }, []);
 
-  console.log(cart, 'cart');
+  console.log(cartItems, 'cart');
 
   if (loading) {
     return <SpinnerComponent />;
@@ -69,7 +72,7 @@ function CartScreen() {
         hStackProps={{shadow: 3}}
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
-      {cart.length == 0 ? (
+      {cartItems.length == 0 ? (
         <NoDataIllustration
           message={
             <VStack alignItems={'center'}>
@@ -103,8 +106,8 @@ function CartScreen() {
                 <VStack height={Dimensions.get('window').height * 0.35}>
                   <ScrollView flex={1}>
                     <VStack>
-                      {cart?.map((cartItem: any, index: number) => (
-                        <CartItem key={index} cartItem={cartItem} />
+                      {cartItems?.map((cartItem: CartItem, index: number) => (
+                        <ProductInCart key={index} cartItem={cartItem} />
                       ))}
                     </VStack>
                   </ScrollView>

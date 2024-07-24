@@ -1,9 +1,10 @@
 import {HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import QuantityButton from '../../../components/QuantityButton';
+import {CartItem} from '../../../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../../../themes/theme';
 
-export const CartItem = ({cartItem}: {cartItem: any}) => {
+function ProductInCart({cartItem}: {cartItem: CartItem}) {
   const price = cartItem?.prices?.row_total_including_tax?.value;
   const parentSku = cartItem?.product?.sku;
   const sku = cartItem?.configured_variant?.sku;
@@ -13,7 +14,7 @@ export const CartItem = ({cartItem}: {cartItem: any}) => {
       <HStack alignItems="center" space={4}>
         <Image
           source={{uri: `${cartItem?.product?.image?.url}`}}
-          alt={cartItem?.product?.image?.label}
+          alt={cartItem?.product?.image?.label ?? 'Product Image'}
           size="sm"
         />
         <VStack>
@@ -35,10 +36,13 @@ export const CartItem = ({cartItem}: {cartItem: any}) => {
         quantity={cartItem?.quantity}
         parentSku={parentSku}
         sku={sku}
+        cartItemId={cartItem?.id}
       />
     </HStack>
   );
-};
+}
+
+export default ProductInCart;
 
 const styles = StyleSheet.create({
   container: {

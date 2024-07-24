@@ -1,7 +1,5 @@
-import {Box, Button, HStack, Image, Text, VStack} from 'native-base';
+import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
-import {useCartStore} from '../hooks/UseCartStore';
-import {getVariantFromCart, transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
 import QuantityButton from './QuantityButton';
 
@@ -10,18 +8,8 @@ function ProductVariant({
   parentSku,
 }: {
   variant: any;
-  parentSku?: string;
+  parentSku: string;
 }) {
-  const {cartId, setCart, cart} = useCartStore(state => state);
-
-  let variantInCart: {id: any; quantity: any} | undefined = undefined;
-  const map = transformCartItemsToMap(cart);
-
-  const productInCart = map.get(parentSku);
-  variantInCart = productInCart?.length
-    ? getVariantFromCart(variant, productInCart)
-    : undefined;
-
   const variantName = variant?.product?.name;
   const price =
     variant?.product?.price_range?.maximum_price?.final_price?.value;
@@ -50,23 +38,8 @@ function ProductVariant({
             </Text>
           </VStack>
         </HStack>
-        {variantInCart ? (
-          <>
-            <QuantityButton
-              quantity={variantInCart?.quantity ?? 0}
-              parentSku={parentSku}
-              sku={sku}
-            />
-          </>
-        ) : (
-          <Button
-            onPress={() => {}}
-            variant={'ghost'}
-            _text={styles.btnText}
-            style={styles.btn}>
-            ADD
-          </Button>
-        )}
+
+        <QuantityButton parentSku={parentSku} sku={sku} />
       </HStack>
     </>
   );
@@ -94,13 +67,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  btnText: {
-    fontSize: 14,
-    fontWeight: 700,
-  },
-  btn: {
-    height: 40,
-    width: 100,
   },
 });

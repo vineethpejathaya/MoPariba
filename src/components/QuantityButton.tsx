@@ -1,6 +1,7 @@
 import {useMutation} from '@apollo/client';
 import {
   AddIcon,
+  Button,
   Center,
   HStack,
   IconButton,
@@ -16,50 +17,63 @@ import {
   REMOVE_ITEM_FROM_CART,
   UPDATE_CART_ITEMS,
 } from '../services/GGL-Queries/CustomerCart/Cart.queries';
+import {
+  AddConfigurableProductsToCartResponse,
+  RemoveItemFromCartResponse,
+  UpdateCartItemsResponse,
+} from '../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../themes/theme';
 
 interface QuantityComponentProps {
-  quantity: number;
-  cartItemId?: number;
-  sku?: string;
-  parentSku?: string;
+  cartItemId?: string;
+  sku: string;
+  parentSku: string;
   isNative?: boolean;
 }
 
 interface QuantityBtnProps {
   removeItem: () => Promise<void>;
   addItem: () => Promise<void>;
-  quantity: number;
+  quantity?: number;
 }
+
 const QuantityButton = ({
-  quantity,
   cartItemId,
   parentSku,
   sku,
   isNative = true,
 }: QuantityComponentProps) => {
-  const {setCart, cartId} = useCartStore();
+  const {setCart, cartId, findProductInCart} = useCartStore();
+  const productInCart = findProductInCart(parentSku, sku);
+  const [addToCartFn] = useMutation<AddConfigurableProductsToCartResponse>(
+    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.addConfigurableProductsToCart?.cart?.items);
+      },
+    },
+  );
 
-  const [addToCartFn] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_CART, {
-    onCompleted: res => {
-      setCart(res?.addConfigurableProductsToCart?.cart?.items);
+  const [removeFromCartFn] = useMutation<RemoveItemFromCartResponse>(
+    REMOVE_ITEM_FROM_CART,
+    {
+      onCompleted: res => {
+        setCart(res?.removeItemFromCart?.cart?.items);
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
     },
-  });
+  );
 
-  const [removeFromCartFn] = useMutation(REMOVE_ITEM_FROM_CART, {
-    onCompleted: res => {
-      setCart(res?.removeItemFromCart?.cart?.items);
+  const [updateCartFn] = useMutation<UpdateCartItemsResponse>(
+    UPDATE_CART_ITEMS,
+    {
+      onCompleted: res => {
+        setCart(res?.updateCartItems?.cart?.items);
+      },
     },
-    onError: err => {
-      console.log(err, 'err');
-    },
-  });
-
-  const [updateCartFn] = useMutation(UPDATE_CART_ITEMS, {
-    onCompleted: res => {
-      setCart(res?.updateCartItems?.cart?.items);
-    },
-  });
+  );
 
   const handleAddToCart = async () => {
     addToCartFn({
@@ -79,14 +93,14 @@ const QuantityButton = ({
   };
 
   const handleRemoveFromCart = async () => {
-    if (quantity > 1) {
+    if (productInCart?.quantity && productInCart?.quantity > 1) {
       updateCartFn({
         variables: {
           cartId: cartId,
           cartItems: [
             {
               cart_item_id: cartItemId,
-              quantity: Number(quantity) - 1,
+              quantity: Number(productInCart?.quantity) - 1,
             },
           ],
         },
@@ -101,18 +115,34 @@ const QuantityButton = ({
     }
   };
 
-  return isNative ? (
-    <NativeQuantityBtn
-      removeItem={handleRemoveFromCart}
-      addItem={handleAddToCart}
-      quantity={quantity}
-    />
-  ) : (
-    <CustomQuantityBtn
-      removeItem={handleRemoveFromCart}
-      addItem={handleAddToCart}
-      quantity={quantity}
-    />
+  return (
+    <>
+      {productInCart ? (
+        <>
+          {isNative ? (
+            <NativeQuantityBtn
+              removeItem={handleRemoveFromCart}
+              addItem={handleAddToCart}
+              quantity={productInCart?.quantity}
+            />
+          ) : (
+            <CustomQuantityBtn
+              removeItem={handleRemoveFromCart}
+              addItem={handleAddToCart}
+              quantity={productInCart?.quantity}
+            />
+          )}
+        </>
+      ) : (
+        <Button
+          onPress={handleAddToCart}
+          variant={'ghost'}
+          _text={styles.addPlainBtnText}
+          style={styles.addPlainBtn}>
+          ADD
+        </Button>
+      )}
+    </>
   );
 };
 
@@ -127,16 +157,14 @@ const NativeQuantityBtn = ({
     <>
       <HStack style={styles.qtnContainer}>
         <IconButton
-          icon={<FontAwesomeIcon name={'minus'} size={18} color={'green'} />}
+          icon={<FontAwesomeIcon name={'minus'} size={10} color={'green'} />}
           onPress={removeItem}
         />
         <Center>
-          <Text fontSize="md" fontWeight={'bold'} color="green.500">
-            {quantity}
-          </Text>
+          <Text style={styles.addPlainBtnText}>{quantity}</Text>
         </Center>
         <IconButton
-          icon={<FontAwesomeIcon name={'plus'} size={18} color={'green'} />}
+          icon={<FontAwesomeIcon name={'plus'} size={10} color={'green'} />}
           onPress={addItem}
         />
       </HStack>
@@ -154,16 +182,16 @@ const CustomQuantityBtn = ({
       <HStack alignItems="center" space={3}>
         <IconButton
           onPress={removeItem}
-          style={[styles.bth]}
-          icon={<MinusIcon size={3} style={{color: 'black'}} />}
+          style={[styles.customBth]}
+          icon={<MinusIcon size={2} style={{color: 'black'}} />}
         />
 
         <Text variant={'subheader2'}>{quantity}</Text>
 
         <IconButton
           onPress={addItem}
-          style={[styles.bth, styles.addBtn]}
-          icon={<AddIcon size={3} color={theme.colors.white} />}
+          style={[styles.customBth, styles.addBtn]}
+          icon={<AddIcon size={2} color={theme.colors.white} />}
         />
       </HStack>
     </>
@@ -174,22 +202,31 @@ const styles = StyleSheet.create({
   qtnContainer: {
     gap: 4,
     alignItems: 'center',
-    padding: 5,
-    borderWidth: 1,
+    backgroundColor: theme.colors.white,
     borderColor: theme.colors.gray[300],
-    borderRadius: 10,
   },
-  qtnBtn: {},
-  bth: {
+
+  customBth: {
     width: 30,
     height: 30,
     borderRadius: 20,
     backgroundColor: theme.colors.gray[500],
   },
-  btnText: {
+  customBtnText: {
     color: theme.colors.black,
   },
   addBtn: {
     backgroundColor: theme.colors.primary[900],
+  },
+
+  addPlainBtnText: {
+    fontSize: 14,
+    fontFamily: 'DMSans-Bold',
+    fontWeight: 900,
+    color: theme.colors.primary[800],
+  },
+  addPlainBtn: {
+    height: 40,
+    width: 100,
   },
 });

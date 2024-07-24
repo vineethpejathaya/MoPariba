@@ -1,21 +1,22 @@
-import {Button, Text, VStack} from 'native-base';
+import {Button, Center, HStack, Text, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {useCartStore} from '../hooks/UseCartStore';
 import {transformCartItemsToMap} from '../services/utils';
 import theme from '../themes/theme';
 import ModalButton from './ModalButton';
+import PressableContainer from './Pressable/PressableContainer';
 import ProductVariant from './ProductVariant';
-import QuantityButton from './QuantityButton';
 
 function ProductOptions({product}: any) {
-  const {cart} = useCartStore(state => state);
+  const {cartItems} = useCartStore(state => state);
   const [isProductInCart, setIsProductInCart] = useState(false);
   const [quantity, setQuantity] = useState(0);
   const totalOptions = product?.variants?.length;
 
   useEffect(() => {
-    const map = transformCartItemsToMap(cart);
+    const map = transformCartItemsToMap(cartItems);
     const isProductInCart = map.has(product?.sku);
     const productInCart = map.get(product?.sku);
     const quantity = productInCart?.reduce(
@@ -24,7 +25,7 @@ function ProductOptions({product}: any) {
     );
     setQuantity(quantity);
     setIsProductInCart(isProductInCart);
-  }, [cart, quantity, isProductInCart]);
+  }, [cartItems, quantity, isProductInCart]);
 
   return (
     <>
@@ -32,12 +33,17 @@ function ProductOptions({product}: any) {
         anchor={({open}) => (
           <>
             {isProductInCart ? (
-              <VStack alignItems={'center'} space={2}>
-                <QuantityButton quantity={quantity ?? 0} />
-                <Text variant={'body2'} onPress={open}>
-                  View Options
-                </Text>
-              </VStack>
+              <PressableContainer onPress={open}>
+                <HStack style={styles.qtnContainer}>
+                  <FontAwesomeIcon name={'minus'} size={10} color={'green'} />
+
+                  <Center>
+                    <Text style={styles.qtnText}>{quantity}</Text>
+                  </Center>
+
+                  <FontAwesomeIcon name={'plus'} size={10} color={'green'} />
+                </HStack>
+              </PressableContainer>
             ) : (
               <Button
                 variant={'outline'}
@@ -85,5 +91,28 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 12,
     lineHeight: 12,
+  },
+
+  qtnContainer: {
+    gap: 4,
+    alignItems: 'center',
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.gray[700],
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.15,
+    shadowRadius: 1.5,
+    elevation: 3,
+    width: 70,
+    borderRadius: 10,
+    padding: 10,
+  },
+
+  qtnText: {
+    fontSize: 14,
+    fontFamily: 'DMSans-Bold',
+    fontWeight: 900,
+    color: theme.colors.primary[800],
   },
 });

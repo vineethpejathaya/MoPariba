@@ -31,7 +31,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
-  const {cartId, setCart, cart, setCartId} = useCartStore(state => state);
+  const {cartId, setCart, cartItems, setCartId} = useCartStore(state => state);
   const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
     defaultHomeScreenState,
   );
