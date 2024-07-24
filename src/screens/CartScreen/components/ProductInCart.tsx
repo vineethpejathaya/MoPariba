@@ -7,7 +7,7 @@ import theme from '../../../themes/theme';
 function ProductInCart({cartItem}: {cartItem: CartItem}) {
   const price = cartItem?.prices?.row_total_including_tax?.value;
   const parentSku = cartItem?.product?.sku;
-  const sku = cartItem?.configured_variant?.sku;
+  const sku = cartItem?.configured_variant?.sku ?? '';
 
   return (
     <HStack style={styles.container}>
@@ -31,13 +31,7 @@ function ProductInCart({cartItem}: {cartItem: CartItem}) {
           </Text>
         </VStack>
       </HStack>
-      <QuantityButton
-        isNative={false}
-        quantity={cartItem?.quantity}
-        parentSku={parentSku}
-        sku={sku}
-        cartItemId={cartItem?.id}
-      />
+      <QuantityButton isNative={false} parentSku={parentSku} sku={sku} />
     </HStack>
   );
 }

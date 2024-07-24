@@ -25,7 +25,6 @@ import {
 import theme from '../themes/theme';
 
 interface QuantityComponentProps {
-  cartItemId?: string;
   sku: string;
   parentSku: string;
   isNative?: boolean;
@@ -38,7 +37,6 @@ interface QuantityBtnProps {
 }
 
 const QuantityButton = ({
-  cartItemId,
   parentSku,
   sku,
   isNative = true,
@@ -99,19 +97,20 @@ const QuantityButton = ({
           cartId: cartId,
           cartItems: [
             {
-              cart_item_id: cartItemId,
+              cart_item_id: productInCart.id,
               quantity: Number(productInCart?.quantity) - 1,
             },
           ],
         },
       });
     } else {
-      removeFromCartFn({
-        variables: {
-          cartId: cartId,
-          cartItemId: cartItemId,
-        },
-      });
+      if (productInCart)
+        removeFromCartFn({
+          variables: {
+            cartId: cartId,
+            cartItemId: productInCart.id,
+          },
+        });
     }
   };
 

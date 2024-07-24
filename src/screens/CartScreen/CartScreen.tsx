@@ -60,8 +60,6 @@ function CartScreen() {
     refetch();
   }, []);
 
-  console.log(cartItems, 'cart');
-
   if (loading) {
     return <SpinnerComponent />;
   }
