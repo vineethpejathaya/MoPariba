@@ -55,7 +55,7 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
   return (
     <>
       <ScreenHeader title={categoryName} />
-      <ScreenContent px={2}>
+      <ScreenContent>
         {categoryUid ? (
           <CategoryList
             categoryItems={categoryState?.items[0].children}

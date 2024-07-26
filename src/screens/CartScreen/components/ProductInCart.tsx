@@ -1,6 +1,6 @@
 import {HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
-import QuantityButton from '../../../components/QuantityButton';
+import QuantitySelector from '../../../components/QuantitySelector';
 import {CartItem} from '../../../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../../../themes/theme';
 
@@ -31,7 +31,7 @@ function ProductInCart({cartItem}: {cartItem: CartItem}) {
           </Text>
         </VStack>
       </HStack>
-      <QuantityButton isNative={false} parentSku={parentSku} sku={sku} />
+      <QuantitySelector btnType={'custom'} parentSku={parentSku} sku={sku} />
     </HStack>
   );
 }

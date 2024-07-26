@@ -18,10 +18,13 @@ const authorizationMessages = [
 ];
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type SetIsAuthenticatedType = Dispatch<SetStateAction<boolean>>;
+type setLoading = (loading: boolean) => void;
+
 const createApolloClient = (
   showErrorToast: (description: string, title?: string) => void,
   navigation: NavigationProp,
   setIsAuthenticated: SetIsAuthenticatedType,
+  setLoading: setLoading,
 ) => {
   const httpLink = new HttpLink({
     uri: 'https://dev.mopariba.com/graphql',
@@ -59,6 +62,14 @@ const createApolloClient = (
     if (networkError) {
       navigation.navigate('NoNetwork');
     }
+  });
+
+  const loadingLink = new ApolloLink((operation, forward) => {
+    setLoading(true);
+    return forward(operation).map(response => {
+      setLoading(false);
+      return response;
+    });
   });
 
   const link = ApolloLink.from([errorLink, authLink, httpLink]);

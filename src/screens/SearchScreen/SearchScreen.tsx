@@ -86,6 +86,7 @@ function SearchScreen({navigation}: SearchScreenProps) {
           />,
         ]}
       />
+      {/* <LinearProgress /> */}
       <ScreenContent flex={1} containerStyles={{backgroundColor: 'white'}}>
         <VStack space={5} justifyContent={'space-between'} px={5}>
           <SearchBar

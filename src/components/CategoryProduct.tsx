@@ -26,12 +26,10 @@ function CategoryProduct({product}: {product: any}) {
           <VStack justifyContent={'space-between'} style={{flex: 1}}>
             <VStack space={2}>
               <ProductImage product={product} />
-              <Text variant="title1">{product?.name}</Text>
+              <Text style={styles.productText}>{product?.name}</Text>
             </VStack>
             <HStack alignItems={'center'} justifyContent={'space-between'}>
-              <Text variant="body2" style={styles.prize}>
-                ₹{price ?? 0}
-              </Text>
+              <Text style={styles.productText}>₹{price ?? 0}</Text>
 
               {product?.variants?.length > 0 ? (
                 <ProductOptions product={product} />
@@ -111,6 +109,7 @@ export const styles = StyleSheet.create({
   image: {
     objectFit: 'contain',
     aspectRatio: 1,
+    borderRadius: 15,
   },
 
   imageContainer: {
@@ -121,12 +120,15 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.15,
-    shadowRadius: 1.5,
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
     elevation: 1,
+    borderColor: theme.colors.gray[700],
   },
 
-  prize: {
-    fontSize: 12,
+  productText: {
+    fontSize: 14,
+    fontFamily: 'DMSans-Bold',
+    fontWeight: 700,
   },
 });

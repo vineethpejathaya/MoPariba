@@ -1,7 +1,7 @@
 import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import theme from '../themes/theme';
-import QuantityButton from './QuantityButton';
+import QuantitySelector from './QuantitySelector';
 
 function ProductVariant({
   variant,
@@ -39,7 +39,7 @@ function ProductVariant({
           </VStack>
         </HStack>
 
-        <QuantityButton parentSku={parentSku} sku={sku} />
+        <QuantitySelector parentSku={parentSku} sku={sku} btnType={'regular'} />
       </HStack>
     </>
   );
@@ -49,15 +49,19 @@ export default ProductVariant;
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,
     justifyContent: 'space-between',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowColor: '#848282',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.17,
+    shadowRadius: 2.54,
+    elevation: 3,
   },
   imageContainer: {
     height: 40,

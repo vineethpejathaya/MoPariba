@@ -66,9 +66,8 @@ export const CustomDialog = ({
       onClose={onClose}
       {...dialogProps}
       size="full"
-      justifyContent="flex-end"
-      bottom="0">
-      <Modal.Content maxWidth="400px" borderRadius="10px">
+      justifyContent="flex-end">
+      <Modal.Content borderTopRadius={'20px'}>
         {title && (
           <Modal.Header>
             <Text variant={'subheader1'}> {title}</Text>

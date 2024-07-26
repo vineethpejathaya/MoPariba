@@ -22,7 +22,7 @@ function ScreenHeader({
   const navigation = useNavigation();
   return (
     <HStack shadow={3} style={styles.container} {...hStackProps}>
-      <HStack space={2} alignItems="center">
+      <HStack space={2} alignItems="center" style={{flex: 1}}>
         {!disableNavigateBack && (
           <IconButton
             icon={
@@ -36,8 +36,15 @@ function ScreenHeader({
             <Box key={index}>{component}</Box>
           ))}
       </HStack>
-      {title && <Text variant={'subheader1'}>{title}</Text>}
-      <HStack space={2} alignItems="center">
+      {title && (
+        <Box style={styles.titleContainer}>
+          <Text style={styles.titleText}>{title}</Text>
+        </Box>
+      )}
+      <HStack
+        space={2}
+        alignItems="center"
+        style={{flex: 1, justifyContent: 'flex-end'}}>
         {rightActions &&
           rightActions?.map((component, index) => (
             <Box key={index}>{component}</Box>
@@ -60,5 +67,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 1,
+  },
+
+  titleContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  titleText: {
+    fontWeight: 700,
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    textAlign: 'center',
   },
 });

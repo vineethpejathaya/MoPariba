@@ -24,10 +24,14 @@ import {
 } from '../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../themes/theme';
 
+const btnTypes = Object.freeze({
+  regular: 'regular',
+  custom: 'custom',
+});
 interface QuantityComponentProps {
   sku: string;
   parentSku: string;
-  isNative?: boolean;
+  btnType: 'regular' | 'custom';
 }
 
 interface QuantityBtnProps {
@@ -36,33 +40,32 @@ interface QuantityBtnProps {
   quantity?: number;
 }
 
-const QuantityButton = ({
+const QuantitySelector = ({
   parentSku,
   sku,
-  isNative = true,
+  btnType = btnTypes.regular,
 }: QuantityComponentProps) => {
   const {setCart, cartId, findProductInCart} = useCartStore();
   const productInCart = findProductInCart(parentSku, sku);
-  const [addToCartFn] = useMutation<AddConfigurableProductsToCartResponse>(
-    ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-    {
-      onCompleted: res => {
-        setCart(res?.addConfigurableProductsToCart?.cart?.items);
+  const [addToCartFn, {loading: adding}] =
+    useMutation<AddConfigurableProductsToCartResponse>(
+      ADD_CONFIGURABLE_PRODUCTS_TO_CART,
+      {
+        onCompleted: res => {
+          setCart(res?.addConfigurableProductsToCart?.cart?.items);
+        },
       },
-    },
-  );
+    );
 
-  const [removeFromCartFn] = useMutation<RemoveItemFromCartResponse>(
-    REMOVE_ITEM_FROM_CART,
-    {
+  const [removeFromCartFn, {loading: updating}] =
+    useMutation<RemoveItemFromCartResponse>(REMOVE_ITEM_FROM_CART, {
       onCompleted: res => {
         setCart(res?.removeItemFromCart?.cart?.items);
       },
       onError: err => {
         console.log(err, 'err');
       },
-    },
-  );
+    });
 
   const [updateCartFn] = useMutation<UpdateCartItemsResponse>(
     UPDATE_CART_ITEMS,
@@ -118,7 +121,7 @@ const QuantityButton = ({
     <>
       {productInCart ? (
         <>
-          {isNative ? (
+          {btnType == btnTypes.regular ? (
             <NativeQuantityBtn
               removeItem={handleRemoveFromCart}
               addItem={handleAddToCart}
@@ -145,7 +148,7 @@ const QuantityButton = ({
   );
 };
 
-export default QuantityButton;
+export default QuantitySelector;
 
 const NativeQuantityBtn = ({
   removeItem,

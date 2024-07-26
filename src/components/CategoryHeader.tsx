@@ -13,7 +13,7 @@ export const CategoryHeader = ({
 }) => {
   return (
     <>
-      <HStack space={2}>
+      <HStack space={2} alignItems={'center'}>
         <Box style={styles.container}>
           {categoryImageUrl ? (
             <>
@@ -21,14 +21,14 @@ export const CategoryHeader = ({
                 source={{uri: `${categoryImageUrl}`}}
                 style={{width: '80%', height: '80%'}}
                 resizeMode="contain"
-                alt={''}
+                alt={title}
               />
             </>
           ) : null}
         </Box>
         <VStack>
-          <Text variant={'subheader1'}>{title}</Text>
-          <Text variant={'body2'}>{productsCount} items</Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.productCount}>{productsCount} items</Text>
         </VStack>
       </HStack>
     </>
@@ -44,5 +44,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  title: {
+    fontFamily: 'DMSans-Bold',
+    fontSize: 16,
+    fontWeight: 700,
+  },
+
+  productCount: {
+    color: theme.colors.gray[700],
+    fontSize: 12,
   },
 });
