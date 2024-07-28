@@ -15,7 +15,7 @@ import {
 import {
   CartItem,
   GetCustomerCartResponse,
-} from '../../services/GGL-Queries/CustomerCart/Cart.types';
+} from '../../services/GGL-Queries/CustomerCart/Cart.type';
 import theme from '../../themes/theme';
 import CartScreenStyles from './Cart.styles';
 import CouponSection from './components/CouponSection';

@@ -3,10 +3,12 @@ export interface ProductImage {
   label: string | null;
 }
 
+export type ProductType = 'ConfigurableProduct' | 'SimpleProduct';
 export interface Product {
+  __typename: ProductType;
   name: string;
   sku: string;
-  image: ProductImage | null;
+  image: ProductImage;
 }
 
 export interface Money {
@@ -36,8 +38,9 @@ export interface CartItemPrices {
   total_item_discount: Money;
 }
 
+export type cartItemType = 'ConfigurableCartItem' | 'SimpleCartItem';
 export interface CartItem {
-  __typename: 'ConfigurableCartItem';
+  __typename: cartItemType;
   id: string;
   uid: string;
   quantity: number;

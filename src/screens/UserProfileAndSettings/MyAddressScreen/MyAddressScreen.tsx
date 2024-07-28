@@ -26,7 +26,7 @@ import {
   GetCustomerAddressesResponse,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
-import {MYAddressScreenProps} from './MyAddress.types';
+import {MYAddressScreenProps} from './MyAddress.type';
 import AddressForm from './components/AddressForm';
 
 function MyAddressScreen({navigation}: MYAddressScreenProps) {

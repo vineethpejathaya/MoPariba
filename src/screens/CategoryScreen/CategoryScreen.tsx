@@ -1,33 +1,25 @@
 import {useQuery} from '@apollo/client';
-import {RouteProp} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {Box, Divider, HStack, Text, VStack} from 'native-base';
 import {useState} from 'react';
+import {StyleSheet} from 'react-native';
 import CategoryCard from '../../components/CategoryCard';
 import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {baseUrl} from '../../constants/config';
-import {RootStackParamList} from '../../navigations/types';
+import {GET_CATEGORIES_LIST} from '../../services/GGL-Queries/Categories/Categories.queries';
 import {
-  Categories,
   CategoryItemInterface,
-} from '../../services/GGL-Queries/HomeScreen/Home.type';
-import {GET_CATEGORIES_LIST} from '../../services/GGL-Queries/category';
+  GetCategoriesResponse,
+} from '../../services/GGL-Queries/Categories/Categories.type';
+import theme from '../../themes/theme';
+import {
+  CategoryScreenNavigationProp,
+  CategoryScreenProps,
+  CategoryState,
+} from './CategoryScreen.type';
 
-type CategoryScreenRouteProp = RouteProp<RootStackParamList, 'Category'>;
-type CategoryScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Category'
->;
-
-export type CategoryScreenProps = {
-  route: CategoryScreenRouteProp;
-  navigation: CategoryScreenNavigationProp;
-};
-
-type CategoryState = Categories | null;
 function CategoryScreen({route, navigation}: CategoryScreenProps) {
   const {
     categoryUid = null,
@@ -36,17 +28,20 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
   } = route.params || {};
   const [categoryState, setCategoryState] = useState<CategoryState>(null);
 
-  const {loading, error, data} = useQuery(GET_CATEGORIES_LIST, {
-    variables: {
-      categoryUid: categoryUid || null,
-      ...(parentId ? {parentId: [parentId]} : {parentId: 2}),
-      pageSize: 10,
-      currentPage: 1,
+  const {loading, error, data} = useQuery<GetCategoriesResponse>(
+    GET_CATEGORIES_LIST,
+    {
+      variables: {
+        categoryUid: categoryUid || null,
+        ...(parentId ? {parentId: [parentId]} : {parentId: 2}),
+        pageSize: 10,
+        currentPage: 1,
+      },
+      onCompleted: res => {
+        setCategoryState(res.categories);
+      },
     },
-    onCompleted: res => {
-      setCategoryState(res.categories);
-    },
-  });
+  );
 
   if (loading) {
     return <SpinnerComponent />;
@@ -55,34 +50,19 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
   return (
     <>
       <ScreenHeader title={categoryName} />
-      <ScreenContent>
+      <ScreenContent containerStyles={{backgroundColor: theme.colors.white}}>
         {categoryUid ? (
           <CategoryList
             categoryItems={categoryState?.items[0].children}
             navigation={navigation}
-            categoryState={categoryState}
+            categoryProductsCount={categoryState?.total_count ?? 0}
           />
         ) : (
           <>
-            <VStack space={3}>
-              {categoryState?.items?.map((category: any, index: number) => (
-                <>
-                  <HStack key={index} space={2} alignItems={'center'} mb={3}>
-                    <Text variant={'subTitle2'}>{category?.name}</Text>
-                    <Divider />
-                  </HStack>
-                  <CategoryList
-                    categoryItems={
-                      category.children_count == 0
-                        ? [category]
-                        : category.children
-                    }
-                    navigation={navigation}
-                    categoryState={categoryState}
-                  />
-                </>
-              ))}
-            </VStack>
+            <AllCategories
+              categories={categoryState?.items ?? []}
+              navigation={navigation}
+            />
           </>
         )}
       </ScreenContent>
@@ -91,14 +71,43 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
 }
 export default CategoryScreen;
 
+export const AllCategories = ({
+  categories,
+  navigation,
+}: {
+  categories: CategoryItemInterface[];
+  navigation: CategoryScreenNavigationProp;
+}) => {
+  return (
+    <>
+      <VStack space={3}>
+        {categories?.map((category: CategoryItemInterface, index: number) => (
+          <Box key={index}>
+            <HStack space={2} alignItems={'center'} mb={3}>
+              <Text style={styles.categoryTitle}>{category?.name}</Text>
+              <Divider />
+            </HStack>
+            <CategoryList
+              categoryItems={
+                category.children_count == 0 ? [category] : category.children
+              }
+              navigation={navigation}
+              categoryProductsCount={0}
+            />
+          </Box>
+        ))}
+      </VStack>
+    </>
+  );
+};
 export const CategoryList = ({
   categoryItems = [],
   navigation,
-  categoryState,
+  categoryProductsCount,
 }: {
   categoryItems?: CategoryItemInterface[];
-  navigation: any;
-  categoryState: CategoryState;
+  navigation: CategoryScreenNavigationProp;
+  categoryProductsCount: number;
 }) => {
   const handlePress = (categoryItem: CategoryItemInterface) => {
     if (categoryItem.children_count > 0) {
@@ -111,21 +120,14 @@ export const CategoryList = ({
         categoryId: categoryItem.uid,
         categoryName: categoryItem.name,
         categoryImageUrl: `${baseUrl}${categoryItem.sw_menu_icon_img}`,
-        totalProductCount: categoryState?.total_count ?? 0,
+        totalProductCount: categoryProductsCount ?? 0,
       });
     }
   };
   return (
     <>
       {categoryItems?.length ? (
-        <Box
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 5,
-            alignItems: 'flex-start',
-          }}>
+        <Box style={styles.categoryListContainer}>
           {categoryItems?.map((item: CategoryItemInterface, index: number) => (
             <CategoryCard
               key={index}
@@ -141,3 +143,19 @@ export const CategoryList = ({
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  categoryTitle: {
+    fontWeight: 700,
+    fontSize: 12,
+    fontFamily: 'DMSans-Bold',
+    textTransform: 'uppercase',
+  },
+  categoryListContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+    alignItems: 'flex-start',
+  },
+});

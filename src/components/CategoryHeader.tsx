@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
   },
 
   productCount: {
-    color: theme.colors.gray[700],
     fontSize: 12,
   },
 });

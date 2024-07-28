@@ -9,15 +9,19 @@ import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/GGL-Queries/products';
+
+import {GET_PRODUCTS_BY_CATEGORY_ID} from '../../services/GGL-Queries/Products/Product.queries';
+import {
+  GetProductsResponse,
+  Product,
+} from '../../services/GGL-Queries/Products/Product.type';
 import productListStyles from './ProductList.styles';
-import {ProductListScreenProps} from './ProductList.types';
+import {ProductListScreenProps} from './ProductList.type';
 
 function ProductListScreen({route, navigation}: ProductListScreenProps) {
   const {categoryName, categoryId, categoryImageUrl} = route.params;
   const [products, setProducts] = useState<any[] | []>([]);
-
-  const {loading, error, data, refetch} = useQuery(
+  const {loading, error, data, refetch} = useQuery<GetProductsResponse>(
     GET_PRODUCTS_BY_CATEGORY_ID,
     {
       variables: {
@@ -41,7 +45,7 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
         leftActions={[
           <CategoryHeader
             title={categoryName}
-            productsCount={data?.products?.total_count}
+            productsCount={data?.products?.total_count ?? 0}
             categoryImageUrl={categoryImageUrl}
           />,
         ]}
@@ -67,7 +71,7 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
         ) : (
           <>
             <Box style={productListStyles.productListContainer}>
-              {products?.map((product: any, index: number) => (
+              {products?.map((product: Product, index: number) => (
                 <CategoryProduct key={index} product={product} />
               ))}
             </Box>

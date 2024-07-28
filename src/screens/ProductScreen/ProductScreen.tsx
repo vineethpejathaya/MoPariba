@@ -7,7 +7,7 @@ import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import StarRating from '../../components/StarRating';
-import {GET_PRODUCT_DETAILS} from '../../services/GGL-Queries/products';
+import {GET_PRODUCT_DETAILS} from '../../services/GGL-Queries/Products/Product.queries';
 import theme from '../../themes/theme';
 import ProductStyles from './ProductScreen.styles';
 import {ProductScreenProps} from './ProductScreen.types';

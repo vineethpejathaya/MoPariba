@@ -3,7 +3,7 @@ import {FaceSavoringFood} from '../../../assets/icons/Icons';
 import CategoryItem from '../../../components/CategoryItem';
 import TitleActions from '../../../components/TitleActions';
 import {CategoryItemInterface} from '../../../services/GGL-Queries/HomeScreen/Home.type';
-import {HomeScreenNavigationProp, HomeScreenState} from '../Home.types';
+import {HomeScreenNavigationProp, HomeScreenState} from '../Home.type';
 
 function HomeCategoryList({
   navigation,

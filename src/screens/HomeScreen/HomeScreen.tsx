@@ -22,7 +22,7 @@ import {
   HomeScreenProps,
   HomeScreenState,
   defaultHomeScreenState,
-} from './Home.types';
+} from './Home.type';
 import BestDeals from './components/BestDeals';
 import HomeCategoryList from './components/CategoryList';
 import HomeBanner from './components/HomeBanner';
@@ -88,7 +88,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
     };
 
     if (isAuthenticated) fetchData();
-  }, [client]);
+  }, [client, isAuthenticated, setCart, setCartId]);
 
   const {customer, categoryItems} = homeScreenState;
 

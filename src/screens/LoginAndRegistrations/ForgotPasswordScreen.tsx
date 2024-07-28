@@ -1,7 +1,7 @@
 import {Button, VStack} from 'native-base';
 import React, {useState} from 'react';
 import TextField from '../../components/Forms/TextInput';
-import {ForgotPasswordScreenProps} from './LoginAndRegistrations.types';
+import {ForgotPasswordScreenProps} from './LoginAndRegistrations.type';
 import LoginScreenTemplate from './components/ScreenTemplate';
 
 function ForgotPasswordScreen({navigation}: ForgotPasswordScreenProps) {

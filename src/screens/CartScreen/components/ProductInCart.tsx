@@ -1,13 +1,13 @@
-import {HStack, Image, Text, VStack} from 'native-base';
+import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import QuantitySelector from '../../../components/QuantitySelector';
-import {CartItem} from '../../../services/GGL-Queries/CustomerCart/Cart.types';
+import {CartItem} from '../../../services/GGL-Queries/CustomerCart/Cart.type';
 import theme from '../../../themes/theme';
 
 function ProductInCart({cartItem}: {cartItem: CartItem}) {
   const price = cartItem?.prices?.row_total_including_tax?.value;
-  const parentSku = cartItem?.product?.sku;
-  const sku = cartItem?.configured_variant?.sku ?? '';
+  const productSku = cartItem?.product?.sku;
+  const variantSku = cartItem?.configured_variant?.sku ?? '';
 
   return (
     <HStack style={styles.container}>
@@ -31,7 +31,14 @@ function ProductInCart({cartItem}: {cartItem: CartItem}) {
           </Text>
         </VStack>
       </HStack>
-      <QuantitySelector btnType={'custom'} parentSku={parentSku} sku={sku} />
+      <Box style={styles.column}>
+        <QuantitySelector
+          btnType={'custom'}
+          productSku={productSku}
+          variantSku={variantSku}
+          productType={'ConfigurableProduct'}
+        />
+      </Box>
     </HStack>
   );
 }
@@ -47,6 +54,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: theme.colors.gray[300],
     borderBottomWidth: 1,
+  },
+  column: {
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imageContainer: {
     height: 60,

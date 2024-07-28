@@ -3,9 +3,9 @@
     "ellipsize",
     "firstname",
     "lastname",
-    "minu",
     "Navigations",
     "Pressable",
+    "razorpay",
     "zustand"
   ]
 }

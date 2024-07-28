@@ -1,7 +1,7 @@
 import {Button, HStack, Input, Text, VStack} from 'native-base';
 import React, {useRef, useState} from 'react';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {EmailVerificationScreenProps} from './LoginAndRegistrations.types';
+import {EmailVerificationScreenProps} from './LoginAndRegistrations.type';
 import LoginScreenTemplate from './components/ScreenTemplate';
 
 function EmailVerificationScreen({navigation}: EmailVerificationScreenProps) {

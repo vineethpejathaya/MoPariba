@@ -1,4 +1,3 @@
-import {useMutation} from '@apollo/client';
 import {
   AddIcon,
   Button,
@@ -6,149 +5,98 @@ import {
   HStack,
   IconButton,
   MinusIcon,
+  Spinner,
   Text,
 } from 'native-base';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import useCartActions from '../hooks/UseCartActions';
 import {useCartStore} from '../hooks/UseCartStore';
-import {
-  ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-  REMOVE_ITEM_FROM_CART,
-  UPDATE_CART_ITEMS,
-} from '../services/GGL-Queries/CustomerCart/Cart.queries';
-import {
-  AddConfigurableProductsToCartResponse,
-  RemoveItemFromCartResponse,
-  UpdateCartItemsResponse,
-} from '../services/GGL-Queries/CustomerCart/Cart.types';
 import theme from '../themes/theme';
+import PressableText from './Pressable/PressableText';
 
 const btnTypes = Object.freeze({
   regular: 'regular',
   custom: 'custom',
 });
-interface QuantityComponentProps {
-  sku: string;
-  parentSku: string;
-  btnType: 'regular' | 'custom';
-}
 
-interface QuantityBtnProps {
-  removeItem: () => Promise<void>;
-  addItem: () => Promise<void>;
-  quantity?: number;
+type ProductType = 'ConfigurableProduct' | 'SimpleProduct';
+type AddType = 'simpleAdd' | 'variantAdd';
+
+interface BaseQuantitySelectorProps {
+  productSku: string;
+  btnType: 'regular' | 'custom';
+  productType: ProductType;
+  addType?: AddType;
+  variantSku?: string;
 }
 
 const QuantitySelector = ({
-  parentSku,
-  sku,
+  productSku,
+  variantSku = '',
+  productType,
+  addType = 'simpleAdd',
   btnType = btnTypes.regular,
-}: QuantityComponentProps) => {
-  const {setCart, cartId, findProductInCart} = useCartStore();
-  const productInCart = findProductInCart(parentSku, sku);
-  const [addToCartFn, {loading: adding}] =
-    useMutation<AddConfigurableProductsToCartResponse>(
-      ADD_CONFIGURABLE_PRODUCTS_TO_CART,
-      {
-        onCompleted: res => {
-          setCart(res?.addConfigurableProductsToCart?.cart?.items);
-        },
-      },
-    );
+}: BaseQuantitySelectorProps) => {
+  const {findProductInCart} = useCartStore();
+  const [isLoading, setLoading] = useState(false);
+  const {addToCart, removeFromCart} = useCartActions();
 
-  const [removeFromCartFn, {loading: updating}] =
-    useMutation<RemoveItemFromCartResponse>(REMOVE_ITEM_FROM_CART, {
-      onCompleted: res => {
-        setCart(res?.removeItemFromCart?.cart?.items);
-      },
-      onError: err => {
-        console.log(err, 'err');
-      },
-    });
-
-  const [updateCartFn] = useMutation<UpdateCartItemsResponse>(
-    UPDATE_CART_ITEMS,
-    {
-      onCompleted: res => {
-        setCart(res?.updateCartItems?.cart?.items);
-      },
-    },
-  );
+  const productInCart = findProductInCart(productSku, variantSku);
 
   const handleAddToCart = async () => {
-    addToCartFn({
-      variables: {
-        cartId: cartId,
-        cartItems: [
-          {
-            parent_sku: parentSku,
-            data: {
-              quantity: 1,
-              sku: sku,
-            },
-          },
-        ],
-      },
-    });
+    setLoading(true);
+    await addToCart(productSku, variantSku);
+    setLoading(false);
   };
 
   const handleRemoveFromCart = async () => {
-    if (productInCart?.quantity && productInCart?.quantity > 1) {
-      updateCartFn({
-        variables: {
-          cartId: cartId,
-          cartItems: [
-            {
-              cart_item_id: productInCart.id,
-              quantity: Number(productInCart?.quantity) - 1,
-            },
-          ],
-        },
-      });
-    } else {
-      if (productInCart)
-        removeFromCartFn({
-          variables: {
-            cartId: cartId,
-            cartItemId: productInCart.id,
-          },
-        });
-    }
+    setLoading(true);
+    await removeFromCart(productSku, variantSku);
+    setLoading(false);
   };
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (productInCart) {
+    return (
+      <>
+        {btnType === btnTypes.regular ? (
+          <NativeQuantityBtn
+            removeItem={handleRemoveFromCart}
+            addItem={handleAddToCart}
+            quantity={productInCart.quantity}
+          />
+        ) : (
+          <CustomQuantityBtn
+            removeItem={handleRemoveFromCart}
+            addItem={handleAddToCart}
+            quantity={productInCart.quantity}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
-    <>
-      {productInCart ? (
-        <>
-          {btnType == btnTypes.regular ? (
-            <NativeQuantityBtn
-              removeItem={handleRemoveFromCart}
-              addItem={handleAddToCart}
-              quantity={productInCart?.quantity}
-            />
-          ) : (
-            <CustomQuantityBtn
-              removeItem={handleRemoveFromCart}
-              addItem={handleAddToCart}
-              quantity={productInCart?.quantity}
-            />
-          )}
-        </>
-      ) : (
-        <Button
-          onPress={handleAddToCart}
-          variant={'ghost'}
-          _text={styles.addPlainBtnText}
-          style={styles.addPlainBtn}>
-          ADD
-        </Button>
-      )}
-    </>
+    <ConfigurableButton
+      onPress={handleAddToCart}
+      productType={productType}
+      addType={addType}
+    />
   );
 };
 
 export default QuantitySelector;
+
+interface QuantityBtnProps {
+  removeItem: () => Promise<void>;
+  addItem: () => Promise<void>;
+  quantity: number;
+}
 
 const NativeQuantityBtn = ({
   removeItem,
@@ -158,17 +106,19 @@ const NativeQuantityBtn = ({
   return (
     <>
       <HStack style={styles.qtnContainer}>
-        <IconButton
-          icon={<FontAwesomeIcon name={'minus'} size={10} color={'green'} />}
-          onPress={removeItem}
-        />
-        <Center>
-          <Text style={styles.addPlainBtnText}>{quantity}</Text>
-        </Center>
-        <IconButton
-          icon={<FontAwesomeIcon name={'plus'} size={10} color={'green'} />}
-          onPress={addItem}
-        />
+        <>
+          <IconButton
+            icon={<FontAwesomeIcon name={'minus'} size={10} color={'green'} />}
+            onPress={removeItem}
+          />
+          <Center>
+            <Text style={styles.addPlainBtnText}>{quantity}</Text>
+          </Center>
+          <IconButton
+            icon={<FontAwesomeIcon name={'plus'} size={10} color={'green'} />}
+            onPress={addItem}
+          />
+        </>
       </HStack>
     </>
   );
@@ -185,7 +135,7 @@ const CustomQuantityBtn = ({
         <IconButton
           onPress={removeItem}
           style={[styles.customBth]}
-          icon={<MinusIcon size={2} style={{color: 'black'}} />}
+          icon={<MinusIcon size={3} style={{color: 'black'}} />}
         />
 
         <Text variant={'subheader2'}>{quantity}</Text>
@@ -193,16 +143,49 @@ const CustomQuantityBtn = ({
         <IconButton
           onPress={addItem}
           style={[styles.customBth, styles.addBtn]}
-          icon={<AddIcon size={2} color={theme.colors.white} />}
+          icon={<AddIcon size={3} color={theme.colors.white} />}
         />
       </HStack>
     </>
   );
 };
 
+interface ConfigurableButtonProps {
+  onPress: () => void;
+  productType: 'ConfigurableProduct' | 'SimpleProduct';
+  addType?: 'simpleAdd' | 'variantAdd';
+}
+
+const ConfigurableButton = ({
+  onPress,
+  productType,
+  addType = 'variantAdd',
+}: ConfigurableButtonProps) => {
+  if (addType === 'variantAdd' && productType === 'ConfigurableProduct') {
+    return (
+      <PressableText
+        onPress={onPress}
+        text={'ADD'}
+        styles={styles.addPlainBtnText}
+      />
+    );
+  }
+
+  return (
+    <Button
+      variant={'outline'}
+      _text={{fontSize: 10, lineHeight: 10}}
+      style={styles.btn}
+      onPress={onPress}>
+      Add
+    </Button>
+  );
+};
+
 const styles = StyleSheet.create({
   qtnContainer: {
     gap: 4,
+    maxWidth: 100,
     alignItems: 'center',
     backgroundColor: theme.colors.white,
     borderColor: theme.colors.gray[300],
@@ -214,9 +197,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: theme.colors.gray[500],
   },
-  customBtnText: {
-    color: theme.colors.black,
-  },
+
   addBtn: {
     backgroundColor: theme.colors.primary[900],
   },
@@ -225,10 +206,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'DMSans-Bold',
     fontWeight: 900,
-    color: theme.colors.primary[800],
+    color: theme.colors.primary[900],
   },
-  addPlainBtn: {
-    height: 40,
+
+  btn: {
+    height: 35,
     width: 100,
+    padding: 1,
+    borderColor: theme.colors.gray[700],
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  btnText: {
+    fontSize: 14,
+    lineHeight: 14,
+    fontFamily: 'DMSans-Bold',
+    color: theme.colors.primary[900],
   },
 });

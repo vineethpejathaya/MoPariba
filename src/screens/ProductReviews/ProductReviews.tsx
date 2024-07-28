@@ -12,7 +12,7 @@ import {Dimensions, StyleSheet} from 'react-native';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenHeader from '../../components/ScreenHeader';
 import StarRating from '../../components/StarRating';
-import {ProductReviewScreenProps, Review} from './ProductReviews.types';
+import {ProductReviewScreenProps, Review} from './ProductReviews.type';
 
 const reviews: Review[] = [
   {

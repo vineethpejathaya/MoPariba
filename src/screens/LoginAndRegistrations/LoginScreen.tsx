@@ -15,7 +15,7 @@ import {
   LoginFormData,
   LoginScreenNavigationProp,
   defaultLoginFormState,
-} from './LoginAndRegistrations.types';
+} from './LoginAndRegistrations.type';
 import LoginScreenTemplate from './components/ScreenTemplate';
 import SocialMediaList from './components/SocialMediaList';
 

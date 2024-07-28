@@ -1,16 +1,21 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {Badge, Box, Button, HStack, Image, Text, VStack} from 'native-base';
+import {Badge, Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import {RootStackParamList} from '../navigations/types';
+import {
+  Product,
+  ProductImage,
+} from '../services/GGL-Queries/Products/Product.type';
 import theme from '../themes/theme';
 import FavoriteCheckbox from './FavoriteCheckBox';
 import PressableContainer from './Pressable/PressableContainer';
 import ProductOptions from './ProductOptions';
+import QuantitySelector from './QuantitySelector';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-function CategoryProduct({product}: {product: any}) {
+function CategoryProduct({product}: {product: Product}) {
   const navigation = useNavigation<NavigationProp>();
   const price = product?.price_range?.maximum_price?.final_price?.value;
   return (
@@ -25,7 +30,7 @@ function CategoryProduct({product}: {product: any}) {
         <Box style={styles.container}>
           <VStack justifyContent={'space-between'} style={{flex: 1}}>
             <VStack space={2}>
-              <ProductImage product={product} />
+              <ProductImageComponent productImage={product.image} />
               <Text style={styles.productText}>{product?.name}</Text>
             </VStack>
             <HStack alignItems={'center'} justifyContent={'space-between'}>
@@ -34,16 +39,12 @@ function CategoryProduct({product}: {product: any}) {
               {product?.variants?.length > 0 ? (
                 <ProductOptions product={product} />
               ) : (
-                <Button
-                  variant={'outline'}
-                  _text={{fontSize: 10, lineHeight: 10}}
-                  style={{
-                    height: 35,
-                    width: 100,
-                    alignSelf: 'flex-end',
-                  }}>
-                  Add
-                </Button>
+                <QuantitySelector
+                  productSku={product.sku}
+                  productType={'SimpleProduct'}
+                  btnType={'regular'}
+                  addType={'simpleAdd'}
+                />
               )}
             </HStack>
           </VStack>
@@ -55,7 +56,11 @@ function CategoryProduct({product}: {product: any}) {
 
 export default CategoryProduct;
 
-const ProductImage = ({product}: {product: any}) => {
+const ProductImageComponent = ({
+  productImage,
+}: {
+  productImage: ProductImage;
+}) => {
   return (
     <Box style={styles.imageContainer}>
       <Badge style={styles.discount} _text={styles.discText}>
@@ -63,8 +68,8 @@ const ProductImage = ({product}: {product: any}) => {
       </Badge>
       <Image
         style={styles.image}
-        source={{uri: product?.image?.url}}
-        alt={product?.image?.label}
+        source={{uri: productImage?.url}}
+        alt={productImage?.label}
       />
       <Badge style={styles.fav}>
         <FavoriteCheckbox iconSize={20} />
@@ -130,5 +135,24 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'DMSans-Bold',
     fontWeight: 700,
+  },
+
+  modalTitle: {
+    fontFamily: 'DMSans-Bold',
+    fontWeight: 700,
+    fontSize: 18,
+  },
+
+  confirmContainer: {
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary[800],
+  },
+  confirmText: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: theme.colors.white,
   },
 });

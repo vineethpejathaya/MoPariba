@@ -18,7 +18,7 @@ function ProductVariant({
   return (
     <>
       <HStack style={styles.container}>
-        <HStack alignItems={'center'} space={2}>
+        <HStack space={2} alignItems={'center'}>
           <Box style={styles.imageContainer}>
             {variant?.product?.image?.url && (
               <Image
@@ -29,6 +29,7 @@ function ProductVariant({
               />
             )}
           </Box>
+
           <VStack>
             <Text variant="body2" fontSize={'sm'}>
               {variantName ?? '--'}
@@ -39,7 +40,15 @@ function ProductVariant({
           </VStack>
         </HStack>
 
-        <QuantitySelector parentSku={parentSku} sku={sku} btnType={'regular'} />
+        <Box style={styles.column}>
+          <QuantitySelector
+            productSku={parentSku}
+            variantSku={sku}
+            btnType={'regular'}
+            productType={'ConfigurableProduct'}
+            addType={'variantAdd'}
+          />
+        </Box>
       </HStack>
     </>
   );
@@ -62,6 +71,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.17,
     shadowRadius: 2.54,
     elevation: 3,
+  },
+
+  column: {
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imageContainer: {
     height: 40,

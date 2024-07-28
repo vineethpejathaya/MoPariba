@@ -14,7 +14,7 @@ import {
   ShowPasswordState,
   SignUpNavigationProp,
   SignUpScreenProps,
-} from './LoginAndRegistrations.types';
+} from './LoginAndRegistrations.type';
 import LoginScreenTemplate from './components/ScreenTemplate';
 
 const fields: Field[] = [

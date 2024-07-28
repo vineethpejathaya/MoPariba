@@ -77,6 +77,7 @@ export const GET_CUSTOMER_CART = gql`
       id
       is_virtual
       items {
+        __typename
         id
         uid
         quantity
@@ -174,6 +175,7 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
     ) {
       cart {
         items {
+          __typename
           id
           uid
           quantity
@@ -249,6 +251,7 @@ export const REMOVE_ITEM_FROM_CART = gql`
     removeItemFromCart(input: {cart_id: $cartId, cart_item_id: $cartItemId}) {
       cart {
         items {
+          __typename
           id
           uid
           quantity
@@ -327,6 +330,7 @@ export const UPDATE_CART_ITEMS = gql`
     updateCartItems(input: {cart_id: $cartId, cart_items: $cartItems}) {
       cart {
         items {
+          __typename
           id
           uid
           quantity

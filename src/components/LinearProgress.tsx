@@ -12,7 +12,7 @@ const LinearProgress = () => {
         toValue: 1,
         duration: 1500,
         easing: Easing.linear,
-        useNativeDriver: false, // We can't use native driver for width animation
+        useNativeDriver: false,
       }).start(() => animate());
     };
 

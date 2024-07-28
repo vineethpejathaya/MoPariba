@@ -6,7 +6,7 @@ import {NotificationsList} from '../../../constants/NotificationsList';
 import {
   NotificationItem,
   NotificationSettingsType,
-} from './NotificationSettings.types';
+} from './NotificationSettings.type';
 
 const NotificationSettings = () => {
   const [notifications, setNotifications] = useState<NotificationSettingsType>({

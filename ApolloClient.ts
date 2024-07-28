@@ -64,8 +64,10 @@ const createApolloClient = (
     }
   });
 
-  const loadingLink = new ApolloLink((operation, forward) => {
+  const requestLink = new ApolloLink((operation, forward) => {
+    // Update the state to indicate loading has started
     setLoading(true);
+
     return forward(operation).map(response => {
       setLoading(false);
       return response;

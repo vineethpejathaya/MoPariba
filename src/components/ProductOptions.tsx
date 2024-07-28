@@ -6,36 +6,32 @@ import {
   Text,
   VStack,
 } from 'native-base';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {useCartStore} from '../hooks/UseCartStore';
-import {useNetworkStore} from '../hooks/UseNetwork';
-import {transformCartItemsToMap} from '../services/utils';
+import {Product} from '../services/GGL-Queries/Products/Product.type';
 import theme from '../themes/theme';
-import LinearProgress from './LinearProgress';
 import ModalButton from './ModalButton';
 import PressableContainer from './Pressable/PressableContainer';
 import ProductVariant from './ProductVariant';
 
-function ProductOptions({product}: any) {
-  const {isLoading} = useNetworkStore();
-  const {cartItems} = useCartStore(state => state);
-  const [isProductInCart, setIsProductInCart] = useState(false);
-  const [quantity, setQuantity] = useState(0);
-  const totalOptions = product?.variants?.length;
+function ProductOptions({product}: {product: Product}) {
+  const {cartItems, findByProductSku, checkProductExists} = useCartStore(
+    state => state,
+  );
+  const isProductInCart = checkProductExists(product?.sku);
+  const productListByProductSku = findByProductSku(product.sku);
+  const totalSelectedPrice = productListByProductSku?.reduce(
+    (acc, curr) => curr.totalPrice + acc,
+    0,
+  );
+  const quantity = productListByProductSku?.reduce(
+    (acc: any, curr: any) => curr?.quantity + acc,
+    0,
+  );
 
-  useEffect(() => {
-    const map = transformCartItemsToMap(cartItems);
-    const isProductInCart = map.has(product?.sku);
-    const productInCart = map.get(product?.sku);
-    const quantity = productInCart?.reduce(
-      (acc: any, curr: any) => curr?.quantity + acc,
-      0,
-    );
-    setQuantity(quantity);
-    setIsProductInCart(isProductInCart);
-  }, [cartItems, quantity, isProductInCart]);
+  const totalOptions = product?.variants?.length;
 
   return (
     <>
@@ -70,7 +66,7 @@ function ProductOptions({product}: any) {
           <>
             <VStack space={3} padding={1}>
               <Text style={styles.modalTitle}>{product?.name}</Text>
-              {isLoading && <LinearProgress />}
+
               {product?.variants?.map((variant: any, index: number) => (
                 <ProductVariant
                   key={index}
@@ -80,7 +76,9 @@ function ProductOptions({product}: any) {
               ))}
               <PressableContainer onPress={close}>
                 <HStack style={styles.confirmContainer}>
-                  <Text style={styles.confirmText}>Item total: ₹{0}</Text>
+                  <Text style={styles.confirmText}>
+                    Item total: ₹ {totalSelectedPrice ?? 0}
+                  </Text>
                   <Text style={styles.confirmText}>Confirm</Text>
                 </HStack>
               </PressableContainer>
@@ -146,6 +144,7 @@ const styles = StyleSheet.create({
   confirmContainer: {
     borderRadius: 10,
     padding: 10,
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: theme.colors.primary[800],

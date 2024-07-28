@@ -8,7 +8,7 @@ import ImageComponent from '../../components/ImageComponent';
 import {Slide, slides} from '../../constants/OnBoardingSlides';
 import theme from '../../themes/theme';
 import onBoardingStyles from './OnBoarding.styles';
-import {OnBoardingScreenProps} from './OnBoarding.types';
+import {OnBoardingScreenProps} from './OnBoarding.type';
 
 function OnboardingScreen({navigation}: OnBoardingScreenProps) {
   const swiperRef: any = useRef(null);

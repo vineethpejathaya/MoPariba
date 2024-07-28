@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Avatar, Box, Center, FlatList, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
-import {Dimensions} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {
   FavoriteIcon,
   LocationIcon,
@@ -15,7 +15,7 @@ import CustomIconButton from '../../components/Buttons/IconButton';
 import NavigationItem from '../../components/NavigationItem';
 import {useAuth} from '../../hooks/UseAuth';
 import {RootStackParamList} from '../../navigations/types';
-import {Customer} from '../../services/ggl-queries/HomeScreen/Home.type';
+import {Customer} from '../../services/GGL-Queries/HomeScreen/Home.type';
 import {GetInitialLetterOfString} from '../../services/utils';
 import theme from '../../themes/theme';
 
@@ -109,17 +109,9 @@ function ProfileScreen({navigation}: Props) {
 
   return (
     <>
-      <Center style={{height: Dimensions.get('window').height * 0.2}}>
-        <Box
-          style={{
-            position: 'absolute',
-            bottom: -Dimensions.get('window').height * 0.2 * 0.5,
-            zIndex: 1,
-          }}>
-          <Avatar
-            _text={{fontSize: 25, lineHeight: 27, textTransform: 'uppercase'}}
-            size="2xl"
-            bg="gray.700">
+      <Center style={styles.topSection}>
+        <Box style={styles.avatarContainer}>
+          <Avatar _text={styles.avatarText} style={styles.avatar} size="2xl">
             {GetInitialLetterOfString(
               [customer.firstname, customer.lastname].join(' '),
             )}
@@ -127,18 +119,14 @@ function ProfileScreen({navigation}: Props) {
           <CustomIconButton
             iconName="photo-camera"
             size={14}
-            BtnStyles={{
-              position: 'relative',
-              bottom: 30,
-              right: -80,
-            }}
+            BtnStyles={styles.cameraIcon}
           />
         </Box>
       </Center>
-      <Box flex={1} px={10} style={{backgroundColor: theme.colors.gray[300]}}>
-        <VStack mt={20} space={2}>
+      <Box style={styles.container}>
+        <VStack space={2}>
           <VStack alignItems={'center'}>
-            <Text variant={'title1'} style={{textTransform: 'capitalize'}}>
+            <Text style={styles.userName}>
               {customer?.firstname ?? 'Guest'} {customer?.lastname ?? ''}
             </Text>
             <Text variant={'label1'}>{customer?.email ?? '--'}</Text>
@@ -164,3 +152,44 @@ function ProfileScreen({navigation}: Props) {
 }
 
 export default ProfileScreen;
+
+const styles = StyleSheet.create({
+  topSection: {
+    height: Dimensions.get('window').height * 0.2,
+    backgroundColor: theme.colors.white,
+    zIndex: 1,
+  },
+  avatarContainer: {
+    position: 'absolute',
+    bottom: -Dimensions.get('window').height * 0.2 * 0.5,
+    zIndex: 10,
+  },
+  avatar: {
+    backgroundColor: theme.colors.gray[700],
+  },
+  avatarText: {
+    fontSize: 25,
+    lineHeight: 27,
+    textTransform: 'uppercase',
+  },
+
+  cameraIcon: {
+    position: 'relative',
+    bottom: 30,
+    right: -80,
+    zIndex: 1,
+  },
+
+  container: {
+    paddingTop: 60,
+    flex: 1,
+    paddingHorizontal: 34,
+    backgroundColor: theme.colors.gray[300],
+  },
+  userName: {
+    fontSize: 15,
+    fontWeight: 700,
+    fontFamily: 'Poppins-Bold',
+    textTransform: 'capitalize',
+  },
+});

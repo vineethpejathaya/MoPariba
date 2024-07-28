@@ -31,7 +31,11 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
     <TouchableOpacity onPress={onPress}>
       <Box flexDirection="row" alignItems="center" paddingY={4} paddingX={2}>
         {renderIcon()}
-        <Text variant="subTitle1" style={{marginLeft: 10}}>
+        <Text
+          fontFamily={'Poppins-Bold'}
+          fontWeight={700}
+          fontSize={'md'}
+          style={{marginLeft: 10}}>
           {label}
         </Text>
         <Icon

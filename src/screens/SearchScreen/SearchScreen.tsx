@@ -56,7 +56,6 @@ function SearchScreen({navigation}: SearchScreenProps) {
     </TouchableOpacity>
   );
 
-  console.log(products, 'products');
   return (
     <>
       <ScreenHeader
