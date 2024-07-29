@@ -62,11 +62,10 @@ function ProductOptions({product}: {product: Product}) {
             )}
           </>
         )}
+        title={product.name ?? ''}
         content={({close}) => (
           <>
             <VStack space={3} padding={1}>
-              <Text style={styles.modalTitle}>{product?.name}</Text>
-
               {product?.variants?.map((variant: any, index: number) => (
                 <ProductVariant
                   key={index}
@@ -133,12 +132,6 @@ const styles = StyleSheet.create({
     fontFamily: 'DMSans-Bold',
     fontWeight: 900,
     color: theme.colors.primary[900],
-  },
-
-  modalTitle: {
-    fontFamily: 'DMSans-Bold',
-    fontWeight: 700,
-    fontSize: 18,
   },
 
   confirmContainer: {

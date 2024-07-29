@@ -6,6 +6,8 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
+import AddressSelection from '../screens/CartAndPaymentsScreen/AddressSelection/AddressSelection';
+import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
@@ -76,6 +78,11 @@ function RootNavigator() {
             <Stack.Screen name="Reviews" component={ReviewsScreen} />
             <Stack.Screen name="NoNetwork" component={NoNetworkScreen} />
             <Stack.Screen name="AddressScreen" component={MyAddressScreen} />
+            <Stack.Screen
+              name="AddressSelection"
+              component={AddressSelection}
+            />
+            <Stack.Screen name="OrderConfirm" component={OrderConfirm} />
           </>
         ) : (
           <>

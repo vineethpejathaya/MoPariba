@@ -1,6 +1,6 @@
 import {Box, Text} from 'native-base';
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {StyleProp, StyleSheet, TouchableOpacity, ViewStyle} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../themes/theme';
 
@@ -9,6 +9,7 @@ interface NavigationItemProps {
   svgIcon?: React.ReactElement;
   label: string;
   onPress: () => void;
+  containerStyles?: StyleProp<ViewStyle>;
 }
 
 const NavigationItem: React.FC<NavigationItemProps> = ({
@@ -16,6 +17,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   svgIcon,
   label,
   onPress,
+  containerStyles,
 }) => {
   const renderIcon = () => {
     if (svgIcon) {
@@ -27,9 +29,14 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
     return null;
   };
 
+  const combinedStyles = StyleSheet.flatten([
+    styles.container,
+    containerStyles,
+  ]);
+
   return (
     <TouchableOpacity onPress={onPress}>
-      <Box flexDirection="row" alignItems="center" paddingY={4} paddingX={2}>
+      <Box style={combinedStyles}>
         {renderIcon()}
         <Text
           fontFamily={'Poppins-Bold'}
@@ -50,3 +57,12 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
 };
 
 export default NavigationItem;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 2,
+  },
+});

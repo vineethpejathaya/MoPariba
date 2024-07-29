@@ -6,6 +6,19 @@ export type MyAddressScreenNavigationProp = NativeStackNavigationProp<
   'MyAddress'
 >;
 
-export type MYAddressScreenProps = {
+export type MyAddressScreenProps = {
   navigation: MyAddressScreenNavigationProp;
+};
+
+export type AddressState = {
+  name: string;
+  firstname: string;
+  lastname: string;
+  street: string;
+  city: string;
+  postcode: string;
+  country_code: string;
+  default_billing: boolean;
+  telephone: string;
+  region_id: number | null;
 };

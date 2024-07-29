@@ -147,24 +147,6 @@ export const GET_CUSTOMER_CART = gql`
   }
 `;
 
-// billing_address {
-//   city
-//   company
-//   country {
-//     code
-//     label
-//   }
-//   firstname
-//   lastname
-//   postcode
-//   region {
-//     code
-//     label
-//   }
-//   street
-//   telephone
-// }
-
 export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
   mutation AddConfigurableProductsToCart(
     $cartId: String!

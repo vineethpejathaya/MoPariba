@@ -1,27 +1,30 @@
 import {useMutation, useQuery} from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
 import {Button, Divider, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useEffect} from 'react';
 import {Dimensions} from 'react-native';
-import {CartBag, DeleteIcon} from '../../assets/icons/Icons';
-import NoDataIllustration from '../../components/NoDataIllustration';
-import PressableContainer from '../../components/Pressable/PressableContainer';
-import ScreenHeader from '../../components/ScreenHeader';
-import SpinnerComponent from '../../components/SpinnerComponent';
-import {useCartStore} from '../../hooks/UseCartStore';
+import {CartBag, DeleteIcon} from '../../../assets/icons/Icons';
+import NoDataIllustration from '../../../components/NoDataIllustration';
+import PressableContainer from '../../../components/Pressable/PressableContainer';
+import ScreenHeader from '../../../components/ScreenHeader';
+import SpinnerComponent from '../../../components/SpinnerComponent';
+import {useCartStore} from '../../../hooks/UseCartStore';
+import {NavigationProp} from '../../../navigations/types';
 import {
   CLEAR_CUSTOMER_CART,
   GET_CUSTOMER_CART,
-} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
+} from '../../../services/GGL-Queries/CustomerCart/Cart.queries';
 import {
   CartItem,
   GetCustomerCartResponse,
-} from '../../services/GGL-Queries/CustomerCart/Cart.type';
-import theme from '../../themes/theme';
-import CartScreenStyles from './Cart.styles';
-import CouponSection from './components/CouponSection';
-import ProductInCart from './components/ProductInCart';
+} from '../../../services/GGL-Queries/CustomerCart/Cart.type';
+import theme from '../../../themes/theme';
+import CartScreenStyles from '../Cart.styles';
+import CouponSection from '../components/CouponSection';
+import ProductInCart from '../components/ProductInCart';
 
 function CartScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const {cartId, setCart, cartItems} = useCartStore(state => state);
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
@@ -33,6 +36,7 @@ function CartScreen() {
     },
   );
   const shippingCharges = 0;
+  const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
   const subTotal = cartItems?.reduce(
     (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
     0,
@@ -118,7 +122,10 @@ function CartScreen() {
               total={total}
               shippingCharges={shippingCharges}
             />
-            <Button mx={5}>Proceed to pay</Button>
+            <Button
+              onPress={() => navigation.navigate('AddressSelection')}
+              _text={{fontSize: 15}}
+              mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button>
           </VStack>
         </>
       )}

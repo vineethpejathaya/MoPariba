@@ -237,7 +237,7 @@ const theme = extendTheme({
           _text: {
             fontFamily: 'Sen-Bold',
             color: 'white',
-            fontSize: 18,
+            fontSize: 28,
             fontWeight: 700,
           },
           _pressed: {

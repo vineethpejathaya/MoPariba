@@ -19,46 +19,47 @@ import {
   UPDATE_CUSTOMER_ADDRESS,
 } from '../../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
+  Country,
+  CustomerAddress,
   UpdateCustomerAddressResponse,
   UpdateCustomerAddressVariables,
 } from '../../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import {AddressState} from '../MyAddress.type';
 
 function AddressForm({
   address,
   countries,
-  formType,
   close,
 }: {
-  address?: any;
-  countries: any[];
-  formType: 'Add' | 'Edit';
+  address?: CustomerAddress;
+  countries: Country[];
   close?: () => void;
 }) {
-  const [userAddress, setUserAddress] = useState({
+  const [userAddress, setUserAddress] = useState<AddressState>({
     name: '',
     firstname: '',
     lastname: '',
     street: '',
-    city: address?.city,
+    city: '',
     postcode: '',
     country_code: '',
     default_billing: false,
     telephone: '',
-    region_id: '',
+    region_id: null,
   });
 
   useEffect(() => {
     setUserAddress({
-      name: address?.firstname + address?.lastname ?? '',
-      firstname: address?.firstname,
-      lastname: address?.lastname,
-      street: address?.street.join(','),
-      city: address?.city,
-      postcode: address?.postcode,
-      country_code: address?.country_code,
-      default_billing: address?.default_billing,
-      telephone: address?.telephone,
-      region_id: address?.region?.region_id,
+      name: address?.firstname ?? '' + address?.lastname ?? '',
+      firstname: address?.firstname ?? '',
+      lastname: address?.lastname ?? '',
+      street: address?.street.join(',') ?? '',
+      city: address?.city ?? '',
+      postcode: address?.postcode ?? '',
+      country_code: address?.country_code ?? '',
+      default_billing: address?.default_billing ?? false,
+      telephone: address?.telephone ?? '',
+      region_id: address?.region?.region_id ?? null,
     });
   }, [address]);
 
@@ -99,6 +100,7 @@ function AddressForm({
         (region: any) => region.id == userAddress?.region_id,
       );
 
+    if (!region) return;
     const input = {
       region: {
         region_id: region?.id,
@@ -115,17 +117,17 @@ function AddressForm({
       default_shipping: userAddress.default_billing,
       default_billing: userAddress.default_billing,
     };
-    if (formType == 'Add') {
-      createCustomerAddress({
+    if (address?.id) {
+      updateCustomerAddress({
         variables: {
-          input,
+          id: address?.id,
+          input: input,
         },
       });
     } else {
-      updateCustomerAddress({
+      createCustomerAddress({
         variables: {
-          id: address.id,
-          input: input,
+          input,
         },
       });
     }
@@ -219,7 +221,7 @@ function AddressForm({
               <Select
                 height={38}
                 size={'md'}
-                selectedValue={userAddress?.region_id}
+                selectedValue={userAddress?.region_id?.toString() ?? undefined}
                 placeholder="Region"
                 onValueChange={(itemValue: any) => {
                   setUserAddress((prev: any) => ({

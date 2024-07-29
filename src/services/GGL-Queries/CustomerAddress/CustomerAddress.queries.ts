@@ -20,7 +20,6 @@ export const GET_COUNTRIES = gql`
 export const GET_CUSTOMER_ADDRESSES = gql`
   query GetCustomerAddresses {
     customer {
-      id
       firstname
       lastname
       email

@@ -1,5 +1,6 @@
 import {Box, Modal, Text} from 'native-base';
 import {ReactNode, useState} from 'react';
+import {StyleSheet} from 'react-native';
 
 const SCROLLBAR_DARK = {};
 interface ModalButtonProps {
@@ -68,11 +69,7 @@ export const CustomDialog = ({
       size="full"
       justifyContent="flex-end">
       <Modal.Content borderTopRadius={'20px'}>
-        {title && (
-          <Modal.Header>
-            <Text variant={'subheader1'}> {title}</Text>
-          </Modal.Header>
-        )}
+        {title && <Text style={styles.modalTitle}> {title}</Text>}
         <Modal.Body>
           <StyledDialogContent>{content({close: onClose})}</StyledDialogContent>
         </Modal.Body>
@@ -86,3 +83,13 @@ const StyledDialogContent = ({children}: {children: ReactNode}) => (
     {children}
   </Box>
 );
+
+const styles = StyleSheet.create({
+  modalTitle: {
+    fontFamily: 'DMSans-Bold',
+    fontWeight: 700,
+    padding: 15,
+    paddingTop: 25,
+    fontSize: 18,
+  },
+});

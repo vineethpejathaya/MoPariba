@@ -1,8 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {Badge, Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
-import {RootStackParamList} from '../navigations/types';
+import {NavigationProp} from '../navigations/types';
 import {
   Product,
   ProductImage,
@@ -12,8 +11,6 @@ import FavoriteCheckbox from './FavoriteCheckBox';
 import PressableContainer from './Pressable/PressableContainer';
 import ProductOptions from './ProductOptions';
 import QuantitySelector from './QuantitySelector';
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 function CategoryProduct({product}: {product: Product}) {
   const navigation = useNavigation<NavigationProp>();

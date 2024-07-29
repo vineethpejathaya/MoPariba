@@ -8,15 +8,14 @@ import {
 import {setContext} from '@apollo/client/link/context';
 import {onError} from '@apollo/client/link/error';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {Dispatch, SetStateAction} from 'react';
-import {RootStackParamList} from './src/navigations/types';
+import {NavigationProp} from './src/navigations/types';
 
 const authorizationMessages = [
   'The current user cannot perform operations on cart',
   "The current customer isn't authorized.",
 ];
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+
 type SetIsAuthenticatedType = Dispatch<SetStateAction<boolean>>;
 type setLoading = (loading: boolean) => void;
 

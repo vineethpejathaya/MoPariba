@@ -7,7 +7,6 @@ import {
   HStack,
   IconButton,
   ScrollView,
-  Text,
   VStack,
 } from 'native-base';
 import {useState} from 'react';
@@ -17,28 +16,32 @@ import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
+import UserAddress from '../../../components/UserAddress';
 import {
   GET_COUNTRIES,
   GET_CUSTOMER_ADDRESSES,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
+  Country,
+  CustomerAddress,
   GetCountriesData,
   GetCustomerAddressesResponse,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
-import {MYAddressScreenProps} from './MyAddress.type';
+import {MyAddressScreenProps} from './MyAddress.type';
 import AddressForm from './components/AddressForm';
 
-function MyAddressScreen({navigation}: MYAddressScreenProps) {
-  const [addresses, setAddresses] = useState<any[]>([]);
+function MyAddressScreen({navigation}: MyAddressScreenProps) {
+  const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
-  const [countryList, setCountryList] = useState<any[]>([]);
+  const [countryList, setCountryList] = useState<Country[]>([]);
   const {loading: fetchingCountries, data: countries} =
     useQuery<GetCountriesData>(GET_COUNTRIES, {
       onCompleted: res => {
         setCountryList(res.countries);
       },
     });
+  console.log(addresses, 'addresses');
   const {loading, error, data, refetch} =
     useQuery<GetCustomerAddressesResponse>(GET_CUSTOMER_ADDRESSES, {
       onCompleted: res => {
@@ -69,11 +72,7 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
             )}
             content={({close}) => (
               <>
-                <AddressForm
-                  address={null}
-                  countries={countryList}
-                  formType="Add"
-                />
+                <AddressForm countries={countryList} close={close} />
               </>
             )}
           />,
@@ -107,11 +106,7 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
                   </HStack>
 
                   <Collapse isOpen={editingAddressId === address.id}>
-                    <AddressForm
-                      address={address}
-                      countries={countryList}
-                      formType="Edit"
-                    />
+                    <AddressForm address={address} countries={countryList} />
                   </Collapse>
                 </Box>
               ))}
@@ -124,33 +119,6 @@ function MyAddressScreen({navigation}: MYAddressScreenProps) {
 }
 
 export default MyAddressScreen;
-
-const UserAddress = ({address}: {address: any}) => {
-  return (
-    <>
-      <VStack>
-        <Text variant={'title1'}>
-          {address.firstname} {''}
-          {address.lastname}
-        </Text>
-        <Text
-          variant={'body1'}
-          style={{color: theme.colors.gray[900], fontSize: 10}}>
-          {address?.street?.join(',')}
-        </Text>
-        <Text
-          variant={'body1'}
-          style={{color: theme.colors.gray[900], fontSize: 10}}>
-          {address.city},{address?.region?.region}, {address?.country_code},
-          {address?.postcode}
-        </Text>
-        <Text variant={'title1'} fontSize={10}>
-          {address.telephone}
-        </Text>
-      </VStack>
-    </>
-  );
-};
 
 const styles = StyleSheet.create({
   addressIConContainer: {

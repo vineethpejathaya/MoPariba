@@ -1,3 +1,5 @@
+import {StackNavigationProp} from '@react-navigation/stack';
+
 export type RootStackParamList = {
   // Stacks
   MainStack: undefined;
@@ -35,8 +37,10 @@ export type RootStackParamList = {
     productSku: string;
   };
   Reviews: undefined;
+  // Cart and Payments
   Cart: undefined;
-
+  AddressSelection: undefined;
+  OrderConfirm: undefined;
   // Profile
   Profile: undefined;
   NotificationSettings: undefined;
@@ -47,3 +51,5 @@ export type RootStackParamList = {
   OrdersScreen: undefined;
   Dummy: undefined;
 };
+
+export type NavigationProp = StackNavigationProp<RootStackParamList>;

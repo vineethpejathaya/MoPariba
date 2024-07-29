@@ -3,8 +3,7 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {IconButton} from 'native-base';
+import {Box, IconButton, Text} from 'native-base';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {
   CartIcon,
@@ -13,13 +12,13 @@ import {
   ProfileTabIcon,
 } from '../assets/icons/Icons';
 import {bottomNavigatorHeight} from '../constants/config';
-import CartScreen from '../screens/CartScreen';
+import {useCartStore} from '../hooks/UseCartStore';
+import CartScreen from '../screens/CartAndPaymentsScreen/CartScreen';
 import CategoryScreen from '../screens/CategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/UserProfileAndSettings/ProfileScreen';
-import {RootStackParamList} from './types';
+import {NavigationProp, RootStackParamList} from './types';
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 type TabItem = {
   route: keyof RootStackParamList;
   label: string;
@@ -61,8 +60,9 @@ type TabButtonProps = BottomTabBarButtonProps & {
   item: TabItem;
 };
 
-export const TabButton = ({item, ...props}: any) => {
+export const TabButton = ({item, ...props}: TabButtonProps) => {
   const navigation = useNavigation<NavigationProp>();
+  const {cartItems} = useCartStore();
   const handleNavigation = (route: any) => {
     if (route == 'Category') {
       navigation.navigate('Category', {parentId: 2});
@@ -72,10 +72,19 @@ export const TabButton = ({item, ...props}: any) => {
 
   return (
     <TouchableOpacity activeOpacity={1} style={[styles.container]}>
-      <IconButton
-        icon={item.icon}
-        onPress={() => handleNavigation(item.route)}
-      />
+      <Box>
+        {cartItems.length > 0 && item.label == 'Cart' && (
+          <Box style={styles.cartItemCount}>
+            <Text style={{fontFamily: 'DMSans-Bold', fontWeight: 900}}>
+              {cartItems.length}
+            </Text>
+          </Box>
+        )}
+        <IconButton
+          icon={item.icon}
+          onPress={() => handleNavigation(item.route)}
+        />
+      </Box>
     </TouchableOpacity>
   );
 };
@@ -116,5 +125,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: bottomNavigatorHeight,
+  },
+  cartItemCount: {
+    position: 'absolute',
+    top: 10,
+    left: -5,
+    borderRadius: 30,
+    width: 25,
+    height: 25,
+    borderWidth: 0.5,
+    backgroundColor: 'yellow',
+    zIndex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
