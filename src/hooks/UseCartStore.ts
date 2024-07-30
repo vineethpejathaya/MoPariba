@@ -15,14 +15,14 @@ interface TransformedCartItem {
 }
 interface CartState {
   cartItems: CartItem[];
-  cartId: string | null;
+  cartId: string;
   adding: boolean;
   removing: boolean;
   updating: boolean;
   showLoading: boolean;
   transformedCartItems: TransformedCartItem[];
   productMap: Map<string, TransformedCartItem[]>;
-  setCartId: (id: string | null) => void;
+  setCartId: (id: string) => void;
   setCart: (cart: CartItem[]) => void;
   setAdding: (status: boolean) => void;
   setRemoving: (status: boolean) => void;
@@ -42,7 +42,7 @@ interface CartState {
 export const useCartStore = create<CartState>()(
   devtools((set, get) => ({
     cartItems: [],
-    cartId: null,
+    cartId: '',
     adding: false,
     removing: false,
     updating: false,
@@ -59,7 +59,7 @@ export const useCartStore = create<CartState>()(
       });
     },
 
-    setCartId: (id: string | null) => set({cartId: id}),
+    setCartId: (id: string) => set({cartId: id}),
     setAdding: status => set({adding: status}),
     setRemoving: status => set({removing: status}),
     setUpdating: status => set({updating: status}),

@@ -12,6 +12,7 @@ import {
 import {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {AddressIcon, ExpandLess} from '../../../assets/icons/Icons';
+import AddressForm from '../../../components/AddressForm';
 import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -29,7 +30,6 @@ import {
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
 import {MyAddressScreenProps} from './MyAddress.type';
-import AddressForm from './components/AddressForm';
 
 function MyAddressScreen({navigation}: MyAddressScreenProps) {
   const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
@@ -41,13 +41,15 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
         setCountryList(res.countries);
       },
     });
-  console.log(addresses, 'addresses');
-  const {loading, error, data, refetch} =
-    useQuery<GetCustomerAddressesResponse>(GET_CUSTOMER_ADDRESSES, {
+
+  const {loading} = useQuery<GetCustomerAddressesResponse>(
+    GET_CUSTOMER_ADDRESSES,
+    {
       onCompleted: res => {
         setAddresses(res?.customer?.addresses);
       },
-    });
+    },
+  );
 
   const handleEdit = (id: number) => {
     setEditingAddressId(editingAddressId === id ? null : id);
@@ -85,7 +87,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
           <ScrollView>
             <VStack space={4}>
               {addresses?.map((address: any, index: number) => (
-                <Box key={address.id} style={styles.addressCard}>
+                <Box key={index} style={styles.addressCard}>
                   {address?.default_billing && (
                     <Badge style={styles.default} _text={styles.defaultText}>
                       DEFAULT

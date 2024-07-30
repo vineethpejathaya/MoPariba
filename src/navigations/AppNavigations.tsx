@@ -19,6 +19,7 @@ import ReviewsScreen from '../screens/ProductReviews/ProductReviews';
 import ProductScreen from '../screens/ProductScreen/ProductScreen';
 import SearchScreen from '../screens/SearchScreen';
 import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
+import NotificationSettings from '../screens/UserProfileAndSettings/NotificationSettings';
 import theme from '../themes/theme';
 import MainTabs from './MainTabs';
 import {RootStackParamList} from './types';
@@ -78,6 +79,10 @@ function RootNavigator() {
             <Stack.Screen name="Reviews" component={ReviewsScreen} />
             <Stack.Screen name="NoNetwork" component={NoNetworkScreen} />
             <Stack.Screen name="AddressScreen" component={MyAddressScreen} />
+            <Stack.Screen
+              name="NotificationSettings"
+              component={NotificationSettings}
+            />
             <Stack.Screen
               name="AddressSelection"
               component={AddressSelection}

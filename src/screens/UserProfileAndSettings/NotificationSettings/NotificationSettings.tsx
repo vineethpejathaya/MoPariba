@@ -22,7 +22,7 @@ const NotificationSettings = () => {
       <VStack flex={1} justifyContent={'space-between'} p={4}>
         <VStack space={3} alignItems={'center'}>
           {NotificationsList.map((item: NotificationItem, index: number) => (
-            <NotificationItem
+            <NotificationListItem
               key={index}
               title={item.title}
               description={item.description}
@@ -40,7 +40,7 @@ const NotificationSettings = () => {
 
 export default NotificationSettings;
 
-const NotificationItem = ({
+const NotificationListItem = ({
   notificationKey,
   title,
   description,

@@ -20,6 +20,7 @@ const AddressSelectionStyles = StyleSheet.create({
 
   addressCardContainer: {
     display: 'flex',
+    width: '100%',
     flexDirection: 'column',
     gap: 10,
     borderBottomWidth: 0.5,

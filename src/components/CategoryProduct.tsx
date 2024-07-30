@@ -63,11 +63,15 @@ const ProductImageComponent = ({
       <Badge style={styles.discount} _text={styles.discText}>
         {'16% off'}
       </Badge>
-      <Image
-        style={styles.image}
-        source={{uri: productImage?.url}}
-        alt={productImage?.label}
-      />
+      {productImage?.url && (
+        <>
+          <Image
+            style={styles.image}
+            source={{uri: productImage?.url}}
+            alt={productImage?.label}
+          />
+        </>
+      )}
       <Badge style={styles.fav}>
         <FavoriteCheckbox iconSize={20} />
       </Badge>
