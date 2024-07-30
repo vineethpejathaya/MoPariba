@@ -5,6 +5,7 @@ import {useState} from 'react';
 import RazorpayCheckout from 'react-native-razorpay';
 import {NavigationProp} from '../navigations/types';
 import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import {CREATE_CART_MUTATION} from '../services/GGL-Queries/CustomerCart/Cart.queries';
 import {
   PLACE_ORDER,
   PLACE_RAZORPAY_ORDER,
@@ -28,7 +29,7 @@ import useToast from './UseToast';
 
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {cartId, setCart, cartItems} = useCartStore();
+  const {cartId, setCart, cartItems, setCartId} = useCartStore();
   const {showErrorToast} = useToast();
   const total = cartItems?.reduce(
     (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
@@ -57,6 +58,8 @@ const usePayment = () => {
     PlaceRazorpayOrderResponse,
     PlaceRazorpayOrderVariables
   >(PLACE_RAZORPAY_ORDER);
+
+  const [createCustomerCart] = useMutation(CREATE_CART_MUTATION);
 
   const handlePayment = async (address: CustomerAddress) => {
     try {
@@ -106,7 +109,11 @@ const usePayment = () => {
           });
 
           setIsLoading(false);
+          const cart = await createCustomerCart();
+          const newCartId = cart.data.createEmptyCart;
+          setCartId(newCartId);
           setCart([]);
+
           navigate.navigate('OrderConfirm');
         })
         .catch((error: any) => {
