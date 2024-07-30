@@ -8,9 +8,13 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import usePayment from '../../../hooks/UsePayment';
 import {NavigationProp} from '../../../navigations/types';
-import {GET_CUSTOMER_ADDRESSES} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
+import {
+  GET_COUNTRIES,
+  GET_CUSTOMER_ADDRESSES,
+} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
   CustomerAddress,
+  GetCountriesData,
   GetCustomerAddressesResponse,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 
@@ -35,13 +39,18 @@ function AddressSelection() {
       },
     },
   );
+  const {loading: fetchingCountries, data: countries} =
+    useQuery<GetCountriesData>(GET_COUNTRIES);
 
   const handleSelectAddress = (id: number) => {
     console.log(id, 'clicked');
     setSelectedAddress(id);
   };
 
-  if (loading || isLoading) return <SpinnerComponent onlySpinner />;
+  const handleSave = () => {};
+
+  if (loading || isLoading || fetchingCountries)
+    return <SpinnerComponent onlySpinner />;
   console.log(selectedAddress, 'selectedAddress');
   return (
     <>
@@ -83,7 +92,13 @@ function AddressSelection() {
                   <NavigationItem label={'Add New Address'} onPress={open} />
                 )}
                 title="Add New Address"
-                content={({close}) => <AddressForm countries={[]} />}
+                content={({close}) => (
+                  <AddressForm
+                    countries={countries?.countries ?? []}
+                    close={close}
+                    onSave={handleSave}
+                  />
+                )}
               />
             </Box>
           </Box>

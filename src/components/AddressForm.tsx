@@ -1,5 +1,6 @@
-import {useMutation} from '@apollo/client';
+import {useApolloClient, useMutation} from '@apollo/client';
 import {
+  Box,
   Button,
   Divider,
   FormControl,
@@ -54,11 +55,14 @@ function AddressForm({
   address,
   countries,
   close,
+  onSave,
 }: {
   address?: CustomerAddress;
   countries: Country[];
   close?: () => void;
+  onSave?: () => void;
 }) {
+  const client = useApolloClient();
   const {showSuccessToast} = useToast();
   const [userAddress, setUserAddress] = useState<AddressState>({
     name: '',
@@ -75,7 +79,10 @@ function AddressForm({
 
   useEffect(() => {
     setUserAddress({
-      name: address?.firstname ?? '' + address?.lastname ?? '',
+      name: address
+        ? (address.firstname ? address.firstname + ' ' : '') +
+          (address.lastname ?? '')
+        : '',
       firstname: address?.firstname ?? '',
       lastname: address?.lastname ?? '',
       street: address?.street.join(',') ?? '',
@@ -88,24 +95,31 @@ function AddressForm({
     });
   }, [address]);
 
-  const [updateCustomerAddress] = useMutation<
+  const [updateCustomerAddress, {loading: updatingAddress}] = useMutation<
     UpdateCustomerAddressResponse,
     UpdateCustomerAddressVariables
   >(UPDATE_CUSTOMER_ADDRESS, {
-    refetchQueries: [{query: GET_CUSTOMER_ADDRESSES}],
     onCompleted: res => {
       showSuccessToast('Update Address', 'Address updated successfully');
       close && close();
+      onSave && onSave();
+    },
+    onError: err => {
+      console.log(err, 'error');
     },
   });
 
-  const [createCustomerAddress] = useMutation(CREATE_CUSTOMER_ADDRESS, {
-    refetchQueries: [{query: GET_CUSTOMER_ADDRESSES}],
-    onCompleted: res => {
-      showSuccessToast('Add Address', 'Address added successfully');
-      close && close();
+  const [createCustomerAddress, {loading: creatingAddress}] = useMutation(
+    CREATE_CUSTOMER_ADDRESS,
+    {
+      refetchQueries: [{query: GET_CUSTOMER_ADDRESSES}],
+      onCompleted: res => {
+        showSuccessToast('Add Address', 'Address added successfully');
+        close && close();
+        onSave && onSave();
+      },
     },
-  });
+  );
 
   const handleSubmit = () => {
     const nameArr = userAddress.name.split(' ');
@@ -199,7 +213,10 @@ function AddressForm({
                       size={'md'}
                       value={(userAddress as any)[field.name]}
                       placeholder={field.placeholder}
-                      leftElement={field.icon}
+                      style={{padding: 2}}
+                      leftElement={
+                        <Box style={{paddingLeft: 10}}>{field.icon}</Box>
+                      }
                       onChangeText={(value: any) => {
                         setUserAddress((prev: any) => ({
                           ...prev,
@@ -223,7 +240,13 @@ function AddressForm({
               />
               <Text>Make default</Text>
             </HStack>
-            <Button onPress={handleSubmit}>Save Address</Button>
+            <Button
+              style={{height: 40}}
+              _text={{textTransform: 'uppercase'}}
+              isLoading={creatingAddress || updatingAddress}
+              onPress={handleSubmit}>
+              Save Address
+            </Button>
           </VStack>
         </ScrollView>
       </VStack>
@@ -258,12 +281,7 @@ const fieldConfig = [
     placeholder: 'Zip Code',
     icon: <ZipCodeIcon />,
   },
-  {
-    name: 'telephone',
-    type: 'text',
-    placeholder: 'Phone number',
-    icon: <TelephoneIcon />,
-  },
+
   {
     name: 'country_code',
     type: 'select',
@@ -275,5 +293,11 @@ const fieldConfig = [
     type: 'select',
     placeholder: 'Region',
     options: 'regions',
+  },
+  {
+    name: 'telephone',
+    type: 'text',
+    placeholder: 'Phone number',
+    icon: <TelephoneIcon />,
   },
 ];

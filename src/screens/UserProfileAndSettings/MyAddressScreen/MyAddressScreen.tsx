@@ -42,7 +42,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
       },
     });
 
-  const {loading} = useQuery<GetCustomerAddressesResponse>(
+  const {loading, refetch} = useQuery<GetCustomerAddressesResponse>(
     GET_CUSTOMER_ADDRESSES,
     {
       onCompleted: res => {
@@ -55,6 +55,12 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
     setEditingAddressId(editingAddressId === id ? null : id);
   };
 
+  const handleSave = (id: number) => {
+    handleEdit(id);
+    refetch();
+  };
+
+  console.log(loading, 'loading');
   if (loading || fetchingCountries) {
     return <SpinnerComponent onlySpinner />;
   }
@@ -108,7 +114,11 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
                   </HStack>
 
                   <Collapse isOpen={editingAddressId === address.id}>
-                    <AddressForm address={address} countries={countryList} />
+                    <AddressForm
+                      address={address}
+                      countries={countryList}
+                      onSave={() => handleSave(address.id)}
+                    />
                   </Collapse>
                 </Box>
               ))}
