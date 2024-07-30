@@ -1,5 +1,5 @@
 import {useMutation} from '@apollo/client';
-import {RAZORPAY_KEY_ID} from '@env';
+
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import RazorpayCheckout from 'react-native-razorpay';
@@ -26,7 +26,8 @@ import {
 import {createRazorpayOrder} from '../services/utils';
 import {useCartStore} from './UseCartStore';
 import useToast from './UseToast';
-
+const RAZORPAY_KEY_ID = 'rzp_test_ufO7RgfnrHiSE3';
+const RAZORPAY_KEY_SECRET = 'MVSyNa9sK49wYJlpnBr2COqp';
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {cartId, setCart, cartItems, setCartId} = useCartStore();

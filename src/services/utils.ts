@@ -1,5 +1,3 @@
-import {RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET} from '@env';
-
 export function GetInitialLetterOfString(str: string) {
   if (str) {
     const strArr = str.split(' ');
@@ -10,7 +8,8 @@ export function GetInitialLetterOfString(str: string) {
 
   return '';
 }
-
+const RAZORPAY_KEY_ID = 'rzp_test_ufO7RgfnrHiSE3';
+const RAZORPAY_KEY_SECRET = 'MVSyNa9sK49wYJlpnBr2COqp';
 export const createRazorpayOrder = async (
   total: number,
   showErrorToast: (title: string, message: string) => void,
