@@ -1,6 +1,7 @@
-import {Box, Button, HStack, Switch, Text, VStack, theme} from 'native-base';
+import {Box, Button, HStack, Text, VStack, theme} from 'native-base';
 import React, {useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
+import Switch from '../../../components/Forms/Switch';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {NotificationsList} from '../../../constants/NotificationsList';
 import {

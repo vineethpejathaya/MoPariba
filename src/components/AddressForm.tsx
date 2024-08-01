@@ -2,19 +2,16 @@ import {useApolloClient, useMutation} from '@apollo/client';
 import {
   Box,
   Button,
-  Divider,
   FormControl,
   HStack,
-  Input,
   ScrollView,
-  Select,
-  Switch,
   Text,
   VStack,
 } from 'native-base';
 import {useEffect, useState} from 'react';
 import {
   CityMapIcon,
+  GlobeIcon,
   LocationInputIcon,
   TelephoneIcon,
   UserNameIcon,
@@ -33,6 +30,9 @@ import {
   UpdateCustomerAddressResponse,
   UpdateCustomerAddressVariables,
 } from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import SingleSelect from './Forms/SingleSelect';
+import Switch from './Forms/Switch';
+import TextField from './Forms/TextInput';
 
 export type AddressState = {
   name: string;
@@ -165,70 +165,130 @@ function AddressForm({
 
   return (
     <>
-      <VStack p={4} paddingBottom={5}>
-        <ScrollView>
-          <VStack space={2}>
-            <Divider />
-            {fieldConfig.map(field => {
-              const isSelect = field.type === 'select';
-              const options =
-                field.options === 'countries'
-                  ? countries
-                  : countries?.find(
-                      country => country.id === userAddress.country_code,
-                    )?.available_regions || [];
+      <ScrollView>
+        <FormControl>
+          <VStack space={2} padding={3}>
+            <TextField
+              name={'name'}
+              height={45}
+              value={userAddress.name}
+              placeholder={'Name'}
+              leftElement={
+                <Box style={{paddingLeft: 10}}>{fieldConfig['name']}</Box>
+              }
+              onChangeText={(value: any) => {
+                setUserAddress((prev: any) => ({
+                  ...prev,
+                  name: value,
+                }));
+              }}
+            />
+            <TextField
+              name={'street'}
+              height={45}
+              value={userAddress.street}
+              placeholder={'Address'}
+              leftElement={
+                <Box style={{paddingLeft: 10}}>{fieldConfig['street']}</Box>
+              }
+              onChangeText={(value: any) => {
+                setUserAddress((prev: any) => ({
+                  ...prev,
+                  street: value,
+                }));
+              }}
+            />
+            <HStack alignItems={'center'} space={2}>
+              <Box style={{flex: 1}}>
+                <TextField
+                  name={'city'}
+                  height={45}
+                  value={userAddress.city}
+                  placeholder={'City'}
+                  leftElement={
+                    <Box style={{paddingLeft: 10}}>{fieldConfig['city']}</Box>
+                  }
+                  onChangeText={(value: any) => {
+                    setUserAddress((prev: any) => ({
+                      ...prev,
+                      city: value,
+                    }));
+                  }}
+                />
+              </Box>
+              <Box style={{flex: 1}}>
+                <TextField
+                  name={'postcode'}
+                  height={45}
+                  value={userAddress.postcode}
+                  placeholder={'Zip code'}
+                  leftElement={
+                    <Box style={{paddingLeft: 10}}>
+                      {fieldConfig['postcode']}
+                    </Box>
+                  }
+                  onChangeText={(value: any) => {
+                    setUserAddress((prev: any) => ({
+                      ...prev,
+                      postcode: value,
+                    }));
+                  }}
+                />
+              </Box>
+            </HStack>
 
-              return (
-                <FormControl key={field.name}>
-                  {isSelect ? (
-                    <Select
-                      height={38}
-                      size={'md'}
-                      selectedValue={
-                        (userAddress as any)[field.name]?.toString() ??
-                        undefined
-                      }
-                      placeholder={field.placeholder}
-                      onValueChange={(itemValue: any) => {
-                        setUserAddress((prev: any) => ({
-                          ...prev,
-                          [field.name]: itemValue,
-                        }));
-                      }}>
-                      {options.map((option, index) => (
-                        <Select.Item
-                          key={index}
-                          label={
-                            isCountry(option)
-                              ? option.full_name_english
-                              : option.name
-                          }
-                          value={option.id}
-                        />
-                      ))}
-                    </Select>
-                  ) : (
-                    <Input
-                      height={38}
-                      size={'md'}
-                      value={(userAddress as any)[field.name]}
-                      placeholder={field.placeholder}
-                      style={{padding: 2}}
-                      leftElement={
-                        <Box style={{paddingLeft: 10}}>{field.icon}</Box>
-                      }
-                      onChangeText={(value: any) => {
-                        setUserAddress((prev: any) => ({
-                          ...prev,
-                          [field.name]: value,
-                        }));
-                      }}
-                    />
-                  )}
-                </FormControl>
-              );
-            })}
-            <HStack space={2} alignItems={'center'}>
+            <SingleSelect
+              label={'Country'}
+              onValueChange={(itemValue: any) => {
+                setUserAddress((prev: any) => ({
+                  ...prev,
+                  country_code: itemValue,
+                }));
+              }}
+              value={userAddress?.country_code}
+              options={
+                countries?.map(country => ({
+                  label: country.full_name_english,
+                  value: country.id,
+                })) ?? []
+              }
+            />
+
+            <SingleSelect
+              label={'Region'}
+              onValueChange={(itemValue: any) => {
+                setUserAddress((prev: any) => ({
+                  ...prev,
+                  region_id: itemValue,
+                }));
+              }}
+              value={userAddress?.region_id}
+              options={
+                countries
+                  ?.find(country => country.id == userAddress.country_code)
+                  ?.available_regions?.map(region => ({
+                    label: region.name,
+                    value: region.id,
+                  })) ?? []
+              }
+            />
+
+            <TextField
+              name={'telephone'}
+              height={45}
+              value={userAddress.telephone}
+              placeholder={'Telephone'}
+              leftElement={
+                <Box style={{paddingLeft: 10}}>{fieldConfig['telephone']}</Box>
+              }
+              onChangeText={(value: any) => {
+                setUserAddress((prev: any) => ({
+                  ...prev,
+                  telephone: value,
+                }));
+              }}
+            />
+            <HStack space={2} alignItems={'center'} mb={2}>
               <Switch
                 isChecked={userAddress.default_billing}
                 onToggle={() =>
@@ -238,6 +298,7 @@ function AddressForm({
                   }))
                 }
               />
+
               <Text>Make default</Text>
             </HStack>
             <Button
@@ -248,56 +309,19 @@ function AddressForm({
               Save Address
             </Button>
           </VStack>
-        </ScrollView>
-      </VStack>
+        </FormControl>
+      </ScrollView>
     </>
   );
 }
 
 export default AddressForm;
 
-const fieldConfig = [
-  {
-    name: 'name',
-    type: 'text',
-    placeholder: 'Name',
-    icon: <UserNameIcon />,
-  },
-  {
-    name: 'street',
-    type: 'text',
-    placeholder: 'Address',
-    icon: <LocationInputIcon />,
-  },
-  {
-    name: 'city',
-    type: 'text',
-    placeholder: 'City',
-    icon: <CityMapIcon />,
-  },
-  {
-    name: 'postcode',
-    type: 'text',
-    placeholder: 'Zip Code',
-    icon: <ZipCodeIcon />,
-  },
-
-  {
-    name: 'country_code',
-    type: 'select',
-    placeholder: 'Country',
-    options: 'countries',
-  },
-  {
-    name: 'region_id',
-    type: 'select',
-    placeholder: 'Region',
-    options: 'regions',
-  },
-  {
-    name: 'telephone',
-    type: 'text',
-    placeholder: 'Phone number',
-    icon: <TelephoneIcon />,
-  },
-];
+const fieldConfig = {
+  name: <UserNameIcon />,
+  city: <CityMapIcon />,
+  postcode: <ZipCodeIcon />,
+  telephone: <TelephoneIcon />,
+  street: <LocationInputIcon />,
+  country: <GlobeIcon />,
+};

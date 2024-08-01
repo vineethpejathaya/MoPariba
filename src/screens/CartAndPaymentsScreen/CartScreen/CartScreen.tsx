@@ -19,9 +19,9 @@ import {
   GetCustomerCartResponse,
 } from '../../../services/GGL-Queries/CustomerCart/Cart.type';
 import theme from '../../../themes/theme';
-import CartScreenStyles from '../Cart.styles';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
+import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -74,6 +74,7 @@ function CartScreen() {
         hStackProps={{shadow: 3}}
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
+
       {cartItems.length == 0 ? (
         <NoDataIllustration
           message={
@@ -123,6 +124,7 @@ function CartScreen() {
               shippingCharges={shippingCharges}
             />
             <Button
+              style={CartScreenStyles.btn}
               onPress={() => navigation.navigate('AddressSelection')}
               _text={{fontSize: 15}}
               mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button>

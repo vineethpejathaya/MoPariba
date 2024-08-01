@@ -1,5 +1,4 @@
 import {useMutation} from '@apollo/client';
-
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import RazorpayCheckout from 'react-native-razorpay';

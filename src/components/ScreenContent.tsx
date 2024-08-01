@@ -12,7 +12,6 @@ function ScreenContent({containerStyles, ...rest}: ScreenContentProps) {
     paddingHorizontal: 10,
     paddingTop: 5,
     flex: 1,
-
     paddingBottom: bottomNavigatorHeight + 5,
   };
 

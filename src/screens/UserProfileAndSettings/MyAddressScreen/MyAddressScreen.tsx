@@ -1,24 +1,27 @@
-import {useQuery} from '@apollo/client';
+import {useMutation, useQuery} from '@apollo/client';
 import {
   AddIcon,
   Badge,
   Box,
-  Collapse,
-  HStack,
   IconButton,
+  Menu,
+  Pressable,
   ScrollView,
   VStack,
 } from 'native-base';
-import {useState} from 'react';
+import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {AddressIcon, ExpandLess} from '../../../assets/icons/Icons';
+import {AddressIcon, MoreActions} from '../../../assets/icons/Icons';
+import Accordion from '../../../components/Accordion';
 import AddressForm from '../../../components/AddressForm';
+import LinearProgress from '../../../components/LinearProgress';
 import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import UserAddress from '../../../components/UserAddress';
 import {
+  DELETE_CUSTOMER_ADDRESS,
   GET_COUNTRIES,
   GET_CUSTOMER_ADDRESSES,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
@@ -51,16 +54,23 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
     },
   );
 
-  const handleEdit = (id: number) => {
-    setEditingAddressId(editingAddressId === id ? null : id);
+  const [deleteAddress, {loading: deleting}] = useMutation(
+    DELETE_CUSTOMER_ADDRESS,
+    {
+      onCompleted: res => {
+        refetch();
+      },
+    },
+  );
+
+  const handleDelete = (id: number) => {
+    deleteAddress({
+      variables: {
+        id,
+      },
+    });
   };
 
-  const handleSave = (id: number) => {
-    handleEdit(id);
-    refetch();
-  };
-
-  console.log(loading, 'loading');
   if (loading || fetchingCountries) {
     return <SpinnerComponent onlySpinner />;
   }
@@ -71,56 +81,69 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
         title={'My Address'}
         rightActions={[
           <ModalButton
+            title={'Add new address'}
             anchor={({open}) => (
               <IconButton
                 onPress={open}
                 style={styles.addBtn}
-                icon={<AddIcon size={4} color={theme.colors.black} />}
+                icon={<AddIcon size={3} color={theme.colors.black} />}
               />
             )}
             content={({close}) => (
               <>
-                <AddressForm countries={countryList} close={close} />
+                <AddressForm countries={countryList ?? []} close={close} />
               </>
             )}
           />,
         ]}
       />
+      {deleting && <LinearProgress />}
       {addresses?.length == 0 ? (
         <NoDataIllustration message={'No Address found'} />
       ) : (
         <Box style={styles.mainContainer}>
           <ScrollView>
             <VStack space={4}>
-              {addresses?.map((address: any, index: number) => (
-                <Box key={index} style={styles.addressCard}>
-                  {address?.default_billing && (
-                    <Badge style={styles.default} _text={styles.defaultText}>
-                      DEFAULT
-                    </Badge>
-                  )}
-
-                  <HStack style={styles.addressItem}>
-                    <HStack space={2} alignItems="center">
-                      <Box style={styles.addressIConContainer}>
-                        <AddressIcon />
-                      </Box>
-                      <UserAddress address={address} />
-                    </HStack>
-                    <IconButton
-                      icon={<ExpandLess />}
-                      onPress={() => handleEdit(address.id)}
-                    />
-                  </HStack>
-
-                  <Collapse isOpen={editingAddressId === address.id}>
+              {addresses?.map((address: CustomerAddress, index: number) => (
+                <Accordion
+                  key={index}
+                  summary={<UserAddress address={address} />}
+                  content={
                     <AddressForm
                       address={address}
-                      countries={countryList}
-                      onSave={() => handleSave(address.id)}
+                      countries={countryList ?? []}
+                      onSave={() => refetch()}
                     />
-                  </Collapse>
-                </Box>
+                  }
+                  startIcon={
+                    <Box style={styles.addressIConContainer}>
+                      <AddressIcon />
+                    </Box>
+                  }
+                  leftAction={
+                    address?.default_billing && (
+                      <Badge style={styles.default} _text={styles.defaultText}>
+                        DEFAULT
+                      </Badge>
+                    )
+                  }
+                  rightAction={
+                    <Menu
+                      trigger={triggerProps => {
+                        return (
+                          <Pressable
+                            accessibilityLabel="More options menu"
+                            {...triggerProps}>
+                            <MoreActions />
+                          </Pressable>
+                        );
+                      }}>
+                      <Menu.Item onPress={() => handleDelete(address.id)}>
+                        Delete Address
+                      </Menu.Item>
+                    </Menu>
+                  }
+                />
               ))}
             </VStack>
           </ScrollView>
@@ -144,30 +167,27 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    backgroundColor: theme.colors.white,
     padding: 15,
   },
   addressCard: {
-    paddingTop: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 25,
+    backgroundColor: theme.colors.white,
   },
   addressItem: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 10,
   },
   addBtn: {
-    width: 30,
-    height: 30,
+    width: 25,
+    height: 25,
     borderRadius: 20,
     borderWidth: 2,
   },
   default: {
     backgroundColor: theme.colors.primary[100],
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
   },
+
   defaultText: {
     fontSize: 10,
     color: theme.colors.primary[900],

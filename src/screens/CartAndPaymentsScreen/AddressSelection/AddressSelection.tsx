@@ -51,7 +51,7 @@ function AddressSelection() {
 
   if (loading || isLoading || fetchingCountries)
     return <SpinnerComponent onlySpinner />;
-  console.log(selectedAddress, 'selectedAddress');
+
   return (
     <>
       <ScreenHeader

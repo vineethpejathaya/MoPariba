@@ -1,11 +1,13 @@
 import {StyleSheet} from 'react-native';
-import theme from '../../themes/theme';
+import {bottomNavigatorHeight} from '../../../constants/config';
+import theme from '../../../themes/theme';
 
 const CartScreenStyles = StyleSheet.create({
   mainContainer: {
     backgroundColor: theme.colors.white,
     flex: 1,
-    paddingBottom: 70,
+    paddingBottom: bottomNavigatorHeight + 10,
+    justifyContent: 'space-between',
   },
   cartReviewContainer: {
     justifyContent: 'space-between',
@@ -18,6 +20,10 @@ const CartScreenStyles = StyleSheet.create({
     fontFamily: 'DMSans-Bold',
     fontSize: 15,
     fontWeight: 700,
+  },
+  btn: {
+    height: 40,
+    borderRadius: 20,
   },
 });
 

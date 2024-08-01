@@ -98,3 +98,9 @@ export const GET_REGIONS_BY_COUNTRY = gql`
     }
   }
 `;
+
+export const DELETE_CUSTOMER_ADDRESS = gql`
+  mutation DeleteCustomerAddress($id: Int!) {
+    deleteCustomerAddress(id: $id)
+  }
+`;
