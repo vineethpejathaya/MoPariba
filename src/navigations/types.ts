@@ -45,6 +45,7 @@ export type RootStackParamList = {
   Profile: undefined;
   NotificationSettings: undefined;
   MyAddress: undefined;
+  MyOrdersScreen: undefined;
   AddressScreen: undefined;
   AboutMeScreen: undefined;
   FavoritesScreen: undefined;

@@ -35,17 +35,21 @@ export const GET_CUSTOMER_DETAILS = gql`
       suffix
       email
       addresses {
-        firstname
-        lastname
-        street
-        city
+        id
         region {
+          region_id
           region_code
           region
         }
-        postcode
         country_code
+        street
         telephone
+        postcode
+        city
+        firstname
+        lastname
+        default_shipping
+        default_billing
       }
     }
   }

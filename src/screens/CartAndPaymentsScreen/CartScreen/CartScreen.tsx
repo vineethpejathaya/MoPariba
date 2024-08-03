@@ -3,9 +3,8 @@ import {useNavigation} from '@react-navigation/native';
 import {Button, Divider, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useEffect} from 'react';
 import {Dimensions} from 'react-native';
-import {CartBag, DeleteIcon} from '../../../assets/icons/Icons';
+import {CartBag} from '../../../assets/icons/Icons';
 import NoDataIllustration from '../../../components/NoDataIllustration';
-import PressableContainer from '../../../components/Pressable/PressableContainer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {useCartStore} from '../../../hooks/UseCartStore';
@@ -92,7 +91,7 @@ function CartScreen() {
                 <Text style={CartScreenStyles.cartReviewHeading}>
                   Review Items
                 </Text>
-                <PressableContainer onPress={() => {}}>
+                {/* <PressableContainer onPress={() => {}}>
                   <HStack space={2} alignItems={'center'}>
                     <Text
                       style={CartScreenStyles.cartReviewHeading}
@@ -102,7 +101,7 @@ function CartScreen() {
                     </Text>
                     <DeleteIcon />
                   </HStack>
-                </PressableContainer>
+                </PressableContainer> */}
               </HStack>
 
               <ScrollView>

@@ -46,7 +46,7 @@ const navigationItems: NavigationItem[] = [
     icon: 'shopping-cart',
     svgIcon: <OrderIcon />,
     label: 'My Orders',
-    navigateTo: 'OrdersScreen',
+    navigateTo: 'MyOrdersScreen',
   },
   {
     icon: 'favorite',

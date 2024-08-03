@@ -1,8 +1,13 @@
 import {useApolloClient} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Box, Text, VStack, useTheme} from 'native-base';
+import {Box, HStack, Pressable, Text, VStack, useTheme} from 'native-base';
 import {useEffect, useState} from 'react';
-import {CameraIcon, MenuIcon, NotificationIcon} from '../../assets/icons/Icons';
+import {
+  CameraIcon,
+  DropDownIcon,
+  MenuIcon,
+  NotificationIcon,
+} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -16,7 +21,10 @@ import {
 } from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 
 import {useCartStore} from '../../hooks/UseCartStore';
-import {GET_HOME_SCREEN_DATA} from '../../services/GGL-Queries/HomeScreen/Home.queries';
+import {
+  GET_CATEGORIES,
+  GET_CUSTOMER_DETAILS,
+} from '../../services/GGL-Queries/HomeScreen/Home.queries';
 import {GetHomeScreenDataResponse} from '../../services/GGL-Queries/HomeScreen/Home.type';
 import {
   HomeScreenProps,
@@ -31,7 +39,9 @@ function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
-  const {setCart, setCartId} = useCartStore(state => state);
+  const {setCart, setCartId, setAddresses, defaultAddress} = useCartStore(
+    state => state,
+  );
   const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
     defaultHomeScreenState,
   );
@@ -44,12 +54,20 @@ function HomeScreen({navigation}: HomeScreenProps) {
 
         const homeScreenDataResponse =
           await client.query<GetHomeScreenDataResponse>({
-            query: GET_HOME_SCREEN_DATA,
+            query: GET_CATEGORIES,
             variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
             fetchPolicy: 'network-only',
           });
+        const {categories} = homeScreenDataResponse.data;
+        const customerDetails = await client.query<GetHomeScreenDataResponse>({
+          query: GET_CUSTOMER_DETAILS,
+          variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
+          fetchPolicy: 'network-only',
+        });
 
-        const {categories, customer} = homeScreenDataResponse.data;
+        const {customer} = customerDetails.data;
+
+        setAddresses(customer.addresses);
 
         await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
 
@@ -60,14 +78,13 @@ function HomeScreen({navigation}: HomeScreenProps) {
           categoryItems: categories.items,
         }));
 
-        // Create a customer cart
         const createCartResponse = await client.mutate({
           mutation: CREATE_CART_MUTATION,
         });
 
         const cartId = createCartResponse.data.createEmptyCart;
         setCartId(cartId);
-        // Fetch customer cart details
+
         const customerCartResponse = await client.query({
           query: GET_CUSTOMER_CART,
           variables: {cart_id: cartId},
@@ -76,6 +93,8 @@ function HomeScreen({navigation}: HomeScreenProps) {
         const cart = customerCartResponse.data.cart?.items;
         setCart(cart);
         await AsyncStorage.setItem('cart', JSON.stringify(cart));
+
+        // const customer;
 
         setHomeScreenState((prev: any) => ({
           ...prev,
@@ -114,7 +133,12 @@ function HomeScreen({navigation}: HomeScreenProps) {
               style={{color: theme.colors.primary[200], fontSize: 12}}>
               DELIVER TO
             </Text>
-            <Text variant="subTitle2">Halal Lab office</Text>
+            <Pressable onPress={() => navigation.navigate('AddressScreen')}>
+              <HStack alignItems={'center'} space={2}>
+                <Text variant="subTitle2">{defaultAddress?.city ?? '--'}</Text>
+                <DropDownIcon />
+              </HStack>
+            </Pressable>
           </VStack>,
         ]}
         rightActions={[

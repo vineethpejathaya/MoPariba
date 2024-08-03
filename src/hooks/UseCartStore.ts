@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
+import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import {CartItem} from '../services/GGL-Queries/CustomerCart/Cart.type';
 
 interface TransformedCartItem {
@@ -17,13 +18,17 @@ interface CartState {
   cartItems: CartItem[];
   cartId: string;
   adding: boolean;
+
   removing: boolean;
   updating: boolean;
   showLoading: boolean;
   transformedCartItems: TransformedCartItem[];
+  addresses: CustomerAddress[];
+  defaultAddress: CustomerAddress | null;
   productMap: Map<string, TransformedCartItem[]>;
   setCartId: (id: string) => void;
   setCart: (cart: CartItem[]) => void;
+  setAddresses: (address: CustomerAddress[]) => void;
   setAdding: (status: boolean) => void;
   setRemoving: (status: boolean) => void;
   setUpdating: (status: boolean) => void;
@@ -48,7 +53,9 @@ export const useCartStore = create<CartState>()(
     updating: false,
     showLoading: false,
     transformedCartItems: [],
+    defaultAddress: null,
     productMap: new Map(),
+    addresses: [],
     setCart: (cartItems: CartItem[]) => {
       const transformedData = transformCartItems(cartItems);
       const productMap = mapTransformedDataBySku(transformedData);
@@ -58,7 +65,13 @@ export const useCartStore = create<CartState>()(
         productMap: productMap,
       });
     },
-
+    setAddresses: (addresses: CustomerAddress[]) => {
+      set({
+        addresses: addresses,
+        defaultAddress:
+          addresses?.find(address => address.default_billing) ?? null,
+      });
+    },
     setCartId: (id: string) => set({cartId: id}),
     setAdding: status => set({adding: status}),
     setRemoving: status => set({removing: status}),

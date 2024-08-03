@@ -50,11 +50,20 @@ function SearchScreen({navigation}: SearchScreenProps) {
     setTimeout(() => setDropdownVisible(false), 100);
   };
 
-  const renderDropdownItem = ({item}: any) => (
-    <TouchableOpacity onPress={() => setDropdownVisible(false)}>
-      <Text style={searchScreenStyles.dropdownItem}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+  const renderDropdownItem = ({item}: any) => {
+    console.log(item, 'item');
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Product', {
+            productSku: item?.sku,
+          });
+          // setDropdownVisible(false);
+        }}>
+        <Text style={searchScreenStyles.dropdownItem}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <>
@@ -92,7 +101,7 @@ function SearchScreen({navigation}: SearchScreenProps) {
             placeholder="Search dishes, restaurants"
             onChangeText={handleSearchChange}
             onFocus={handleFocus}
-            onBlur={handleBlur}
+            // onBlur={handleBlur}
           />
           {dropdownVisible && (
             <>
