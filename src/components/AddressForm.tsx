@@ -1,4 +1,4 @@
-import {useApolloClient, useMutation} from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import {Box, Button, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
 import {
@@ -9,6 +9,7 @@ import {
   UserNameIcon,
   ZipCodeIcon,
 } from '../assets/icons/Icons';
+import {countryObj, regionObj} from '../constants/FomConstants';
 import useToast from '../hooks/UseToast';
 import {
   CREATE_CUSTOMER_ADDRESS,
@@ -16,13 +17,10 @@ import {
   UPDATE_CUSTOMER_ADDRESS,
 } from '../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
-  Country,
-  CountryRegion,
   CustomerAddress,
   UpdateCustomerAddressResponse,
   UpdateCustomerAddressVariables,
 } from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
-import SingleSelect from './Forms/SingleSelect';
 import Switch from './Forms/Switch';
 import TextField from './Forms/TextInput';
 
@@ -33,28 +31,19 @@ export type AddressState = {
   street: string;
   city: string;
   postcode: string;
-  country_code: string;
   default_billing: boolean;
   telephone: string;
-  region_id: number | null;
 };
-
-function isCountry(option: Country | CountryRegion): option is Country {
-  return (option as Country).full_name_english !== undefined;
-}
 
 function AddressForm({
   address,
-  countries,
   close,
   onSave,
 }: {
   address?: CustomerAddress;
-  countries: Country[];
   close?: () => void;
   onSave?: () => void;
 }) {
-  const client = useApolloClient();
   const {showSuccessToast} = useToast();
   const [userAddress, setUserAddress] = useState<AddressState>({
     name: '',
@@ -63,10 +52,8 @@ function AddressForm({
     street: '',
     city: '',
     postcode: '',
-    country_code: '',
     default_billing: false,
     telephone: '',
-    region_id: null,
   });
 
   useEffect(() => {
@@ -80,10 +67,8 @@ function AddressForm({
       street: address?.street.join(',') ?? '',
       city: address?.city ?? '',
       postcode: address?.postcode ?? '',
-      country_code: address?.country_code ?? '',
       default_billing: address?.default_billing ?? false,
       telephone: address?.telephone ?? '',
-      region_id: address?.region?.region_id ?? null,
     });
   }, [address]);
 
@@ -115,21 +100,9 @@ function AddressForm({
 
   const handleSubmit = () => {
     const nameArr = userAddress.name.split(' ');
-
-    const region = countries
-      ?.find(country => country.id == userAddress.country_code)
-      ?.available_regions?.find(
-        (region: any) => region.id == userAddress?.region_id,
-      );
-
-    if (!region) return;
     const input = {
-      region: {
-        region_id: region?.id,
-        region_code: region.code,
-        region: region.name,
-      },
-      country_code: userAddress.country_code,
+      region: regionObj.Odisha,
+      country_code: countryObj.India.id,
       street: [userAddress.street],
       telephone: userAddress.telephone,
       postcode: userAddress.postcode,
@@ -226,45 +199,6 @@ function AddressForm({
             </Box>
           </HStack>
 
-          <SingleSelect
-            label={'Country'}
-            onValueChange={(itemValue: any) => {
-              setUserAddress((prev: any) => ({
-                ...prev,
-                country_code: itemValue,
-              }));
-            }}
-            leftElement={
-              <Box style={{paddingLeft: 10}}>{fieldConfig['country']}</Box>
-            }
-            value={userAddress?.country_code}
-            options={
-              countries?.map(country => ({
-                label: country.full_name_english,
-                value: country.id,
-              })) ?? []
-            }
-          />
-
-          <SingleSelect
-            label={'Region'}
-            onValueChange={(itemValue: any) => {
-              setUserAddress((prev: any) => ({
-                ...prev,
-                region_id: itemValue,
-              }));
-            }}
-            value={userAddress?.region_id}
-            options={
-              countries
-                ?.find(country => country.id == userAddress.country_code)
-                ?.available_regions?.map(region => ({
-                  label: region.name,
-                  value: region.id,
-                })) ?? []
-            }
-          />
-
           <TextField
             name={'telephone'}
             height={45}
@@ -280,6 +214,7 @@ function AddressForm({
               }));
             }}
           />
+
           <HStack space={2} alignItems={'center'} mb={2}>
             <Switch
               isChecked={userAddress.default_billing}

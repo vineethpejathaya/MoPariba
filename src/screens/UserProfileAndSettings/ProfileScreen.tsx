@@ -4,7 +4,6 @@ import {Avatar, Box, Center, FlatList, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import {
-  FavoriteIcon,
   LocationIcon,
   NotificationGreenIcon,
   OrderIcon,
@@ -47,12 +46,6 @@ const navigationItems: NavigationItem[] = [
     svgIcon: <OrderIcon />,
     label: 'My Orders',
     navigateTo: 'MyOrdersScreen',
-  },
-  {
-    icon: 'favorite',
-    svgIcon: <FavoriteIcon />,
-    label: 'My Favorites',
-    navigateTo: 'FavoritesScreen',
   },
   {
     icon: 'place',

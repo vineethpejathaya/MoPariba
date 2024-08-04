@@ -51,7 +51,6 @@ function SearchScreen({navigation}: SearchScreenProps) {
   };
 
   const renderDropdownItem = ({item}: any) => {
-    console.log(item, 'item');
     return (
       <TouchableOpacity
         onPress={() => {

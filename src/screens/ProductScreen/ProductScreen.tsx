@@ -1,7 +1,6 @@
 import {useQuery} from '@apollo/client';
 import {Badge, Box, Button, HStack, Image, Text, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
-import FavoriteCheckbox from '../../components/FavoriteCheckBox';
 import ProductOptions from '../../components/ProductOptions';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -81,11 +80,7 @@ export const ProductBrief = ({navigation, product}: any) => {
   return (
     <>
       <VStack mt={2}>
-        <HStack justifyContent={'space-between'} alignItems={'center'}>
-          <Text variant={'header1'}>{product?.name}</Text>
-          <FavoriteCheckbox />
-        </HStack>
-
+        <Text variant={'header1'}>{product?.name}</Text>
         <VStack space={1}>
           <Text variant={'title1'} style={ProductStyles.prize}>
             {`${currency ?? ''} ${value ?? 0}`}

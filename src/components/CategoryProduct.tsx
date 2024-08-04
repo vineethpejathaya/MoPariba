@@ -7,7 +7,6 @@ import {
   ProductImage,
 } from '../services/GGL-Queries/Products/Product.type';
 import theme from '../themes/theme';
-import FavoriteCheckbox from './FavoriteCheckBox';
 import PressableContainer from './Pressable/PressableContainer';
 import ProductOptions from './ProductOptions';
 import QuantitySelector from './QuantitySelector';
@@ -72,9 +71,6 @@ const ProductImageComponent = ({
           />
         </>
       )}
-      <Badge style={styles.fav}>
-        <FavoriteCheckbox iconSize={20} />
-      </Badge>
     </Box>
   );
 };
@@ -102,14 +98,6 @@ export const styles = StyleSheet.create({
     fontSize: 8,
     textTransform: 'uppercase',
     color: theme.colors.red[400],
-  },
-
-  fav: {
-    backgroundColor: theme.colors.white,
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    zIndex: 1,
   },
 
   image: {

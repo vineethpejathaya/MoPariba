@@ -22,13 +22,10 @@ import SpinnerComponent from '../../../components/SpinnerComponent';
 import UserAddress from '../../../components/UserAddress';
 import {
   DELETE_CUSTOMER_ADDRESS,
-  GET_COUNTRIES,
   GET_CUSTOMER_ADDRESSES,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
 import {
-  Country,
   CustomerAddress,
-  GetCountriesData,
   GetCustomerAddressesResponse,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
@@ -37,13 +34,6 @@ import {MyAddressScreenProps} from './MyAddress.type';
 function MyAddressScreen({navigation}: MyAddressScreenProps) {
   const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
-  const [countryList, setCountryList] = useState<Country[]>([]);
-  const {loading: fetchingCountries, data: countries} =
-    useQuery<GetCountriesData>(GET_COUNTRIES, {
-      onCompleted: res => {
-        setCountryList(res.countries);
-      },
-    });
 
   const {loading, refetch} = useQuery<GetCustomerAddressesResponse>(
     GET_CUSTOMER_ADDRESSES,
@@ -71,7 +61,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
     });
   };
 
-  if (loading || fetchingCountries) {
+  if (loading) {
     return <SpinnerComponent onlySpinner />;
   }
 
@@ -91,7 +81,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
             )}
             content={({close}) => (
               <>
-                <AddressForm countries={countryList ?? []} close={close} />
+                <AddressForm close={close} />
               </>
             )}
           />,
@@ -109,11 +99,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
                   key={index}
                   summary={<UserAddress address={address} />}
                   content={
-                    <AddressForm
-                      address={address}
-                      countries={countryList ?? []}
-                      onSave={() => refetch()}
-                    />
+                    <AddressForm address={address} onSave={() => refetch()} />
                   }
                   startIcon={
                     <Box style={styles.addressIConContainer}>
