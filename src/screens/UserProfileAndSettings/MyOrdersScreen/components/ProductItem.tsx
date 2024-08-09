@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 import {
   CustomerOrder,
   OrderItem,
-} from '../../../../services/GGL-Queries/MyOrders/MyOrders.type';
+} from '../../../../services/GGL-Queries/MyOrders/interfaces/MyOrders.type';
 
 function ProductOrderedList({order}: {order: CustomerOrder}) {
   return (

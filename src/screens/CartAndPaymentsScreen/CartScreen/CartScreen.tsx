@@ -9,14 +9,12 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {useCartStore} from '../../../hooks/UseCartStore';
 import {NavigationProp} from '../../../navigations/types';
-import {
-  CLEAR_CUSTOMER_CART,
-  GET_CUSTOMER_CART,
-} from '../../../services/GGL-Queries/CustomerCart/Cart.queries';
-import {
-  CartItem,
-  GetCustomerCartResponse,
-} from '../../../services/GGL-Queries/CustomerCart/Cart.type';
+import {CLEAR_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart.mutation';
+import {GET_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart.queries';
+import {ShippingAddress} from '../../../services/GGL-Queries/CustomerCart/interfaces/BillingAndShippingAddress.type';
+import {GetCustomerCartResponse} from '../../../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
+import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
+import {Prices} from '../../../services/GGL-Queries/CustomerCart/interfaces/Prices.type';
 import theme from '../../../themes/theme';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
@@ -36,11 +34,6 @@ function CartScreen() {
   );
   const shippingCharges = 0;
   const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
-  const subTotal = cartItems?.reduce(
-    (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
-    0,
-  );
-  const total = subTotal + shippingCharges;
 
   const [clearCustomerCart] = useMutation(CLEAR_CUSTOMER_CART, {
     onCompleted: res => {
@@ -118,9 +111,8 @@ function CartScreen() {
             </VStack>
             <CouponSection />
             <CartSummary
-              subTotal={subTotal}
-              total={total}
-              shippingCharges={shippingCharges}
+              prices={data?.cart?.prices}
+              shippingAddresses={data?.cart?.shipping_addresses}
             />
             <Button
               style={CartScreenStyles.btn}
@@ -137,14 +129,22 @@ function CartScreen() {
 export default CartScreen;
 
 const CartSummary = ({
-  subTotal,
-  total,
-  shippingCharges,
+  prices,
+  shippingAddresses,
 }: {
-  subTotal: number;
-  total: number;
-  shippingCharges: number;
+  prices?: Prices;
+  shippingAddresses?: ShippingAddress[];
 }) => {
+  const shippingCharges =
+    shippingAddresses?.reduce(
+      (acc, curr) => acc + curr.selected_shipping_method.amount.value,
+      0,
+    ) ?? 0;
+  const appliedTaxes = prices?.applied_taxes;
+  const subTotalInclusiveOfTax = prices?.subtotal_including_tax?.value;
+  const subTotal = prices?.subtotal_excluding_tax?.value;
+  const discounts = prices?.discounts;
+  const grandTotal = prices?.grand_total?.value ?? 0;
   return (
     <>
       <VStack space={2} padding={5}>
@@ -168,7 +168,7 @@ const CartSummary = ({
         <Divider />
         <HStack justifyContent={'space-between'}>
           <Text variant={'subheader1'}>Total</Text>
-          <Text variant={'subheader1'}>₹ {total ?? 0}</Text>
+          <Text variant={'subheader1'}>₹ {grandTotal ?? 0}</Text>
         </HStack>
       </VStack>
     </>

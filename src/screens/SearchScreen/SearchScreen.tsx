@@ -1,68 +1,55 @@
 import {useQuery} from '@apollo/client';
-import {Badge, Box, FlatList, HStack, Text, VStack} from 'native-base';
-import React, {useCallback, useEffect, useState} from 'react';
-import {TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {
+  Badge,
+  Box,
+  FlatList,
+  HStack,
+  Image,
+  ScrollView,
+  Text,
+  VStack,
+} from 'native-base';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {NotificationIcon} from '../../assets/icons/Icons';
 import CustomIconButton from '../../components/Buttons/IconButton';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SearchBar from '../../components/SearchBar';
-import SpinnerComponent from '../../components/SpinnerComponent';
 import {recentKeywords} from '../../constants/main';
+import {NavigationProp} from '../../navigations/types';
 import {SEARCH_PRODUCTS} from '../../services/GGL-Queries/SearchScreen/SearchScreen.queries';
+import theme from '../../themes/theme';
 import searchScreenStyles from './SearchScreen.styles';
 import {SearchScreenProps} from './SearchScreen.type';
-import {debounce} from './service';
+import AnimatedSkeleton from './components/AnimatedSkeleton';
 
 function SearchScreen({navigation}: SearchScreenProps) {
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState([]);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [shouldQueryRun, setShouldQueryRun] = useState(false);
   const {loading, error, data} = useQuery(SEARCH_PRODUCTS, {
     variables: {search, pageSize: 20, currentPage: 1},
-    skip: !search,
+    skip: !shouldQueryRun,
     onCompleted: res => {
       setProducts(res?.products?.items);
     },
   });
 
   useEffect(() => {
+    if (search) {
+      setShouldQueryRun(true);
+    } else {
+      setShouldQueryRun(false);
+    }
+  }, [search]);
+
+  useEffect(() => {
     if (data && data.products && data.products.items) {
       setProducts(data.products.items);
     }
   }, [data]);
-
-  const debouncedSearch = useCallback(
-    debounce((value: string) => setSearch(value), 300),
-    [],
-  );
-
-  const handleSearchChange = (value: string) => {
-    debouncedSearch(value);
-    setDropdownVisible(true);
-  };
-
-  const handleFocus = () => {
-    setDropdownVisible(true);
-  };
-
-  const handleBlur = () => {
-    setTimeout(() => setDropdownVisible(false), 100);
-  };
-
-  const renderDropdownItem = ({item}: any) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Product', {
-            productSku: item?.sku,
-          });
-          // setDropdownVisible(false);
-        }}>
-        <Text style={searchScreenStyles.dropdownItem}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <>
@@ -93,41 +80,58 @@ function SearchScreen({navigation}: SearchScreenProps) {
           />,
         ]}
       />
-      {/* <LinearProgress /> */}
+
       <ScreenContent flex={1} containerStyles={{backgroundColor: 'white'}}>
         <VStack space={5} justifyContent={'space-between'} px={5}>
           <SearchBar
             placeholder="Search dishes, restaurants"
-            onChangeText={handleSearchChange}
-            onFocus={handleFocus}
-            // onBlur={handleBlur}
+            onSearch={v => {
+              setSearch(v);
+            }}
           />
-          {dropdownVisible && (
+
+          {search ? (
             <>
               {loading ? (
-                <SpinnerComponent onlySpinner />
+                <AnimatedSkeleton />
               ) : (
                 <>
-                  <Box style={searchScreenStyles.dropdown}>
-                    {products.length ? (
-                      <FlatList
-                        data={products}
-                        keyExtractor={(item: any) => item.id}
-                        renderItem={renderDropdownItem}
-                      />
-                    ) : null}
-                  </Box>
+                  <ScrollView>
+                    <Box
+                      style={{
+                        flex: 1,
+                      }}>
+                      {products.length > 0 ? (
+                        <>
+                          {products?.map(product => (
+                            <ProductItem product={product} />
+                          ))}
+                        </>
+                      ) : (
+                        <Box
+                          style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                          <Text>{`No Products found with name ${search}`}</Text>
+                        </Box>
+                      )}
+                    </Box>
+                  </ScrollView>
                 </>
               )}
             </>
-          )}
-
-          <RecentSearchSection recentKeywords={recentKeywords} />
-          {/* <SuggestedStoresSection suggestedStores={suggestedStores} /> */}
-          {/* <PopularOffersSection
+          ) : (
+            <>
+              <RecentSearchSection recentKeywords={recentKeywords} />
+              {/* <SuggestedStoresSection suggestedStores={suggestedStores} /> */}
+              {/* <PopularOffersSection
             navigation={navigation}
             popularOffers={popularOffers}
           /> */}
+            </>
+          )}
         </VStack>
       </ScreenContent>
     </>
@@ -162,3 +166,65 @@ export const RecentSearchSection = ({
     </>
   );
 };
+
+export const ProductItem = ({product}: any) => {
+  const navigation = useNavigation<NavigationProp>();
+  const price = product?.price_range?.maximum_price?.final_price?.value;
+  return (
+    <>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Product', {
+            productSku: product?.sku,
+          })
+        }>
+        <HStack style={styles.container}>
+          <HStack space={2} alignItems={'center'}>
+            <Box style={styles.imageContainer}>
+              {product?.image?.url && (
+                <Image
+                  source={{uri: `${product?.image?.url}`}}
+                  style={{width: '80%', height: '80%'}}
+                  resizeMode="contain"
+                  alt={product?.image?.label}
+                />
+              )}
+            </Box>
+
+            <VStack>
+              <Text variant="body2" fontSize={'sm'}>
+                {product?.name ?? '--'}
+              </Text>
+              <Text variant="body2" fontSize={'sm'}>
+                ₹{price ?? 0}
+              </Text>
+            </VStack>
+          </HStack>
+        </HStack>
+      </TouchableOpacity>
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 8,
+    paddingVertical: 20,
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.gray[500],
+  },
+
+  imageContainer: {
+    height: 60,
+    width: 60,
+    aspectRatio: 1,
+    backgroundColor: theme.colors.gray[500],
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

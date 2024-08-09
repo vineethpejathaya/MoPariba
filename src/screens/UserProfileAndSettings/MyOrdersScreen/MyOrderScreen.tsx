@@ -11,7 +11,7 @@ import {GET_CUSTOMER_ORDERS} from '../../../services/GGL-Queries/MyOrders/MyOrde
 import {
   CustomerOrder,
   GetCustomerOrdersResponse,
-} from '../../../services/GGL-Queries/MyOrders/MyOrders.type';
+} from '../../../services/GGL-Queries/MyOrders/interfaces/MyOrders.type';
 import theme from '../../../themes/theme';
 import ProductOrderedList from './components/ProductItem';
 

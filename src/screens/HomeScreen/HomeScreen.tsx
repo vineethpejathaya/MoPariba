@@ -15,12 +15,10 @@ import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
 import {banners, products} from '../../constants/main';
 import {useAuth} from '../../hooks/UseAuth';
-import {
-  CREATE_CART_MUTATION,
-  GET_CUSTOMER_CART,
-} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
+import {GET_CUSTOMER_CART} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 
 import {useCartStore} from '../../hooks/UseCartStore';
+import {CREATE_CART_MUTATION} from '../../services/GGL-Queries/CustomerCart/Cart.mutation';
 import {
   GET_CATEGORIES,
   GET_CUSTOMER_DETAILS,
@@ -168,14 +166,17 @@ function HomeScreen({navigation}: HomeScreenProps) {
           </Text>
 
           <SearchBar
-            onPress={() => {
-              navigation.navigate('Search');
+            inputProps={{
+              onPress: () => {
+                navigation.navigate('Search');
+              },
+              InputRightElement: (
+                <Box style={{padding: 10}}>
+                  <CameraIcon />
+                </Box>
+              ),
             }}
-            InputRightElement={
-              <Box style={{padding: 10}}>
-                <CameraIcon />
-              </Box>
-            }
+            onSearch={() => {}}
           />
 
           <HomeBanner banners={banners} />

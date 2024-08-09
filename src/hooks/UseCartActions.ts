@@ -1,9 +1,10 @@
 import {useMutation} from '@apollo/client';
+
 import {
   ADD_CONFIGURABLE_PRODUCTS_TO_CART,
   REMOVE_ITEM_FROM_CART,
   UPDATE_CART_ITEMS,
-} from '../services/GGL-Queries/CustomerCart/Cart.queries';
+} from '../services/GGL-Queries/CustomerCart/Cart.mutation';
 import {useCartStore} from './UseCartStore';
 
 const useCartActions = () => {

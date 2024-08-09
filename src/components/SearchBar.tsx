@@ -1,22 +1,42 @@
-import {Box, Input} from 'native-base';
+import {Box, IInputProps, Input} from 'native-base';
+import {useMemo, useState} from 'react';
+import {SearchIcon} from '../assets/icons/Icons';
 import theme from '../themes/theme';
 
-import {IInputProps} from 'native-base';
-import {SearchIcon} from '../assets/icons/Icons';
+export const debounce = (func: any, delay: any) => {
+  let timeoutId: any;
+  return (...args: any) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
 
-export interface SearchProps extends IInputProps {
+interface SearchBarProps {
+  onSearch: (v: string) => void;
+  placeholder?: string;
+  value?: string;
+  inputProps?: IInputProps;
   iconSize?: number;
   iconColor?: string;
   iconPadding?: number;
-  placeholderText?: string;
 }
 
 function SearchBar({
-  iconSize = 25,
-  iconColor = theme.colors.gray[900],
-  placeholderText = 'What are you looking for?',
-  ...props
-}) {
+  onSearch,
+  placeholder = 'What are you looking for?',
+  ...restProps
+}: SearchBarProps) {
+  const [, setSearch] = useState('');
+
+  const debouncedChangeHandler = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearch(value);
+        onSearch(value);
+      }, 300),
+    [],
+  );
+
   return (
     <>
       <Input
@@ -29,12 +49,13 @@ function SearchBar({
           bg: 'transparent',
         }}
         height={10}
-        placeholder={placeholderText}
+        placeholder={placeholder}
         backgroundColor={theme.colors.white}
+        onChangeText={debouncedChangeHandler}
         borderRadius={35}
         borderColor={'#DEDEDE'}
         borderWidth={1}
-        {...props}
+        {...restProps.inputProps}
       />
     </>
   );

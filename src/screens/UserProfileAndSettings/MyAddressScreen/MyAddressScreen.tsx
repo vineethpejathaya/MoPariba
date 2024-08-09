@@ -81,7 +81,7 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
             )}
             content={({close}) => (
               <>
-                <AddressForm close={close} />
+                <AddressForm close={close} onSave={refetch} />
               </>
             )}
           />,

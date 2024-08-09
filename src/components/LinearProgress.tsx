@@ -1,8 +1,14 @@
 import {Box} from 'native-base';
 import React, {useEffect, useRef} from 'react';
-import {Animated, Easing, StyleSheet} from 'react-native';
+import {Animated, Easing, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 
-const LinearProgress = () => {
+const LinearProgress = ({
+  height = 1,
+  containerStyles,
+}: {
+  height?: number;
+  containerStyles?: StyleProp<ViewStyle>;
+}) => {
   const widthAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -26,7 +32,8 @@ const LinearProgress = () => {
 
   return (
     <Box
-      height={1}
+      style={[containerStyles]}
+      height={height}
       width="full"
       backgroundColor="coolGray.200"
       overflow="hidden"

@@ -4,11 +4,11 @@ import theme from '../../../themes/theme';
 
 const coupons = [
   {
-    discount: 'FLAT ₹125 OFF',
-    message: 'USE FLAT DEAL | ABOVE ₹249',
+    discount: 'FLAT ₹ 125 OFF',
+    message: 'USE FLAT DEAL | ABOVE ₹ 249',
   },
   {
-    discount: '40% OFF UPTO ₹100',
+    discount: '40% OFF UPTO ₹ 100',
     message: 'USE GUILT FREE | ON SELECT ITEMS',
   },
 ];
@@ -29,7 +29,7 @@ function CouponSection() {
         </HStack>
         <Box alignItems="center" my="2">
           <Text color="red.500" fontWeight="bold">
-            Free delivery on orders above ₹149
+            Free delivery on orders above ₹ 149
           </Text>
         </Box>
       </VStack>

@@ -25,7 +25,6 @@ import Switch from './Forms/Switch';
 import TextField from './Forms/TextInput';
 
 export type AddressState = {
-  name: string;
   firstname: string;
   lastname: string;
   street: string;
@@ -46,7 +45,6 @@ function AddressForm({
 }) {
   const {showSuccessToast} = useToast();
   const [userAddress, setUserAddress] = useState<AddressState>({
-    name: '',
     firstname: '',
     lastname: '',
     street: '',
@@ -58,10 +56,6 @@ function AddressForm({
 
   useEffect(() => {
     setUserAddress({
-      name: address
-        ? (address.firstname ? address.firstname + ' ' : '') +
-          (address.lastname ?? '')
-        : '',
       firstname: address?.firstname ?? '',
       lastname: address?.lastname ?? '',
       street: address?.street.join(',') ?? '',
@@ -99,7 +93,6 @@ function AddressForm({
   );
 
   const handleSubmit = () => {
-    const nameArr = userAddress.name.split(' ');
     const input = {
       region: regionObj.Odisha,
       country_code: countryObj.India.id,
@@ -107,8 +100,8 @@ function AddressForm({
       telephone: userAddress.telephone,
       postcode: userAddress.postcode,
       city: userAddress.city,
-      firstname: nameArr[0],
-      lastname: nameArr[1],
+      firstname: userAddress.firstname,
+      lastname: userAddress.lastname,
       default_shipping: userAddress.default_billing,
       default_billing: userAddress.default_billing,
     };
@@ -133,17 +126,32 @@ function AddressForm({
       <ScrollView>
         <VStack space={2} padding={3}>
           <TextField
-            name={'name'}
+            name={'firstname'}
             height={45}
-            value={userAddress.name}
-            placeholder={'Name'}
+            value={userAddress.firstname}
+            placeholder={'First Name'}
             leftElement={
               <Box style={{paddingLeft: 10}}>{fieldConfig['name']}</Box>
             }
             onChangeText={(value: any) => {
               setUserAddress((prev: any) => ({
                 ...prev,
-                name: value,
+                firstname: value,
+              }));
+            }}
+          />
+          <TextField
+            name={'lastname'}
+            height={45}
+            value={userAddress.lastname}
+            placeholder={'Last Name'}
+            leftElement={
+              <Box style={{paddingLeft: 10}}>{fieldConfig['name']}</Box>
+            }
+            onChangeText={(value: any) => {
+              setUserAddress((prev: any) => ({
+                ...prev,
+                lastname: value,
               }));
             }}
           />

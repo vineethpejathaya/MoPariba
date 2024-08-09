@@ -16,9 +16,35 @@ export const SEARCH_PRODUCTS = gql`
       sort: $sort
     ) {
       items {
+        uid
         name
-
         sku
+        image {
+          url
+          label
+        }
+        price_range {
+          minimum_price {
+            discount {
+              amount_off
+              percent_off
+            }
+            final_price {
+              value
+              currency
+            }
+          }
+          maximum_price {
+            discount {
+              amount_off
+              percent_off
+            }
+            final_price {
+              value
+              currency
+            }
+          }
+        }
       }
     }
   }

@@ -1,11 +1,3 @@
-// interface GetCustomerOrdersVariables {
-//   filter?: CustomerOrdersFilterInput;
-//   currentPage?: number;
-//   pageSize?: number;
-//   sort?: CustomerOrderSortInput;
-//   scope?: ScopeTypeEnum;
-// }
-
 export interface GetCustomerOrdersResponse {
   customer: {
     orders: {
