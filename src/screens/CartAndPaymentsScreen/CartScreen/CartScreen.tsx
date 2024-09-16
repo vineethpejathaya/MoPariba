@@ -137,7 +137,7 @@ const CartSummary = ({
 }) => {
   const shippingCharges =
     shippingAddresses?.reduce(
-      (acc, curr) => acc + curr.selected_shipping_method.amount.value,
+      (acc, curr) => acc + curr?.selected_shipping_method?.amount?.value,
       0,
     ) ?? 0;
   const appliedTaxes = prices?.applied_taxes;
@@ -153,7 +153,7 @@ const CartSummary = ({
             Subtotal
           </Text>
           <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            ₹ {subTotal ?? 0}
+            ₹ {subTotal || 0}
           </Text>
         </HStack>
         <HStack justifyContent="space-between" mb="2">
@@ -161,14 +161,14 @@ const CartSummary = ({
             Shipping charges
           </Text>
           <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            ₹ {shippingCharges ?? 0}
+            ₹ {shippingCharges || 0}
           </Text>
         </HStack>
 
         <Divider />
         <HStack justifyContent={'space-between'}>
           <Text variant={'subheader1'}>Total</Text>
-          <Text variant={'subheader1'}>₹ {grandTotal ?? 0}</Text>
+          <Text variant={'subheader1'}>₹ {grandTotal || 0}</Text>
         </HStack>
       </VStack>
     </>

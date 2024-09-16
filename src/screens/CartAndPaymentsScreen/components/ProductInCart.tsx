@@ -1,7 +1,7 @@
 import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import QuantitySelector from '../../../components/QuantitySelector';
-import {CartItem} from '../../../services/GGL-Queries/CustomerCart/Cart.type';
+import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
 import theme from '../../../themes/theme';
 
 function ProductInCart({cartItem}: {cartItem: CartItem}) {
