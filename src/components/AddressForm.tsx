@@ -11,6 +11,7 @@ import {
 } from '../assets/icons/Icons';
 import {countryObj, regionObj} from '../constants/FomConstants';
 import useToast from '../hooks/UseToast';
+import {AddressComponent} from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLocation.interface';
 import {
   CREATE_CUSTOMER_ADDRESS,
   GET_CUSTOMER_ADDRESSES,
@@ -21,6 +22,7 @@ import {
   UpdateCustomerAddressResponse,
   UpdateCustomerAddressVariables,
 } from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import {extractFullAddress} from '../services/utils/extractAddress';
 import Switch from './Forms/Switch';
 import TextField from './Forms/TextInput';
 
@@ -38,10 +40,12 @@ function AddressForm({
   address,
   close,
   onSave,
+  addressComponent = [],
 }: {
   address?: CustomerAddress;
   close?: () => void;
   onSave?: () => void;
+  addressComponent?: AddressComponent[];
 }) {
   const {showSuccessToast} = useToast();
   const [userAddress, setUserAddress] = useState<AddressState>({
@@ -55,15 +59,29 @@ function AddressForm({
   });
 
   useEffect(() => {
-    setUserAddress({
-      firstname: address?.firstname ?? '',
-      lastname: address?.lastname ?? '',
-      street: address?.street.join(',') ?? '',
-      city: address?.city ?? '',
-      postcode: address?.postcode ?? '',
-      default_billing: address?.default_billing ?? false,
-      telephone: address?.telephone ?? '',
-    });
+    if (addressComponent.length > 0) {
+      const addressData = extractFullAddress(addressComponent);
+
+      setUserAddress({
+        firstname: '',
+        lastname: '',
+        street: addressData?.street ?? '',
+        city: addressData?.city ?? '',
+        postcode: addressData?.postal_code ?? '',
+        default_billing: false,
+        telephone: '',
+      });
+    } else {
+      setUserAddress({
+        firstname: address?.firstname ?? '',
+        lastname: address?.lastname ?? '',
+        street: address?.street.join(',') ?? '',
+        city: address?.city ?? '',
+        postcode: address?.postcode ?? '',
+        default_billing: address?.default_billing ?? false,
+        telephone: address?.telephone ?? '',
+      });
+    }
   }, [address]);
 
   const [updateCustomerAddress, {loading: updatingAddress}] = useMutation<

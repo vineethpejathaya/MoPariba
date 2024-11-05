@@ -5,12 +5,14 @@ import theme from '../themes/theme';
 function UserAddress({address}: {address: any}) {
   return (
     <>
-      <VStack>
+      <VStack style={{padding: 5, width: '100%'}}>
         <Text style={styles.userName}>
           {address.firstname} {''}
           {address.lastname}
         </Text>
-        <Text style={styles.address}>{address?.street?.join(',')}</Text>
+        <Text style={styles.address}>
+          {address?.street?.slice(0, 2).join(',')}
+        </Text>
         <Text style={styles.address}>
           {address.city},{address?.region?.region}, {address?.country_code},
           {address?.postcode}
@@ -31,6 +33,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   address: {
+    flexShrink: 1,
+
     fontSize: 10,
     fontFamily: 'Poppins-SemiBold',
     fontWeight: 400,

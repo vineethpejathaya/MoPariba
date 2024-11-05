@@ -14,7 +14,10 @@ import 'react-native-get-random-values';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import MapView, {Marker} from 'react-native-maps';
 import {AddressIcon, SearchIcon} from '../../../assets/icons/Icons';
+import AddressForm from '../../../components/AddressForm';
+import ModalButton from '../../../components/ModalButton';
 import ScreenHeader from '../../../components/ScreenHeader';
+import {GooglePlaceResponse} from './GeoLocation.interface';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDk_I-Pa2fyDziuZqGI5iYQ8Uu1goV_mDY';
 
@@ -32,7 +35,7 @@ export default function DeliveryLocationScreen() {
     longitude: -122.4324,
   });
 
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState<GooglePlaceResponse | null>(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -132,6 +135,7 @@ export default function DeliveryLocationScreen() {
     });
   };
 
+  console.log(mapRegion, 'mapRegion');
   const onRegionChangeComplete = (region: any) => {
     fetchAddressFromCoordinates(region.latitude, region.longitude);
   };
@@ -143,7 +147,7 @@ export default function DeliveryLocationScreen() {
       );
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        setAddress(data.results[0].formatted_address);
+        setAddress(data.results[0]);
       }
     } catch (error) {
       console.error('Error fetching address:', error);
@@ -161,7 +165,7 @@ export default function DeliveryLocationScreen() {
 
     setMapRegion(newRegion);
     setMarkerPosition({latitude: lat, longitude: lng});
-    setAddress(details.formatted_address);
+    setAddress(details);
   };
 
   const onMarkerDragEnd = (e: any) => {
@@ -169,6 +173,10 @@ export default function DeliveryLocationScreen() {
     setMarkerPosition({latitude, longitude});
     fetchAddressFromCoordinates(latitude, longitude);
   };
+
+  const handleSave = () => {};
+
+  console.log(address, 'address');
 
   return (
     <>
@@ -234,12 +242,26 @@ export default function DeliveryLocationScreen() {
       <VStack style={styles.addressContainer}>
         <HStack alignItems={'center'} space={2}>
           <AddressIcon />
+
           <Text style={styles.addressText}>
-            {address ? address : 'Fetching address...'}
+            {address ? address?.formatted_address : 'Fetching address...'}
           </Text>
         </HStack>
-
-        <Button style={styles.btn}>CONFIRM LOCATION</Button>
+        <ModalButton
+          anchor={({open}) => (
+            <Button style={styles.btn} onPress={open}>
+              CONFIRM AND ADD MORE DETAILS
+            </Button>
+          )}
+          title="Add New Address"
+          content={({close}) => (
+            <AddressForm
+              close={close}
+              onSave={handleSave}
+              addressComponent={address?.address_components}
+            />
+          )}
+        />
       </VStack>
     </>
   );
@@ -280,6 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   addressText: {
+    flexShrink: 1,
     fontSize: 16,
     fontWeight: '500',
   },
