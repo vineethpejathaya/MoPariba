@@ -1,6 +1,6 @@
 import Geolocation from '@react-native-community/geolocation';
 import {Button, HStack, VStack, View} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -17,9 +17,34 @@ import {AddressIcon, SearchIcon} from '../../../assets/icons/Icons';
 import AddressForm from '../../../components/AddressForm';
 import ModalButton from '../../../components/ModalButton';
 import ScreenHeader from '../../../components/ScreenHeader';
+import {debounce} from '../../../components/SearchBar';
 import {GooglePlaceResponse} from './GeoLocation.interface';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDk_I-Pa2fyDziuZqGI5iYQ8Uu1goV_mDY';
+
+const isRegionDifferent = (newRegion: any, mapRegion: any) => {
+  const tolerance = 0.0001;
+  return (
+    Math.abs(newRegion.latitude - mapRegion.latitude) > tolerance ||
+    Math.abs(newRegion.longitude - mapRegion.longitude) > tolerance ||
+    Math.abs(newRegion.latitudeDelta - mapRegion.latitudeDelta) > tolerance ||
+    Math.abs(newRegion.longitudeDelta - mapRegion.longitudeDelta) > tolerance
+  );
+};
+
+const isRegionChangeSignificant = (newRegion: any, mapRegion: any) => {
+  const tolerance = 0.0001;
+  const deltaTolerance = 0.01;
+
+  return (
+    Math.abs(newRegion.latitude - mapRegion.latitude) > tolerance ||
+    Math.abs(newRegion.longitude - mapRegion.longitude) > tolerance ||
+    Math.abs(newRegion.latitudeDelta - mapRegion.latitudeDelta) >
+      deltaTolerance ||
+    Math.abs(newRegion.longitudeDelta - mapRegion.longitudeDelta) >
+      deltaTolerance
+  );
+};
 
 export default function DeliveryLocationScreen() {
   // Separate state for initial region and current marker position
@@ -103,8 +128,10 @@ export default function DeliveryLocationScreen() {
       );
     }
   };
+  console.log('data');
 
   useEffect(() => {
+    console.log('useEffect no dep');
     const checkAndRequestPermission = async () => {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.check(
@@ -120,24 +147,24 @@ export default function DeliveryLocationScreen() {
 
     checkAndRequestPermission();
   }, []);
-
+  console.log(hasPermission, 'hasPermission');
+  console.log(address?.formatted_address, 'address');
+  console.log(mapRegion, 'region');
   useEffect(() => {
     if (hasPermission) {
       getCurrentLocation();
     }
+    console.log('useEffect');
   }, [hasPermission]);
 
   const onRegionChange = (region: any) => {
-    setMapRegion(region);
-    setMarkerPosition({
-      latitude: region.latitude,
-      longitude: region.longitude,
-    });
-  };
-
-  console.log(mapRegion, 'mapRegion');
-  const onRegionChangeComplete = (region: any) => {
-    fetchAddressFromCoordinates(region.latitude, region.longitude);
+    if (isRegionDifferent(region, mapRegion)) {
+      setMapRegion(region);
+      setMarkerPosition({
+        latitude: region.latitude,
+        longitude: region.longitude,
+      });
+    }
   };
 
   const fetchAddressFromCoordinates = async (lat: number, lng: number) => {
@@ -147,14 +174,42 @@ export default function DeliveryLocationScreen() {
       );
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        setAddress(data.results[0]);
+        const fetchedAddress = data.results[0].formatted_address;
+        if (fetchedAddress !== address?.formatted_address) {
+          setAddress(data.results[0]);
+        }
       }
     } catch (error) {
       console.error('Error fetching address:', error);
     }
   };
 
+  const debouncedFetchAddress = debounce(fetchAddressFromCoordinates, 500);
+
+  // const onRegionChangeComplete = (region: any) => {
+  //   if (isRegionDifferent(region, mapRegion)) {
+  //     debouncedFetchAddress(region.latitude, region.longitude);
+  //   }
+  // };
+
+  const onRegionChangeComplete = useCallback(
+    (region: any) => {
+      if (isRegionChangeSignificant(region, mapRegion)) {
+        setMapRegion(region);
+        setMarkerPosition({
+          latitude: region.latitude,
+          longitude: region.longitude,
+        });
+        fetchAddressFromCoordinates(region.latitude, region.longitude);
+      }
+    },
+    [mapRegion],
+  );
+
+  const debouncedOnRegionChangeComplete = debounce(onRegionChangeComplete, 500);
+
   const handlePlaceSelect = (data: any, details: any) => {
+    console.log('setting places');
     const {lat, lng} = details.geometry.location;
     const newRegion = {
       latitude: lat,
@@ -175,8 +230,6 @@ export default function DeliveryLocationScreen() {
   };
 
   const handleSave = () => {};
-
-  console.log(address, 'address');
 
   return (
     <>
@@ -217,7 +270,7 @@ export default function DeliveryLocationScreen() {
           region={mapRegion}
           showsUserLocation={true}
           onRegionChange={onRegionChange}
-          onRegionChangeComplete={onRegionChangeComplete}
+          onRegionChangeComplete={debouncedOnRegionChangeComplete}
           mapType="terrain">
           <Marker
             coordinate={markerPosition}
