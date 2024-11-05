@@ -1,5 +1,6 @@
 import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
+import {ConfigurableVariant} from '../services/GGL-Queries/Products/Product.type';
 import theme from '../themes/theme';
 import QuantitySelector from './QuantitySelector';
 
@@ -7,7 +8,7 @@ function ProductVariant({
   variant,
   parentSku,
 }: {
-  variant: any;
+  variant: ConfigurableVariant;
   parentSku: string;
 }) {
   const variantName = variant?.product?.name;

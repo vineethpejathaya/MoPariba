@@ -4,7 +4,8 @@ import {useState} from 'react';
 import RazorpayCheckout from 'react-native-razorpay';
 import {NavigationProp} from '../navigations/types';
 import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
-import {CREATE_CART_MUTATION} from '../services/GGL-Queries/CustomerCart/Cart.queries';
+
+import {CREATE_CART_MUTATION} from '../services/GGL-Queries/CustomerCart/Cart.mutation';
 import {
   PLACE_ORDER,
   PLACE_RAZORPAY_ORDER,

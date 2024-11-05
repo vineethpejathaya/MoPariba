@@ -22,13 +22,17 @@ import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const {cartId, setCart, cartItems} = useCartStore(state => state);
+  const {cartId, setCart, cartItems, setAppliedCoupons} = useCartStore(
+    state => state,
+  );
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
     {
       variables: {cart_id: cartId},
       onCompleted: res => {
+        const appliedCoupons = res?.cart?.applied_coupons;
         setCart(res?.cart?.items);
+        setAppliedCoupons(appliedCoupons ? appliedCoupons : []);
       },
     },
   );
@@ -97,19 +101,17 @@ function CartScreen() {
                 </PressableContainer> */}
               </HStack>
 
-              <ScrollView>
-                <VStack height={Dimensions.get('window').height * 0.35}>
-                  <ScrollView flex={1}>
-                    <VStack>
-                      {cartItems?.map((cartItem: CartItem, index: number) => (
-                        <ProductInCart key={index} cartItem={cartItem} />
-                      ))}
-                    </VStack>
-                  </ScrollView>
-                </VStack>
-              </ScrollView>
+              <VStack height={Dimensions.get('window').height * 0.35}>
+                <ScrollView flex={1}>
+                  <VStack>
+                    {cartItems?.map((cartItem: CartItem, index: number) => (
+                      <ProductInCart key={index} cartItem={cartItem} />
+                    ))}
+                  </VStack>
+                </ScrollView>
+              </VStack>
             </VStack>
-            <CouponSection />
+            <CouponSection refetchCart={refetch} />
             <CartSummary
               prices={data?.cart?.prices}
               shippingAddresses={data?.cart?.shipping_addresses}
@@ -142,28 +144,26 @@ const CartSummary = ({
     ) ?? 0;
   const appliedTaxes = prices?.applied_taxes;
   const subTotalInclusiveOfTax = prices?.subtotal_including_tax?.value;
+  const subTotalExclusiveOfTax = prices?.subtotal_excluding_tax?.value;
+  const taxAmount =
+    Number(subTotalInclusiveOfTax ?? 0) - Number(subTotalExclusiveOfTax ?? 0);
   const subTotal = prices?.subtotal_excluding_tax?.value;
-  const discounts = prices?.discounts;
+  const totalDiscount = prices?.discounts?.reduce(
+    (acc, curr) => acc + Number(curr?.amount?.value ?? 0),
+    0,
+  );
+
   const grandTotal = prices?.grand_total?.value ?? 0;
   return (
     <>
-      <VStack space={2} padding={5}>
-        <HStack justifyContent="space-between" my="2">
-          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            Subtotal
-          </Text>
-          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            ₹ {subTotal || 0}
-          </Text>
-        </HStack>
-        <HStack justifyContent="space-between" mb="2">
-          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            Shipping charges
-          </Text>
-          <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
-            ₹ {shippingCharges || 0}
-          </Text>
-        </HStack>
+      <VStack space={1} paddingX={5}>
+        <LabelValue label={'Subtotal'} value={`₹ ${subTotal || 0}`} />
+        <LabelValue
+          label={'Shipping charges'}
+          value={`₹ ${shippingCharges || 0}`}
+        />
+        <LabelValue label={'Applied Taxes'} value={`- ₹ ${taxAmount || 0}`} />
+        <LabelValue label={'Discount'} value={`₹ ${totalDiscount || 0}`} />
 
         <Divider />
         <HStack justifyContent={'space-between'}>
@@ -171,6 +171,21 @@ const CartSummary = ({
           <Text variant={'subheader1'}>₹ {grandTotal || 0}</Text>
         </HStack>
       </VStack>
+    </>
+  );
+};
+
+const LabelValue = ({label, value}: {label: string; value: string}) => {
+  return (
+    <>
+      <HStack justifyContent="space-between" mb="2">
+        <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+          {label}
+        </Text>
+        <Text variant={'body1'} style={{color: theme.colors.gray[900]}}>
+          {value}
+        </Text>
+      </HStack>
     </>
   );
 };

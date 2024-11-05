@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
 import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
-import {CartItem} from '../services/GGL-Queries/CustomerCart/Cart.type';
+import {CartItem} from '../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
 
 interface TransformedCartItem {
   cartItemId: string;
@@ -16,9 +16,9 @@ interface TransformedCartItem {
 }
 interface CartState {
   cartItems: CartItem[];
+  appliedCoupons: string[];
   cartId: string;
   adding: boolean;
-
   removing: boolean;
   updating: boolean;
   showLoading: boolean;
@@ -28,6 +28,7 @@ interface CartState {
   productMap: Map<string, TransformedCartItem[]>;
   setCartId: (id: string) => void;
   setCart: (cart: CartItem[]) => void;
+  setAppliedCoupons: (coupons: string[]) => void;
   setAddresses: (address: CustomerAddress[]) => void;
   setAdding: (status: boolean) => void;
   setRemoving: (status: boolean) => void;
@@ -47,6 +48,7 @@ interface CartState {
 export const useCartStore = create<CartState>()(
   devtools((set, get) => ({
     cartItems: [],
+    appliedCoupons: [],
     cartId: '',
     adding: false,
     removing: false,
@@ -73,6 +75,7 @@ export const useCartStore = create<CartState>()(
       });
     },
     setCartId: (id: string) => set({cartId: id}),
+    setAppliedCoupons: (coupons: string[]) => set({appliedCoupons: coupons}),
     setAdding: status => set({adding: status}),
     setRemoving: status => set({removing: status}),
     setUpdating: status => set({updating: status}),

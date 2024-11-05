@@ -15,9 +15,7 @@ export interface Cart {
   items: CartItem[];
   prices: Prices;
   total_quantity: number;
-  applied_coupons?: Array<{
-    code: string;
-  }>;
+  applied_coupons?: Array<string>;
   email: string;
   id: string;
   is_virtual: boolean;

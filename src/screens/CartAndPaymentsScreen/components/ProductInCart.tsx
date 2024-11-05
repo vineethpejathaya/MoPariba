@@ -48,7 +48,7 @@ export default ProductInCart;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 15,
     justifyContent: 'space-between',
     alignItems: 'center',

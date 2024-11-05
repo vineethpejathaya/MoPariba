@@ -15,7 +15,6 @@ import {AddressIcon, MoreActions} from '../../../assets/icons/Icons';
 import Accordion from '../../../components/Accordion';
 import AddressForm from '../../../components/AddressForm';
 import LinearProgress from '../../../components/LinearProgress';
-import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
@@ -70,20 +69,10 @@ function MyAddressScreen({navigation}: MyAddressScreenProps) {
       <ScreenHeader
         title={'My Address'}
         rightActions={[
-          <ModalButton
-            title={'Add new address'}
-            anchor={({open}) => (
-              <IconButton
-                onPress={open}
-                style={styles.addBtn}
-                icon={<AddIcon size={3} color={theme.colors.black} />}
-              />
-            )}
-            content={({close}) => (
-              <>
-                <AddressForm close={close} onSave={refetch} />
-              </>
-            )}
+          <IconButton
+            onPress={() => navigation.navigate('GeoLocationScreen')}
+            style={styles.addBtn}
+            icon={<AddIcon size={3} color={theme.colors.black} />}
           />,
         ]}
       />

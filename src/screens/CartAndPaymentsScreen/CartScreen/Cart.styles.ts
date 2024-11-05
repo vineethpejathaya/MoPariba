@@ -14,7 +14,7 @@ const CartScreenStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 2,
     paddingHorizontal: 25,
-    paddingBottom: 10,
+    paddingBottom: 5,
   },
   cartReviewHeading: {
     fontFamily: 'DMSans-Bold',

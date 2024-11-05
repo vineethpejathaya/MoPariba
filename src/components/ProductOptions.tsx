@@ -1,7 +1,9 @@
 import {
+  Box,
   Button,
   Center,
   ChevronDownIcon,
+  FlatList,
   HStack,
   Text,
   VStack,
@@ -65,14 +67,17 @@ function ProductOptions({product}: {product: Product}) {
         title={product.name ?? ''}
         content={({close}) => (
           <>
-            <VStack space={3} padding={1}>
-              {product?.variants?.map((variant: any, index: number) => (
-                <ProductVariant
-                  key={index}
-                  variant={variant}
-                  parentSku={product.sku}
+            <VStack space={2}>
+              <Box maxHeight={350}>
+                <FlatList
+                  data={product?.variants}
+                  ItemSeparatorComponent={() => <Box height={2} />}
+                  renderItem={({item, index}) => (
+                    <ProductVariant variant={item} parentSku={product.sku} />
+                  )}
+                  keyExtractor={(item: any) => item.product?.uid}
                 />
-              ))}
+              </Box>
               <PressableContainer onPress={close}>
                 <HStack style={styles.confirmContainer}>
                   <Text style={styles.confirmText}>

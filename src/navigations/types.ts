@@ -47,6 +47,7 @@ export type RootStackParamList = {
   MyAddress: undefined;
   MyOrdersScreen: undefined;
   AddressScreen: undefined;
+  GeoLocationScreen: undefined;
   AboutMeScreen: undefined;
   FavoritesScreen: undefined;
   OrdersScreen: undefined;
