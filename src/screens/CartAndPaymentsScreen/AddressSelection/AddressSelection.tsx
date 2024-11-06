@@ -2,7 +2,6 @@ import {useQuery} from '@apollo/client';
 import {useNavigation} from '@react-navigation/native';
 import {Box, Button, Radio, ScrollView, Text, VStack} from 'native-base';
 import {useState} from 'react';
-import ModalButton from '../../../components/ModalButton';
 import NavigationItem from '../../../components/NavigationItem';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
@@ -14,7 +13,6 @@ import {
   GetCustomerAddressesResponse,
 } from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 
-import AddressForm from '../../../components/AddressForm';
 import AddressSelectionStyles from './AddressSelection.styles';
 import AddressCard from './components/AddressCard';
 
@@ -80,14 +78,9 @@ function AddressSelection() {
               ))}
             </Radio.Group>
             <Box>
-              <ModalButton
-                anchor={({open}) => (
-                  <NavigationItem label={'Add New Address'} onPress={open} />
-                )}
-                title="Add New Address"
-                content={({close}) => (
-                  <AddressForm close={close} onSave={handleSave} />
-                )}
+              <NavigationItem
+                label={'Add New Address'}
+                onPress={() => navigate.navigate('GeoLocationScreen')}
               />
             </Box>
           </Box>

@@ -6,6 +6,7 @@ import {
   Dimensions,
   PermissionsAndroid,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,35 +20,25 @@ import ModalButton from '../../../components/ModalButton';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {debounce} from '../../../components/SearchBar';
 import {GooglePlaceResponse} from './GeoLocation.interface';
-
+StatusBar.setBarStyle('dark-content');
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDk_I-Pa2fyDziuZqGI5iYQ8Uu1goV_mDY';
 
-const isRegionDifferent = (newRegion: any, mapRegion: any) => {
-  const tolerance = 0.0001;
-  return (
-    Math.abs(newRegion.latitude - mapRegion.latitude) > tolerance ||
-    Math.abs(newRegion.longitude - mapRegion.longitude) > tolerance ||
-    Math.abs(newRegion.latitudeDelta - mapRegion.latitudeDelta) > tolerance ||
-    Math.abs(newRegion.longitudeDelta - mapRegion.longitudeDelta) > tolerance
-  );
-};
-
-const isRegionChangeSignificant = (newRegion: any, mapRegion: any) => {
+// Check if region change is significant with custom tolerance
+const isRegionChangeSignificant = (newRegion: any, currentRegion: any) => {
   const tolerance = 0.0001;
   const deltaTolerance = 0.01;
 
   return (
-    Math.abs(newRegion.latitude - mapRegion.latitude) > tolerance ||
-    Math.abs(newRegion.longitude - mapRegion.longitude) > tolerance ||
-    Math.abs(newRegion.latitudeDelta - mapRegion.latitudeDelta) >
+    Math.abs(newRegion.latitude - currentRegion.latitude) > tolerance ||
+    Math.abs(newRegion.longitude - currentRegion.longitude) > tolerance ||
+    Math.abs(newRegion.latitudeDelta - currentRegion.latitudeDelta) >
       deltaTolerance ||
-    Math.abs(newRegion.longitudeDelta - mapRegion.longitudeDelta) >
+    Math.abs(newRegion.longitudeDelta - currentRegion.longitudeDelta) >
       deltaTolerance
   );
 };
 
 export default function DeliveryLocationScreen() {
-  // Separate state for initial region and current marker position
   const [mapRegion, setMapRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -99,9 +90,6 @@ export default function DeliveryLocationScreen() {
       Geolocation.getCurrentPosition(
         position => {
           const {latitude, longitude} = position.coords;
-          console.log('Current location:', latitude, longitude);
-
-          // Update both map region and marker position
           const newRegion = {
             latitude,
             longitude,
@@ -128,10 +116,8 @@ export default function DeliveryLocationScreen() {
       );
     }
   };
-  console.log('data');
 
   useEffect(() => {
-    console.log('useEffect no dep');
     const checkAndRequestPermission = async () => {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.check(
@@ -147,27 +133,28 @@ export default function DeliveryLocationScreen() {
 
     checkAndRequestPermission();
   }, []);
-  console.log(hasPermission, 'hasPermission');
-  console.log(address?.formatted_address, 'address');
-  console.log(mapRegion, 'region');
+
   useEffect(() => {
     if (hasPermission) {
       getCurrentLocation();
     }
-    console.log('useEffect');
   }, [hasPermission]);
 
-  const onRegionChange = (region: any) => {
-    if (isRegionDifferent(region, mapRegion)) {
-      setMapRegion(region);
-      setMarkerPosition({
-        latitude: region.latitude,
-        longitude: region.longitude,
-      });
-    }
-  };
+  const onRegionChangeComplete = useCallback(
+    debounce((region: any) => {
+      if (isRegionChangeSignificant(region, mapRegion)) {
+        setMapRegion(region);
+        setMarkerPosition({
+          latitude: region.latitude,
+          longitude: region.longitude,
+        });
+        fetchAddressFromCoordinates(region.latitude, region.longitude);
+      }
+    }, 500),
+    [mapRegion],
+  );
 
-  const fetchAddressFromCoordinates = async (lat: number, lng: number) => {
+  const fetchAddressFromCoordinates = async (lat: any, lng: any) => {
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`,
@@ -184,32 +171,7 @@ export default function DeliveryLocationScreen() {
     }
   };
 
-  const debouncedFetchAddress = debounce(fetchAddressFromCoordinates, 500);
-
-  // const onRegionChangeComplete = (region: any) => {
-  //   if (isRegionDifferent(region, mapRegion)) {
-  //     debouncedFetchAddress(region.latitude, region.longitude);
-  //   }
-  // };
-
-  const onRegionChangeComplete = useCallback(
-    (region: any) => {
-      if (isRegionChangeSignificant(region, mapRegion)) {
-        setMapRegion(region);
-        setMarkerPosition({
-          latitude: region.latitude,
-          longitude: region.longitude,
-        });
-        fetchAddressFromCoordinates(region.latitude, region.longitude);
-      }
-    },
-    [mapRegion],
-  );
-
-  const debouncedOnRegionChangeComplete = debounce(onRegionChangeComplete, 500);
-
   const handlePlaceSelect = (data: any, details: any) => {
-    console.log('setting places');
     const {lat, lng} = details.geometry.location;
     const newRegion = {
       latitude: lat,
@@ -233,7 +195,7 @@ export default function DeliveryLocationScreen() {
 
   return (
     <>
-      <ScreenHeader title={'Delivery location'} />
+      <ScreenHeader title="Delivery location" />
       <VStack height={Dimensions.get('window').height * 0.65}>
         <GooglePlacesAutocomplete
           placeholder="Search for area, street name..."
@@ -253,11 +215,17 @@ export default function DeliveryLocationScreen() {
               zIndex: 1,
               top: 10,
               alignSelf: 'center',
-              margin: 'auto',
             },
             textInputContainer: styles.textInputContainer,
             textInput: styles.textInput,
-            listView: {backgroundColor: 'white'},
+            listView: {
+              backgroundColor: '#fff',
+              borderRadius: 5,
+            },
+            description: {
+              fontSize: 14,
+              color: '#000',
+            },
           }}
           renderLeftButton={() => (
             <View marginLeft={3}>
@@ -269,8 +237,7 @@ export default function DeliveryLocationScreen() {
           style={styles.map}
           region={mapRegion}
           showsUserLocation={true}
-          onRegionChange={onRegionChange}
-          onRegionChangeComplete={debouncedOnRegionChangeComplete}
+          onRegionChangeComplete={onRegionChangeComplete}
           mapType="terrain">
           <Marker
             coordinate={markerPosition}
@@ -278,7 +245,6 @@ export default function DeliveryLocationScreen() {
             onDragEnd={onMarkerDragEnd}
           />
         </MapView>
-
         <TouchableOpacity
           style={[
             styles.currentLocationButton,
@@ -291,39 +257,38 @@ export default function DeliveryLocationScreen() {
           </Text>
         </TouchableOpacity>
       </VStack>
+      <VStack style={styles.container}>
+        <VStack style={styles.addressContainer}>
+          <HStack alignItems={'center'} style={styles.addressRow} space={2}>
+            <AddressIcon />
+            <Text style={styles.addressText}>
+              {address ? address?.formatted_address : 'Fetching address...'}
+            </Text>
+          </HStack>
 
-      <VStack style={styles.addressContainer}>
-        <HStack alignItems={'center'} space={2}>
-          <AddressIcon />
-
-          <Text style={styles.addressText}>
-            {address ? address?.formatted_address : 'Fetching address...'}
-          </Text>
-        </HStack>
-        <ModalButton
-          anchor={({open}) => (
-            <Button style={styles.btn} onPress={open}>
-              CONFIRM AND ADD MORE DETAILS
-            </Button>
-          )}
-          title="Add New Address"
-          content={({close}) => (
-            <AddressForm
-              close={close}
-              onSave={handleSave}
-              addressComponent={address?.address_components}
-            />
-          )}
-        />
+          <ModalButton
+            anchor={({open}) => (
+              <Button style={styles.btn} onPress={open}>
+                CONFIRM AND ADD MORE DETAILS
+              </Button>
+            )}
+            title="Add New Address"
+            content={({close}) => (
+              <AddressForm
+                close={close}
+                onSave={handleSave}
+                addressComponent={address?.address_components}
+              />
+            )}
+          />
+        </VStack>
       </VStack>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  map: {
-    flex: 1,
-  },
+  map: {flex: 1},
   currentLocationButton: {
     position: 'absolute',
     bottom: 10,
@@ -335,37 +300,25 @@ const styles = StyleSheet.create({
     borderColor: '#019543',
     elevation: 2,
     zIndex: 1,
-    display: 'flex',
-    gap: 10,
   },
-  currentLocationButtonDisabled: {
-    opacity: 0.7,
-    borderColor: '#ccc',
-  },
-  currentLocationText: {
-    fontSize: 14,
-    color: '#007AFF',
-  },
+  currentLocationButtonDisabled: {opacity: 0.7, borderColor: '#ccc'},
+  currentLocationText: {fontSize: 14, color: '#007AFF'},
   addressContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+    flex: 1,
     justifyContent: 'space-between',
-    gap: 40,
-    paddingTop: 25,
-    paddingHorizontal: 15,
   },
   addressText: {
     flexShrink: 1,
     fontSize: 16,
     fontWeight: '500',
+    flex: 1,
+    color: '#000',
+    overflow: 'hidden',
   },
-  btn: {
-    height: 60,
-    borderRadius: 20,
-  },
+  btn: {height: 60, borderRadius: 20},
   textInputContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 5,
     elevation: 1,
@@ -375,10 +328,20 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     height: 40,
     fontSize: 16,
+    color: '#000',
+    backgroundColor: '#fff',
   },
   searchIcon: {
     position: 'absolute',
     left: 40,
     top: 10,
+  },
+
+  container: {
+    flex: 1,
+    padding: 15,
+  },
+  addressRow: {
+    marginBottom: 20,
   },
 });

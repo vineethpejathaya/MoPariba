@@ -38,7 +38,6 @@ export default function TextField({
   const defaultStyles: ViewStyle = {
     backgroundColor: '#F4F5F9',
     borderRadius: 10,
-    height: 30,
   };
   const combinedStyles = StyleSheet.flatten([
     defaultStyles,
