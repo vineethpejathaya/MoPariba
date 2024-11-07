@@ -162,8 +162,8 @@ const CartSummary = ({
           label={'Shipping charges'}
           value={`₹ ${shippingCharges || 0}`}
         />
-        <LabelValue label={'Applied Taxes'} value={`- ₹ ${taxAmount || 0}`} />
-        <LabelValue label={'Discount'} value={`₹ ${totalDiscount || 0}`} />
+        <LabelValue label={'Applied Taxes'} value={`₹ ${taxAmount || 0}`} />
+        <LabelValue label={'Discount'} value={`- ₹ ${totalDiscount || 0}`} />
 
         <Divider />
         <HStack justifyContent={'space-between'}>

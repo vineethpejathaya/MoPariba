@@ -1,3 +1,4 @@
+import {RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations/types';
 
@@ -7,16 +8,35 @@ export type LoginScreenNavigationProp = NativeStackNavigationProp<
   'Login'
 >;
 
+export type OtpScreenRouteProp = RouteProp<RootStackParamList, 'OtpScreen'>;
+
+// Otp screen
+export type OtpScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'OtpScreen'
+>;
+
+export type OtpScreenProps = {
+  route: OtpScreenRouteProp;
+  navigation: OtpScreenNavigationProp;
+};
+
 export interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
+  mobileNumber: string;
+  // email: string;
+  // password: string;
+  // rememberMe: boolean;
+}
+
+export interface OtpFormData {
+  otp: string;
 }
 
 export const defaultLoginFormState = {
-  email: '',
-  password: '',
-  rememberMe: false,
+  mobileNumber: '',
+  // email: '',
+  // password: '',
+  // rememberMe: false,
 };
 
 // Email verification screen

@@ -6,6 +6,7 @@ export type ProductListScreenRouteProp = RouteProp<
   RootStackParamList,
   'ProductList'
 >;
+
 export type ProductListScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   'ProductList'

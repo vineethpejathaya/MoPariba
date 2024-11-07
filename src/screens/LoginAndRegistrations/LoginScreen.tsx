@@ -1,16 +1,12 @@
 import {useMutation} from '@apollo/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-import {Button, Checkbox, HStack, Pressable, Text, VStack} from 'native-base';
+import {Button, HStack, Text, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
 import PressableText from '../../components/Pressable/PressableText';
-import {useAuth} from '../../hooks/UseAuth';
 import useValidation from '../../hooks/UseValidation';
-import {LOGIN_MUTATION} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
+import {GENERATE_OTP_FOR_LOGIN} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
 import {loginSchema} from '../../services/form-validations/ValidationSchema';
-import theme from '../../themes/theme';
 import {
   LoginFormData,
   LoginScreenNavigationProp,
@@ -50,40 +46,56 @@ function LoginScreen() {
 export default LoginScreen;
 
 export const LoginForm = () => {
-  const {signIn} = useAuth();
+  // const {signIn} = useAuth();
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const {validate} = useValidation(loginSchema);
-  const [show, setShow] = useState<boolean>(false);
+  const [otp, setOtp] = useState('');
+  // const [show, setShow] = useState<boolean>(false);
   const [areFieldsFilled, setAreFieldsFilled] = useState<boolean>(false);
   const [formData, setFormData] = useState<LoginFormData>(
     defaultLoginFormState,
   );
 
-  const [generateCustomerToken, {data, loading, error}] = useMutation(
-    LOGIN_MUTATION,
-    {
+  // const [generateCustomerToken, {data, loading, error}] = useMutation(
+  //   LOGIN_MUTATION,
+  //   {
+  //     onCompleted: async res => {
+  //       await AsyncStorage.setItem(
+  //         'userToken',
+  //         res?.generateCustomerToken?.token ?? '',
+  //       );
+  //       await signIn(res?.generateCustomerToken?.token);
+  //     },
+  //     onError: err => {
+  //       console.log(err, 'err');
+  //     },
+  //   },
+  // );
+
+  const [generateOtpForLogin, {data: otpData, loading: loadingOtp}] =
+    useMutation(GENERATE_OTP_FOR_LOGIN, {
       onCompleted: async res => {
-        await AsyncStorage.setItem(
-          'userToken',
-          res?.generateCustomerToken?.token ?? '',
-        );
-        await signIn(res?.generateCustomerToken?.token);
+        navigation.navigate('OtpScreen', {mobileNumber: formData.mobileNumber});
       },
       onError: err => {
         console.log(err, 'err');
       },
-    },
-  );
+    });
 
   const handleLogin = async () => {
     const result = await validate(formData);
     if (result.isValid) {
-      generateCustomerToken({
+      generateOtpForLogin({
         variables: {
-          email: formData.email,
-          password: formData.password,
+          mobile_number: formData?.mobileNumber,
         },
       });
+      // generateCustomerToken({
+      //   variables: {
+      //     email: formData.email,
+      //     password: formData.password,
+      //   },
+      // });
     } else {
       console.log('Form has errors:', result.errors);
     }
@@ -91,8 +103,8 @@ export const LoginForm = () => {
 
   useEffect(() => {
     const checkFields = () => {
-      const {email, password} = formData;
-      setAreFieldsFilled(email !== '' && password !== '');
+      const {mobileNumber} = formData;
+      setAreFieldsFilled(mobileNumber !== '');
     };
 
     checkFields();
@@ -102,6 +114,20 @@ export const LoginForm = () => {
     <>
       <VStack space={7} w="100%">
         <TextField
+          label={'Mobile Number'}
+          name={'mobileNumber'}
+          value={formData.mobileNumber}
+          keyboardType="phone-pad"
+          onChangeText={e => {
+            setFormData(s => ({
+              ...s,
+              mobileNumber: e,
+            }));
+          }}
+          placeholder="Enter your registered mobile number"
+        />
+
+        {/* <TextField
           label={'Email'}
           name={'email'}
           value={formData.email}
@@ -113,9 +139,9 @@ export const LoginForm = () => {
             }));
           }}
           placeholder="example@gmail.com"
-        />
+        /> */}
 
-        <TextField
+        {/* <TextField
           label={'Password'}
           name={'password'}
           variant={'filled'}
@@ -139,9 +165,9 @@ export const LoginForm = () => {
             </Pressable>
           }
           placeholder="Password"
-        />
+        /> */}
 
-        <HStack style={{alignItems: 'center', justifyContent: 'space-between'}}>
+        {/* <HStack style={{alignItems: 'center', justifyContent: 'space-between'}}>
           <Checkbox
             value={'rememberMe'}
             isChecked={formData.rememberMe}
@@ -157,14 +183,14 @@ export const LoginForm = () => {
             onPress={() => navigation.navigate('ForgotPassword')}
             text={'Forgot Password'}
           />
-        </HStack>
+        </HStack> */}
         <Button
           isDisabled={!areFieldsFilled}
-          isLoading={loading}
+          isLoading={loadingOtp}
           spinnerPlacement="end"
           isLoadingText="Submitting"
           onPress={handleLogin}>
-          LOG IN
+          SEND OTP
         </Button>
       </VStack>
     </>

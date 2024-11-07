@@ -11,6 +11,7 @@ import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
+import OtpScreen from '../screens/LoginAndRegistrations/OtpScreen';
 import SignUpScreen from '../screens/LoginAndRegistrations/SignUpScreen';
 import NoNetworkScreen from '../screens/NoNetworkScreen';
 import OnboardingScreen from '../screens/OnBoardingScreens/OnBoardingScreen';
@@ -100,6 +101,7 @@ function RootNavigator() {
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="OtpScreen" component={OtpScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             <Stack.Screen
