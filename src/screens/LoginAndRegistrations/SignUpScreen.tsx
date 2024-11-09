@@ -22,31 +22,43 @@ const fields: Field[] = [
     name: 'firstName',
     label: 'First Name',
     placeholder: 'John',
+    keyboardType: 'default',
   },
   {
     name: 'lastName',
     label: 'Last Name',
     placeholder: 'Doe',
+    keyboardType: 'default',
   },
+  {
+    name: 'mobileNumber',
+    label: 'Mobile',
+    placeholder: 'Enter mobile number',
+    keyboardType: 'phone-pad',
+  },
+
   {
     name: 'email',
     label: 'Email',
     placeholder: 'example@gmail.com',
+    keyboardType: 'default',
   },
-  {
-    name: 'password',
-    label: 'Password',
-    placeholder: 'Password',
-    type: 'password',
-    isPassword: true,
-  },
-  {
-    name: 'confirmPassword',
-    label: 'Re-Type Password',
-    placeholder: 'Password',
-    type: 'password',
-    isPassword: true,
-  },
+  // {
+  //   name: 'password',
+  //   label: 'Password',
+  //   placeholder: 'Password',
+  //   type: 'password',
+  //   isPassword: true,
+  //   keyboardType: 'default',
+  // },
+  // {
+  //   name: 'confirmPassword',
+  //   label: 'Re-Type Password',
+  //   placeholder: 'Password',
+  //   type: 'password',
+  //   isPassword: true,
+  //   keyboardType: 'default',
+  // },
 ];
 
 function SignUpScreen({navigation}: SignUpScreenProps) {
@@ -76,9 +88,10 @@ export const SignUpForm = ({
   const [formData, setFormData] = useState<FormDataType>({
     firstName: '',
     lastName: '',
+    mobileNumber: '',
     email: '',
-    password: '',
-    confirmPassword: '',
+    // password: '',
+    // confirmPassword: '',
     is_subscribed: 'false',
   });
 
@@ -101,8 +114,11 @@ export const SignUpForm = ({
             firstname: formData.firstName,
             lastname: formData.lastName,
             email: formData.email,
-            password: formData.password,
+            // password: formData.password,
             is_subscribed: true,
+            extension_attributes: {
+              mobile_number: formData.mobileNumber,
+            },
           },
         },
       });
@@ -123,6 +139,7 @@ export const SignUpForm = ({
               name={field.name}
               value={formData[field.name] || ''}
               height={45}
+              keyboardType={field.keyboardType}
               inputStyles={{backgroundColor: '#F5F8FA'}}
               onChangeText={e =>
                 setFormData(s => ({

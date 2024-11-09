@@ -76,13 +76,23 @@ export interface ShowPasswordState {
 export interface FormDataType {
   firstName: string;
   lastName: string;
+  mobileNumber: string;
   email: string;
-  password: string;
-  confirmPassword: string;
+  // password: string;
+  // confirmPassword: string;
   is_subscribed: string;
 }
 
 export type FieldName = keyof FormDataType;
+
+export type KeyboardType =
+  | 'default'
+  | 'number-pad'
+  | 'decimal-pad'
+  | 'numeric'
+  | 'email-address'
+  | 'phone-pad'
+  | 'url';
 
 export interface Field {
   name: FieldName;
@@ -90,4 +100,5 @@ export interface Field {
   placeholder: string;
   type?: 'password' | 'text';
   isPassword?: boolean;
+  keyboardType: KeyboardType;
 }
