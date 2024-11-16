@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 10,
+    height: 60,
     backgroundColor: theme.colors.white,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},

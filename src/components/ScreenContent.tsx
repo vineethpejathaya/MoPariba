@@ -24,7 +24,7 @@ function ScreenContent({
     paddingHorizontal: 10,
     paddingTop: 5,
     flex: 1,
-    paddingBottom: showCart ? 60 : bottomNavigatorHeight + 5,
+    paddingBottom: showCart && hasCartItems ? 60 : 0,
   };
 
   const combinedOverLayStyles = {

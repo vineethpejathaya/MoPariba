@@ -28,6 +28,26 @@ import {useCartStore} from './UseCartStore';
 import useToast from './UseToast';
 const RAZORPAY_KEY_ID = 'rzp_test_ufO7RgfnrHiSE3';
 const RAZORPAY_KEY_SECRET = 'MVSyNa9sK49wYJlpnBr2COqp';
+
+const getErrorMessage = (error: any): string => {
+  if (error?.graphQLErrors?.length) {
+    // Extract the first GraphQL error message
+    return error.graphQLErrors[0]?.message ?? 'An unknown error occurred.';
+  }
+  if (error?.networkError) {
+    // Handle network-related errors
+    return (
+      error.networkError.result?.errors?.[0]?.message ??
+      'Network error occurred.'
+    );
+  }
+  if (error?.message) {
+    // Handle general errors
+    return error.message;
+  }
+  return 'An unexpected error occurred. Please try again.';
+};
+
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {cartId, setCart, cartItems, setCartId} = useCartStore();
@@ -94,7 +114,7 @@ const usePayment = () => {
             return;
           }
 
-          await placeRazorpayOrder({
+          const res = await placeRazorpayOrder({
             variables: {
               order_id: orderData.id,
               referrer: 'https://dev.mopariba.com/checkout',
@@ -118,18 +138,31 @@ const usePayment = () => {
           navigate.navigate('OrderConfirm');
         })
         .catch((error: any) => {
+          if (
+            error?.error?.code === 'BAD_REQUEST_ERROR' &&
+            error?.error?.reason === 'payment_error' &&
+            error?.error?.source === 'customer'
+          ) {
+            console.log('User cancelled the payment.');
+            showErrorToast(
+              'Payment Cancelled',
+              'You have cancelled the payment.',
+            );
+            setIsLoading(false);
+            navigate.navigate('Cart');
+            return;
+          }
+
+          console.log(error, 'errorsss');
           setIsLoading(false);
-          showErrorToast(
-            'Error in placing order',
-            'Facing issue while placing your order please try after some time',
-          );
+          const errorMessage = getErrorMessage(error);
+          showErrorToast('Payment Failed', errorMessage);
         });
     } catch (error) {
+      console.log(error, 'error');
       setIsLoading(false);
-      showErrorToast(
-        'Error in placing order',
-        'Facing issue while placing your order please try after some time',
-      );
+      const errorMessage = getErrorMessage(error);
+      showErrorToast('Payment Failed', errorMessage);
     }
   };
 
@@ -180,11 +213,10 @@ const usePayment = () => {
 
       await handlePayment(postBody as unknown as CustomerAddress);
     } catch (err) {
+      console.log(err, 'err');
       setIsLoading(false);
-      showErrorToast(
-        'Error in placing order',
-        'Facing issue while placing your order please try after some time',
-      );
+      const errorMessage = getErrorMessage(err);
+      showErrorToast('Payment Failed', errorMessage);
     }
   };
 

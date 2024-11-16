@@ -141,6 +141,44 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
             }
           }
         }
+        shipping_addresses {
+          city
+          company
+          country {
+            code
+            label
+          }
+          firstname
+          lastname
+          postcode
+          region {
+            code
+            label
+            region_id
+          }
+          street
+          telephone
+          uid
+          vat_id
+          selected_shipping_method {
+            carrier_code
+            carrier_title
+            method_code
+            method_title
+            amount {
+              value
+              currency
+            }
+            price_excl_tax {
+              value
+              currency
+            }
+            price_incl_tax {
+              value
+              currency
+            }
+          }
+        }
         prices {
           grand_total {
             value
@@ -214,6 +252,44 @@ export const REMOVE_ITEM_FROM_CART = gql`
             configurable_options {
               option_label
               value_label
+            }
+          }
+        }
+        shipping_addresses {
+          city
+          company
+          country {
+            code
+            label
+          }
+          firstname
+          lastname
+          postcode
+          region {
+            code
+            label
+            region_id
+          }
+          street
+          telephone
+          uid
+          vat_id
+          selected_shipping_method {
+            carrier_code
+            carrier_title
+            method_code
+            method_title
+            amount {
+              value
+              currency
+            }
+            price_excl_tax {
+              value
+              currency
+            }
+            price_incl_tax {
+              value
+              currency
             }
           }
         }
@@ -293,6 +369,44 @@ export const UPDATE_CART_ITEMS = gql`
             configurable_options {
               option_label
               value_label
+            }
+          }
+        }
+        shipping_addresses {
+          city
+          company
+          country {
+            code
+            label
+          }
+          firstname
+          lastname
+          postcode
+          region {
+            code
+            label
+            region_id
+          }
+          street
+          telephone
+          uid
+          vat_id
+          selected_shipping_method {
+            carrier_code
+            carrier_title
+            method_code
+            method_title
+            amount {
+              value
+              currency
+            }
+            price_excl_tax {
+              value
+              currency
+            }
+            price_incl_tax {
+              value
+              currency
             }
           }
         }

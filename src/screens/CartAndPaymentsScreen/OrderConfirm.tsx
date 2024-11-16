@@ -7,7 +7,7 @@ import theme from '../../themes/theme';
 function OrderConfirm() {
   return (
     <>
-      <ScreenHeader title={'Order Confirm'} />
+      <ScreenHeader title={'Order Confirm'} disableNavigateBack />
 
       <VStack style={styles.container}>
         <ShoppingBagIcon />
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     margin: 'auto',
+    padding: 10,
   },
   mainText: {
     fontWeight: 700,

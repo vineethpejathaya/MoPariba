@@ -19,11 +19,13 @@ interface CartState {
   cartItems: CartItem[];
   cartPrices: Prices | null;
   appliedCoupons: string[];
+  shippingAddresses: any[];
   cartId: string;
   adding: boolean;
   removing: boolean;
   updating: boolean;
   showLoading: boolean;
+
   transformedCartItems: TransformedCartItem[];
   addresses: CustomerAddress[];
   defaultAddress: CustomerAddress | null;
@@ -32,6 +34,7 @@ interface CartState {
   setCart: (cart: CartItem[]) => void;
   setCartPrice: (price: Prices) => void;
   setAppliedCoupons: (coupons: string[]) => void;
+  setShippingAddresses: (addresses: any[]) => void;
   setAddresses: (address: CustomerAddress[]) => void;
   setAdding: (status: boolean) => void;
   setRemoving: (status: boolean) => void;
@@ -53,6 +56,7 @@ export const useCartStore = create<CartState>()(
     cartItems: [] as CartItem[],
     cartPrices: null,
     appliedCoupons: [],
+    shippingAddresses: [] as any,
     cartId: '',
     adding: false,
     removing: false,
@@ -81,6 +85,11 @@ export const useCartStore = create<CartState>()(
         addresses: addresses,
         defaultAddress:
           addresses?.find(address => address.default_billing) ?? null,
+      });
+    },
+    setShippingAddresses: (addresses: any) => {
+      set({
+        shippingAddresses: addresses,
       });
     },
     setCartId: (id: string) => set({cartId: id}),
