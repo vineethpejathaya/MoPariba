@@ -1,4 +1,4 @@
-import {FlatList, VStack} from 'native-base';
+import {Box, FlatList, VStack} from 'native-base';
 import {Fire} from '../../../assets/icons/Icons';
 import ProductCard from '../../../components/ProductCard';
 import TitleActions from '../../../components/TitleActions';
@@ -33,11 +33,13 @@ function BestDeals({
               key={item.sku}
               imgSource={item.image}
               discount={item.discount}
-              price={item.price}
+              price={item.final_price}
               originalPrice={item.price}
               title={item.name}
+              containerStyles={{width: 163}}
             />
           )}
+          ItemSeparatorComponent={() => <Box width={4} />}
         />
       </VStack>
     </>

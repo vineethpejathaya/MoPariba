@@ -12,6 +12,7 @@ const bestDealsStyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    gap: 15,
   },
 });
 

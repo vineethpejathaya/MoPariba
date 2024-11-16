@@ -185,7 +185,9 @@ function HomeScreen({navigation}: HomeScreenProps) {
           {categoryItems?.length > 0 && (
             <HomeCategoryList navigation={navigation} state={homeScreenState} />
           )}
-          {dailyDeals?.length > 0 && <BestDeals products={dailyDeals} />}
+          {dailyDeals?.length > 0 && (
+            <BestDeals products={dailyDeals} navigation={navigation} />
+          )}
         </VStack>
       </ScreenContent>
     </>

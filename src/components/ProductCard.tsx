@@ -2,35 +2,52 @@ import {
   AddIcon,
   Badge,
   Box,
+  HStack,
   IconButton,
   Image,
   Text,
   VStack,
 } from 'native-base';
-import {ImageSourcePropType, ImageURISource, StyleSheet} from 'react-native';
+import {
+  ImageSourcePropType,
+  ImageURISource,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native';
 import theme from '../themes/theme';
 
 function ProductCard({
   imgSource,
-  discount,
+  discount = 0,
   title,
-  price,
-  originalPrice,
+  price = 1,
+  originalPrice = 1,
+  containerStyles,
 }: {
   imgSource: ImageSourcePropType | ImageURISource | string;
   discount: number;
   title: string;
   price: number;
   originalPrice: number;
+  containerStyles?: StyleProp<ViewStyle>;
 }) {
   const imageSource =
     typeof imgSource === 'string' ? {uri: imgSource} : imgSource;
+
+  const discountPercentage =
+    price === 0 || discount === 0
+      ? 0
+      : Math.round((discount / originalPrice) * 100);
   return (
     <>
-      <VStack style={styles.container}>
-        <Badge style={styles.badge} _text={styles.badgeText}>
-          {`${discount} % Off`}
-        </Badge>
+      <VStack style={[styles.container, containerStyles]}>
+        {discountPercentage && (
+          <Badge style={styles.badge} _text={styles.badgeText}>
+            {`${discountPercentage} % Off`}
+          </Badge>
+        )}
+
         <Image
           source={imageSource}
           alt="Product Image"
@@ -42,11 +59,19 @@ function ProductCard({
           icon={<AddIcon size={5} color={theme.colors.white} />}
         />
         <VStack space={1}>
-          <Text style={styles.price}>{price}rs</Text>
-          <Text style={styles.originalPrice}>
-            {originalPrice}rs{' '}
-            <Text style={styles.badgeText}>{`${discount} % Off`}</Text>
-          </Text>
+          {discount && (
+            <>
+              <Text style={styles.price}>{originalPrice}rs</Text>
+              <HStack>
+                <Text style={styles.originalPrice}>{price}rs </Text>
+                <Text
+                  style={
+                    styles.badgeText
+                  }>{`${discountPercentage} % Off`}</Text>
+              </HStack>
+            </>
+          )}
+
           <Text fontSize="sm">{title}</Text>
         </VStack>
       </VStack>

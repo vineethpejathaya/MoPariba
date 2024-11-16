@@ -31,7 +31,7 @@ function BestDeals() {
 
   return (
     <>
-      <ScreenHeader />
+      <ScreenHeader title={'Best Deals'} />
       <ScreenContent containerStyles={bestDealsStyles.mainContainer}>
         {products.length == 0 ? (
           <NoDataIllustration
@@ -50,7 +50,7 @@ function BestDeals() {
                   key={product.sku}
                   imgSource={product.image}
                   discount={product.discount}
-                  price={product.price}
+                  price={product.final_price}
                   originalPrice={product.price}
                   title={product.name}
                 />

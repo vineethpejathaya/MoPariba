@@ -132,6 +132,7 @@ const CartSummary = ({
   shippingAddresses?: ShippingAddress[];
 }) => {
   const {cartPrices} = useCartStore(state => state);
+
   const shippingCharges =
     shippingAddresses?.reduce(
       (acc, curr) => acc + curr?.selected_shipping_method?.amount?.value,
