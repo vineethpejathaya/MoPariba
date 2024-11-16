@@ -48,6 +48,7 @@ function BestDeals() {
               {products?.map((product: DailyDealProduct, index: number) => (
                 <ProductCard
                   key={product.sku}
+                  productSku={product?.sku}
                   imgSource={product.image}
                   discount={product.discount}
                   price={product.final_price}

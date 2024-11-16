@@ -20,6 +20,13 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
           url
           label
         }
+        is_daily_deal_product
+        daily_deal_info {
+          discount_type
+          discount_type_label
+          from_date
+          to_date
+        }
         price_range {
           minimum_price {
             discount {
@@ -58,6 +65,13 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
               image {
                 url
                 label
+              }
+              is_daily_deal_product
+              daily_deal_info {
+                discount_type
+                discount_type_label
+                from_date
+                to_date
               }
               price_range {
                 minimum_price {
@@ -110,6 +124,13 @@ export const GET_PRODUCT_DETAILS = gql`
           url
           label
         }
+        is_daily_deal_product
+        daily_deal_info {
+          discount_type
+          discount_type_label
+          from_date
+          to_date
+        }
         sku
         only_x_left_in_stock
         rating_summary
@@ -158,6 +179,13 @@ export const GET_PRODUCT_DETAILS = gql`
               image {
                 url
                 label
+              }
+              is_daily_deal_product
+              daily_deal_info {
+                discount_type
+                discount_type_label
+                from_date
+                to_date
               }
               price_range {
                 minimum_price {

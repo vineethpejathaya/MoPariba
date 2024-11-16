@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import {
   AddIcon,
   Badge,
@@ -15,7 +16,9 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
+import {NavigationProp} from '../navigations/types';
 import theme from '../themes/theme';
+import PressableContainer from './Pressable/PressableContainer';
 
 function ProductCard({
   imgSource,
@@ -24,7 +27,9 @@ function ProductCard({
   price = 1,
   originalPrice = 1,
   containerStyles,
+  productSku,
 }: {
+  productSku: string;
   imgSource: ImageSourcePropType | ImageURISource | string;
   discount: number;
   title: string;
@@ -32,6 +37,7 @@ function ProductCard({
   originalPrice: number;
   containerStyles?: StyleProp<ViewStyle>;
 }) {
+  const navigation = useNavigation<NavigationProp>();
   const imageSource =
     typeof imgSource === 'string' ? {uri: imgSource} : imgSource;
 
@@ -39,42 +45,58 @@ function ProductCard({
     price === 0 || discount === 0
       ? 0
       : Math.round((discount / originalPrice) * 100);
+
+  const handleAdd = () => {
+    navigation.navigate('Product', {
+      productSku: productSku,
+    });
+  };
+
   return (
     <>
-      <VStack style={[styles.container, containerStyles]}>
-        {discountPercentage && (
-          <Badge style={styles.badge} _text={styles.badgeText}>
-            {`${discountPercentage} % Off`}
-          </Badge>
-        )}
-
-        <Image
-          source={imageSource}
-          alt="Product Image"
-          style={styles.image}
-          fallbackElement={<Box style={styles.image}></Box>}
-        />
-        <IconButton
-          style={styles.addBtn}
-          icon={<AddIcon size={5} color={theme.colors.white} />}
-        />
-        <VStack space={1}>
-          {discount && (
-            <>
-              <Text style={styles.price}>{originalPrice}rs</Text>
-              <HStack>
-                <Text style={styles.originalPrice}>{price}rs </Text>
-                <Text
-                  style={
-                    styles.badgeText
-                  }>{`${discountPercentage} % Off`}</Text>
-              </HStack>
-            </>
+      <PressableContainer
+        onPress={() =>
+          navigation.navigate('Product', {
+            productSku: productSku,
+          })
+        }
+        styles={[{width: '48%'}, containerStyles]}>
+        <VStack style={[styles.container]}>
+          {discountPercentage && (
+            <Badge style={styles.badge} _text={styles.badgeText}>
+              {`${discountPercentage} % Off`}
+            </Badge>
           )}
 
-          <Text fontSize="sm">{title}</Text>
+          <Image
+            source={imageSource}
+            alt="Product Image"
+            style={styles.image}
+            fallbackElement={<Box style={styles.image}></Box>}
+          />
+          <IconButton
+            style={styles.addBtn}
+            icon={<AddIcon size={5} color={theme.colors.white} />}
+            onPress={handleAdd}
+          />
+          <VStack space={1}>
+            {discount && (
+              <>
+                <Text style={styles.price}>{originalPrice}rs</Text>
+                <HStack>
+                  <Text style={styles.originalPrice}>{price}rs </Text>
+                  <Text
+                    style={
+                      styles.badgeText
+                    }>{`${discountPercentage} % Off`}</Text>
+                </HStack>
+              </>
+            )}
+
+            <Text fontSize="sm">{title}</Text>
+          </VStack>
         </VStack>
-      </VStack>
+      </PressableContainer>
     </>
   );
 }
@@ -85,7 +107,6 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderRadius: 10,
-    width: '48%',
     height: 214,
     padding: 10,
     justifyContent: 'space-between',

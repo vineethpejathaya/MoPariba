@@ -31,6 +31,7 @@ function BestDeals({
           renderItem={({item}: {item: DailyDealProduct}) => (
             <ProductCard
               key={item.sku}
+              productSku={item.sku}
               imgSource={item.image}
               discount={item.discount}
               price={item.final_price}
