@@ -35,7 +35,7 @@ function CartScreen() {
       },
     },
   );
-  const shippingCharges = 0;
+
   const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
 
   const [clearCustomerCart] = useMutation(CLEAR_CUSTOMER_CART, {
@@ -154,15 +154,6 @@ const CartSummary = ({
 
   const platFormFees = 0;
   const grandTotal = cartPrices?.grand_total?.value ?? 0;
-
-  console.log(
-    shippingCharges,
-    appliedTaxes,
-    subTotalInclusiveOfTax,
-    subTotalExclusiveOfTax,
-    taxAmount,
-    totalDiscount,
-  );
 
   return (
     <>

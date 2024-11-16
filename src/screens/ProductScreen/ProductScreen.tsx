@@ -38,7 +38,7 @@ function ProductScreen({route, navigation}: ProductScreenProps) {
       <ScreenHeader
         leftActions={[<Text variant={'subheader1'}>{product?.name}</Text>]}
       />
-      <ScreenContent containerStyles={{paddingBottom: 0}}>
+      <ScreenContent showCart>
         <VStack space={3}>
           <Box style={[ProductStyles.container, ProductStyles.card]}>
             <Box style={ProductStyles.imageContainer}>

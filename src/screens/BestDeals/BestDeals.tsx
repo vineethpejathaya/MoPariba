@@ -32,7 +32,7 @@ function BestDeals() {
   return (
     <>
       <ScreenHeader title={'Best Deals'} />
-      <ScreenContent containerStyles={bestDealsStyles.mainContainer}>
+      <ScreenContent showCart containerStyles={bestDealsStyles.mainContainer}>
         {products.length == 0 ? (
           <NoDataIllustration
             message={

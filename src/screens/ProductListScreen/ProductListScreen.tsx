@@ -58,7 +58,7 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
           />,
         ]}
       />
-      <ScreenContent containerStyles={productListStyles.mainContainer}>
+      <ScreenContent showCart containerStyles={productListStyles.mainContainer}>
         {products.length == 0 ? (
           <NoDataIllustration
             message={
