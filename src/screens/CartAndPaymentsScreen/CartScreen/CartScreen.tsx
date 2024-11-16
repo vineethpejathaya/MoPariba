@@ -132,7 +132,7 @@ const CartSummary = ({
   shippingAddresses?: ShippingAddress[];
 }) => {
   const {cartPrices} = useCartStore(state => state);
-
+  console.log(cartPrices, 'prices');
   const shippingCharges =
     shippingAddresses?.reduce(
       (acc, curr) => acc + curr?.selected_shipping_method?.amount?.value,
@@ -144,12 +144,26 @@ const CartSummary = ({
   const taxAmount =
     Number(subTotalInclusiveOfTax ?? 0) - Number(subTotalExclusiveOfTax ?? 0);
   const subTotal = cartPrices?.subtotal_excluding_tax?.value;
-  const totalDiscount = cartPrices?.discounts?.reduce(
-    (acc, curr) => acc + Number(curr?.amount?.value ?? 0),
-    0,
+  const totalDiscount =
+    Array.isArray(cartPrices?.discounts) && cartPrices?.discounts?.length
+      ? cartPrices?.discounts.reduce(
+          (acc, curr) => acc + Number(curr?.amount?.value ?? 0),
+          0,
+        )
+      : 0;
+
+  const platFormFees = 0;
+  const grandTotal = cartPrices?.grand_total?.value ?? 0;
+
+  console.log(
+    shippingCharges,
+    appliedTaxes,
+    subTotalInclusiveOfTax,
+    subTotalExclusiveOfTax,
+    taxAmount,
+    totalDiscount,
   );
 
-  const grandTotal = cartPrices?.grand_total?.value ?? 0;
   return (
     <>
       <VStack space={1} paddingX={5}>
@@ -158,8 +172,13 @@ const CartSummary = ({
           label={'Shipping charges'}
           value={`₹ ${shippingCharges || 0}`}
         />
+
+        <LabelValue label={'Platform Fees'} value={` ₹ ${platFormFees}`} />
+
         <LabelValue label={'Applied Taxes'} value={`₹ ${taxAmount || 0}`} />
-        <LabelValue label={'Discount'} value={`- ₹ ${totalDiscount || 0}`} />
+        {totalDiscount > 0 && (
+          <LabelValue label={'Discount'} value={`- ₹ ${totalDiscount}`} />
+        )}
 
         <Divider />
         <HStack justifyContent={'space-between'}>
@@ -172,6 +191,9 @@ const CartSummary = ({
 };
 
 const LabelValue = ({label, value}: {label: string; value: string}) => {
+  console.log(label, value, 'value');
+  if (value == null || value === '') return null;
+
   return (
     <>
       <HStack justifyContent="space-between" mb="2">

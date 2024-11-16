@@ -28,31 +28,34 @@ function CouponSection({refetchCart}: {refetchCart: () => void}) {
     });
   };
 
-  const coupons = [
-    'Data',
-    'string',
-    'dtadadtadtdatdatdtadtadtadt',
-    'fayfayfayfayayfy',
-  ];
-
   return (
     <>
       <VStack style={styles.container}>
         <HStack justifyContent="flex-start" alignItems="flex-end" space={2}>
-          <Box width={250}>
-            <TextField
-              label={''}
-              name={'coupon'}
-              value={couponCode}
-              inputStyles={{backgroundColor: '#F5F8FA', padding: 0}}
-              onChangeText={e => {
-                setCouponCode(e);
-              }}
-              placeholder="Enter coupon code"
-            />
-          </Box>
+          <TextField
+            label={''}
+            height={45}
+            name={'coupon'}
+            value={couponCode}
+            inputStyles={{
+              backgroundColor: '#F5F8FA',
+              padding: 0,
+              height: 35, // Reduced height
+              paddingHorizontal: 10,
+            }}
+            onChangeText={e => {
+              setCouponCode(e);
+            }}
+            containerProps={{
+              style: {
+                width: '70%',
+              },
+            }}
+            placeholder="Enter coupon code"
+          />
+
           <Button
-            style={{minWidth: 100}}
+            style={{minWidth: 100, height: 45, flex: 1}}
             isDisabled={!couponCode}
             isLoading={loading}
             spinnerPlacement="end"
