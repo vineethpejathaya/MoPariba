@@ -14,7 +14,6 @@ import {GET_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart
 import {ShippingAddress} from '../../../services/GGL-Queries/CustomerCart/interfaces/BillingAndShippingAddress.type';
 import {GetCustomerCartResponse} from '../../../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
 import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
-import {Prices} from '../../../services/GGL-Queries/CustomerCart/interfaces/Prices.type';
 import theme from '../../../themes/theme';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
@@ -22,9 +21,8 @@ import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const {cartId, setCart, cartItems, setAppliedCoupons} = useCartStore(
-    state => state,
-  );
+  const {cartId, setCart, cartItems, setAppliedCoupons, setCartPrice} =
+    useCartStore(state => state);
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
     {
@@ -32,6 +30,7 @@ function CartScreen() {
       onCompleted: res => {
         const appliedCoupons = res?.cart?.applied_coupons;
         setCart(res?.cart?.items);
+        setCartPrice(res?.cart?.prices);
         setAppliedCoupons(appliedCoupons ? appliedCoupons : []);
       },
     },
@@ -112,10 +111,7 @@ function CartScreen() {
               </VStack>
             </VStack>
             <CouponSection refetchCart={refetch} />
-            <CartSummary
-              prices={data?.cart?.prices}
-              shippingAddresses={data?.cart?.shipping_addresses}
-            />
+            <CartSummary shippingAddresses={data?.cart?.shipping_addresses} />
             <Button
               style={CartScreenStyles.btn}
               onPress={() => navigation.navigate('AddressSelection')}
@@ -131,29 +127,28 @@ function CartScreen() {
 export default CartScreen;
 
 const CartSummary = ({
-  prices,
   shippingAddresses,
 }: {
-  prices?: Prices;
   shippingAddresses?: ShippingAddress[];
 }) => {
+  const {cartPrices} = useCartStore(state => state);
   const shippingCharges =
     shippingAddresses?.reduce(
       (acc, curr) => acc + curr?.selected_shipping_method?.amount?.value,
       0,
     ) ?? 0;
-  const appliedTaxes = prices?.applied_taxes;
-  const subTotalInclusiveOfTax = prices?.subtotal_including_tax?.value;
-  const subTotalExclusiveOfTax = prices?.subtotal_excluding_tax?.value;
+  const appliedTaxes = cartPrices?.applied_taxes;
+  const subTotalInclusiveOfTax = cartPrices?.subtotal_including_tax?.value;
+  const subTotalExclusiveOfTax = cartPrices?.subtotal_excluding_tax?.value;
   const taxAmount =
     Number(subTotalInclusiveOfTax ?? 0) - Number(subTotalExclusiveOfTax ?? 0);
-  const subTotal = prices?.subtotal_excluding_tax?.value;
-  const totalDiscount = prices?.discounts?.reduce(
+  const subTotal = cartPrices?.subtotal_excluding_tax?.value;
+  const totalDiscount = cartPrices?.discounts?.reduce(
     (acc, curr) => acc + Number(curr?.amount?.value ?? 0),
     0,
   );
 
-  const grandTotal = prices?.grand_total?.value ?? 0;
+  const grandTotal = cartPrices?.grand_total?.value ?? 0;
   return (
     <>
       <VStack space={1} paddingX={5}>

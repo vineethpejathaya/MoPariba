@@ -35,6 +35,7 @@ export type RootStackParamList = {
     categoryImageUrl: string;
     totalProductCount: number;
   };
+  BestDeals: undefined;
   // Product
   Product: {
     productSku: string;
@@ -51,7 +52,7 @@ export type RootStackParamList = {
   MyOrdersScreen: undefined;
   AddressScreen: undefined;
   GeoLocationScreen: undefined;
-  AboutMeScreen: undefined;
+  MyProfileScreen: undefined;
   FavoritesScreen: undefined;
   OrdersScreen: undefined;
   Dummy: undefined;

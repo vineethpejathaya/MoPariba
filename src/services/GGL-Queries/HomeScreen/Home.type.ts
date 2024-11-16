@@ -35,3 +35,21 @@ export interface Customer {
   email: string;
   addresses: CustomerAddress[];
 }
+
+export type DailyDealProduct = {
+  name: string;
+  image: string;
+  sku: string;
+  price: number;
+  discount_type: number;
+  discount_type_label: string;
+  discount: number;
+  final_price: number;
+  you_saved: number;
+  from_date: string;
+  to_date: string;
+};
+
+export type GetDailyDealProductsQuery = {
+  dailyDealProducts: DailyDealProduct[];
+};

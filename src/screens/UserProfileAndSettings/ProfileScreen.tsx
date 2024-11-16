@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Avatar, Box, Center, FlatList, Text, VStack} from 'native-base';
-import {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
 import {
   LocationIcon,
@@ -10,11 +9,10 @@ import {
   ProfileIcon,
   SignOutIcon,
 } from '../../assets/icons/Icons';
-import CustomIconButton from '../../components/Buttons/IconButton';
 import NavigationItem from '../../components/NavigationItem';
 import {useAuth} from '../../hooks/UseAuth';
+import {useCustomerStore} from '../../hooks/UseCustomerStore';
 import {RootStackParamList} from '../../navigations/types';
-import {Customer} from '../../services/GGL-Queries/HomeScreen/Home.type';
 import {GetInitialLetterOfString} from '../../services/utils';
 import theme from '../../themes/theme';
 
@@ -38,8 +36,8 @@ const navigationItems: NavigationItem[] = [
   {
     icon: 'person',
     svgIcon: <ProfileIcon />,
-    label: 'About me',
-    navigateTo: 'AboutMeScreen',
+    label: 'My Profile',
+    navigateTo: 'MyProfileScreen',
   },
   {
     icon: 'shopping-cart',
@@ -80,7 +78,7 @@ const defaultState = {
 
 function ProfileScreen({navigation}: Props) {
   const {signOut} = useAuth();
-  const [customer, setCustomer] = useState<Customer>(defaultState);
+  const {customer} = useCustomerStore();
 
   const handleNavigation = (screen: any) => {
     if (screen === 'Login') {
@@ -90,30 +88,20 @@ function ProfileScreen({navigation}: Props) {
     }
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      const userData = await AsyncStorage.getItem('userDetails');
-      if (userData) {
-        setCustomer(JSON.parse(userData));
-      }
-    };
-    initialize();
-  });
-
   return (
     <>
       <Center style={styles.topSection}>
         <Box style={styles.avatarContainer}>
           <Avatar _text={styles.avatarText} style={styles.avatar} size="2xl">
             {GetInitialLetterOfString(
-              [customer.firstname, customer.lastname].join(' '),
+              [customer?.firstname ?? '-', customer?.lastname ?? '-'].join(' '),
             )}
           </Avatar>
-          <CustomIconButton
+          {/* <CustomIconButton
             iconName="photo-camera"
             size={14}
             BtnStyles={styles.cameraIcon}
-          />
+          /> */}
         </Box>
       </Center>
       <Box style={styles.container}>
@@ -154,7 +142,7 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     position: 'absolute',
-    bottom: -Dimensions.get('window').height * 0.2 * 0.5,
+    bottom: -Dimensions.get('window').height * 0.2 * 0.25,
     zIndex: 10,
   },
   avatar: {

@@ -60,6 +60,30 @@ export const ADD_TO_CART_MUTATION = gql`
             }
           }
         }
+        prices {
+          grand_total {
+            value
+            currency
+          }
+          subtotal_excluding_tax {
+            value
+            currency
+          }
+          discounts {
+            amount {
+              value
+              currency
+            }
+          }
+          applied_taxes {
+            amount {
+              value
+              currency
+            }
+          }
+        }
+
+        total_quantity
       }
     }
   }

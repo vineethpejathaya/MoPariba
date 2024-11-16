@@ -228,7 +228,7 @@ const theme = extendTheme({
         padding: '10px 40px',
         textTransform: 'uppercase',
         fontWeight: 700,
-        fontSize: 16,
+        fontSize: 18,
         color: 'primary.900',
       },
       variants: {

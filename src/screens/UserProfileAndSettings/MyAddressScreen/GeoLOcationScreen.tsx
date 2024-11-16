@@ -70,7 +70,6 @@ export default function DeliveryLocationScreen() {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted');
           setHasPermission(true);
         } else {
           Alert.alert(

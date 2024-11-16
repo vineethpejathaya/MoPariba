@@ -41,3 +41,11 @@ export const signUpSchema = Yup.object().shape({
   //   .oneOf([Yup.ref('password')], 'Password and Confirm password must match')
   //   .required('Confirm password is required'),
 });
+
+export const myProfileSchema = Yup.object().shape({
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  // email: Yup.string()
+  //   .email('Invalid email format')
+  //   .required('Email is required'),
+});

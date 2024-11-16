@@ -9,6 +9,7 @@ import {useCartStore} from './UseCartStore';
 
 const useCartActions = () => {
   const setCart = useCartStore(state => state.setCart);
+  const setCartPrice = useCartStore(state => state.setCartPrice);
   const setAdding = useCartStore(state => state.setAdding);
   const setRemoving = useCartStore(state => state.setRemoving);
   const setUpdating = useCartStore(state => state.setUpdating);
@@ -21,6 +22,7 @@ const useCartActions = () => {
   const [addToCartFn] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_CART, {
     onCompleted: res => {
       setCart(res?.addConfigurableProductsToCart?.cart?.items || []);
+      setCartPrice(res?.addConfigurableProductsToCart?.cart?.prices);
       setAdding(false);
     },
     onError: err => {
@@ -32,6 +34,7 @@ const useCartActions = () => {
   const [removeFromCartFn] = useMutation(REMOVE_ITEM_FROM_CART, {
     onCompleted: res => {
       setCart(res?.removeItemFromCart?.cart?.items || []);
+      setCartPrice(res?.removeItemFromCart?.cart?.prices);
       setRemoving(false);
     },
     onError: () => {
@@ -42,6 +45,7 @@ const useCartActions = () => {
   const [updateCartFn] = useMutation(UPDATE_CART_ITEMS, {
     onCompleted: res => {
       setCart(res?.updateCartItems?.cart?.items || []);
+      setCartPrice(res?.updateCartItems?.cart?.prices);
       setUpdating(false);
     },
     onError: () => {
@@ -86,6 +90,7 @@ const useCartActions = () => {
       } else {
         if (productInCart) {
           setRemoving(true);
+
           await removeFromCartFn({
             variables: {
               cartId,

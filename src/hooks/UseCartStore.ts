@@ -2,6 +2,7 @@ import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
 import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import {CartItem} from '../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
+import {Prices} from '../services/GGL-Queries/CustomerCart/interfaces/Prices.type';
 
 interface TransformedCartItem {
   cartItemId: string;
@@ -16,6 +17,7 @@ interface TransformedCartItem {
 }
 interface CartState {
   cartItems: CartItem[];
+  cartPrices: Prices | null;
   appliedCoupons: string[];
   cartId: string;
   adding: boolean;
@@ -28,6 +30,7 @@ interface CartState {
   productMap: Map<string, TransformedCartItem[]>;
   setCartId: (id: string) => void;
   setCart: (cart: CartItem[]) => void;
+  setCartPrice: (price: Prices) => void;
   setAppliedCoupons: (coupons: string[]) => void;
   setAddresses: (address: CustomerAddress[]) => void;
   setAdding: (status: boolean) => void;
@@ -47,14 +50,15 @@ interface CartState {
 
 export const useCartStore = create<CartState>()(
   devtools((set, get) => ({
-    cartItems: [],
+    cartItems: [] as CartItem[],
+    cartPrices: null,
     appliedCoupons: [],
     cartId: '',
     adding: false,
     removing: false,
     updating: false,
     showLoading: false,
-    transformedCartItems: [],
+    transformedCartItems: [] as TransformedCartItem[],
     defaultAddress: null,
     productMap: new Map(),
     addresses: [],
@@ -65,6 +69,11 @@ export const useCartStore = create<CartState>()(
         cartItems,
         transformedCartItems: transformedData,
         productMap: productMap,
+      });
+    },
+    setCartPrice: (prices: Prices) => {
+      set({
+        cartPrices: prices,
       });
     },
     setAddresses: (addresses: CustomerAddress[]) => {

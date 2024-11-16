@@ -3,7 +3,6 @@ import {RootStackParamList} from '../../navigations/types';
 import {
   Categories,
   CategoryItemInterface,
-  Customer,
 } from '../../services/GGL-Queries/HomeScreen/Home.type';
 
 export type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -18,11 +17,11 @@ export type HomeScreenProps = {
 export interface HomeScreenState {
   categories: Categories | null;
   categoryItems: CategoryItemInterface[] | [];
-  customer: Customer | null;
+  dailyDeals: any[];
 }
 
 export const defaultHomeScreenState = {
   categories: null,
   categoryItems: [],
-  customer: null,
+  dailyDeals: [],
 };

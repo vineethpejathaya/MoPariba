@@ -1,12 +1,17 @@
 import {useMutation} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-import {Button, HStack, Input, VStack} from 'native-base';
-import {useRef, useState} from 'react';
+import {Button, HStack, Input, Text, VStack} from 'native-base';
+import {useEffect, useRef, useState} from 'react';
+import PressableText from '../../components/Pressable/PressableText';
 import {useAuth} from '../../hooks/UseAuth';
 import useValidation from '../../hooks/UseValidation';
-import {GENERATE_LOGIN_TOKEN_WITH_OTP} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
+import {
+  GENERATE_LOGIN_TOKEN_WITH_OTP,
+  GENERATE_OTP_FOR_LOGIN,
+} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
 import {otpSchema} from '../../services/form-validations/ValidationSchema';
+import theme from '../../themes/theme';
 import {
   OtpScreenNavigationProp,
   OtpScreenRouteProp,
@@ -19,7 +24,7 @@ function OtpScreen({route}: {route: OtpScreenRouteProp}) {
   return (
     <LoginScreenTemplate
       title={'Enter OTP'}
-      subTitle={`Please enter  4 digit code sent to +91${mobileNumber} `}
+      subTitle={`Enter 4 digit code sent  to +91 ${mobileNumber} `}
       disableBackBtn={true}>
       <VStack flex={1} px="3" justifyContent={'space-between'}>
         <OtpForm mobileNumber={mobileNumber} />
@@ -35,7 +40,26 @@ const OtpForm = ({mobileNumber}: {mobileNumber: string}) => {
   const {signIn} = useAuth();
   const navigation = useNavigation<OtpScreenNavigationProp>();
   const {validate} = useValidation(otpSchema);
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [state, setState] = useState({
+    otp: ['', '', '', ''],
+    timer: 60,
+    canResend: false,
+  });
+
+  const [generateOtpForLogin, {data: otpData, loading: loadingOtp}] =
+    useMutation(GENERATE_OTP_FOR_LOGIN, {
+      onCompleted: async res => {
+        setState(prev => ({
+          ...prev,
+          timer: 60,
+          canResend: false,
+        }));
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    });
+
   const [generateCustomerToken, {data, loading, error}] = useMutation(
     GENERATE_LOGIN_TOKEN_WITH_OTP,
     {
@@ -53,7 +77,7 @@ const OtpForm = ({mobileNumber}: {mobileNumber: string}) => {
   );
 
   const handleLogin = async () => {
-    const otpValue = otp.join('');
+    const otpValue = state.otp.join('');
     const result = await validate({otp: otpValue});
     if (result.isValid) {
       generateCustomerToken({
@@ -69,9 +93,12 @@ const OtpForm = ({mobileNumber}: {mobileNumber: string}) => {
 
   const handleOtpChange = (text: string, index: number) => {
     if (isNaN(+text)) return;
-    const newOtp = [...otp];
+    const newOtp = [...state.otp];
     newOtp[index] = text;
-    setOtp(newOtp);
+    setState(prev => ({
+      ...prev,
+      otp: newOtp,
+    }));
 
     // Move focus to the next input or submit if complete
     if (text && index < 3) {
@@ -80,16 +107,59 @@ const OtpForm = ({mobileNumber}: {mobileNumber: string}) => {
   };
 
   const handleKeyPress = (e: any, index: number) => {
-    if (e.nativeEvent.key === 'Backspace' && otp[index] === '' && index > 0) {
+    if (
+      e.nativeEvent.key === 'Backspace' &&
+      state.otp[index] === '' &&
+      index > 0
+    ) {
       inputs.current[index - 1].focus();
     }
   };
 
+  const handleResendOtp = () => {
+    generateOtpForLogin({
+      variables: {
+        mobile_number: mobileNumber,
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (state.timer > 0) {
+      const countdown = setInterval(
+        () =>
+          setState(prev => ({
+            ...prev,
+            timer: prev.timer - 1,
+          })),
+        1000,
+      );
+      return () => clearInterval(countdown);
+    } else {
+      setState(prev => ({
+        ...prev,
+        canResend: true,
+      }));
+    }
+  }, [state.timer]);
+
   return (
     <>
-      <VStack space={4} w="100%">
+      <VStack space={4} w="100%" paddingTop={10}>
+        <HStack justifyContent={'space-between'}>
+          <Text variant={'label2'}>Code</Text>
+          {state.canResend ? (
+            <PressableText
+              onPress={handleResendOtp}
+              text={'Resend'}
+              styles={{color: theme.colors.black}}
+            />
+          ) : (
+            <Text>{`Resend in ${state.timer}s`}</Text>
+          )}
+        </HStack>
         <HStack space={4} justifyContent={'center'}>
-          {otp.map((digit, index) => (
+          {state.otp.map((digit: string, index: number) => (
             <Input
               key={index}
               ref={el => (inputs.current[index] = el)}
@@ -100,8 +170,8 @@ const OtpForm = ({mobileNumber}: {mobileNumber: string}) => {
               variant={'filled'}
               keyboardType="numeric"
               textAlign="center"
-              w={12}
-              h={12}
+              w={16}
+              h={16}
               fontSize="xl"
             />
           ))}

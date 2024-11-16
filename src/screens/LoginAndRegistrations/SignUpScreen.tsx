@@ -5,7 +5,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import TextField from '../../components/Forms/TextInput';
 import useToast from '../../hooks/UseToast';
 import useValidation from '../../hooks/UseValidation';
-import {CREATE_CUSTOMER_MUTATION} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
+import {
+  CREATE_CUSTOMER_MUTATION,
+  GENERATE_OTP_FOR_LOGIN,
+} from '../../services/GGL-Queries/LoginAndRegistration/LoginAndRegistration.queries';
 import {signUpSchema} from '../../services/form-validations/ValidationSchema';
 import theme from '../../themes/theme';
 import {
@@ -95,12 +98,28 @@ export const SignUpForm = ({
     is_subscribed: 'false',
   });
 
+  const [generateOtpForLogin, {data: otpData, loading: loadingOtp}] =
+    useMutation(GENERATE_OTP_FOR_LOGIN, {
+      onCompleted: async res => {
+        navigation.navigate('OtpScreen', {
+          mobileNumber: formData.mobileNumber,
+        });
+      },
+      onError: err => {
+        console.log(err, 'err');
+      },
+    });
+
   const [createCustomer, {data, loading, error}] = useMutation(
     CREATE_CUSTOMER_MUTATION,
     {
       onCompleted: res => {
         showSuccessToast('User Sign up', 'User created successfully');
-        navigation.goBack();
+        generateOtpForLogin({
+          variables: {
+            mobile_number: formData?.mobileNumber,
+          },
+        });
       },
     },
   );
@@ -178,7 +197,7 @@ export const SignUpForm = ({
           ))}
 
           <Button
-            isLoading={loading}
+            isLoading={loading || loadingOtp}
             spinnerPlacement="end"
             isLoadingText="Submitting"
             onPress={handleSignUp}>

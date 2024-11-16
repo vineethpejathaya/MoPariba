@@ -1,10 +1,17 @@
-import {Box, VStack} from 'native-base';
+import {FlatList, VStack} from 'native-base';
 import {Fire} from '../../../assets/icons/Icons';
 import ProductCard from '../../../components/ProductCard';
 import TitleActions from '../../../components/TitleActions';
-import {ProductItemInterface} from '../../../constants/main';
+import {DailyDealProduct} from '../../../services/GGL-Queries/HomeScreen/Home.type';
+import {HomeScreenNavigationProp} from '../Home.type';
 
-function BestDeals({products}: {products: ProductItemInterface[]}) {
+function BestDeals({
+  navigation,
+  products,
+}: {
+  navigation: HomeScreenNavigationProp;
+  products: DailyDealProduct[];
+}) {
   return (
     <>
       <VStack>
@@ -12,21 +19,26 @@ function BestDeals({products}: {products: ProductItemInterface[]}) {
           title={' Best deals'}
           titleIcon={<Fire />}
           btnText="See all"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('BestDeals');
+          }}
         />
 
-        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
-          {products?.map((product: ProductItemInterface, index: number) => (
+        <FlatList
+          data={products}
+          horizontal
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}: {item: DailyDealProduct}) => (
             <ProductCard
-              key={index}
-              imgSource={product?.image}
-              discount={product.discount}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              title={product.title}
+              key={item.sku}
+              imgSource={item.image}
+              discount={item.discount}
+              price={item.price}
+              originalPrice={item.price}
+              title={item.name}
             />
-          ))}
-        </Box>
+          )}
+        />
       </VStack>
     </>
   );

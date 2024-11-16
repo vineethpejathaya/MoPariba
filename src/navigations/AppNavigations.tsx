@@ -6,6 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
+import BestDeals from '../screens/BestDeals/BestDeals';
 import AddressSelection from '../screens/CartAndPaymentsScreen/AddressSelection/AddressSelection';
 import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
@@ -22,6 +23,7 @@ import SearchScreen from '../screens/SearchScreen';
 import MapViewComponent from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLOcationScreen';
 import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
 import MyOrdersScreen from '../screens/UserProfileAndSettings/MyOrdersScreen';
+import MyProfile from '../screens/UserProfileAndSettings/MyProfile';
 import NotificationSettings from '../screens/UserProfileAndSettings/NotificationSettings';
 import theme from '../themes/theme';
 import MainTabs from './MainTabs';
@@ -77,6 +79,7 @@ function RootNavigator() {
           <>
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="BestDeals" component={BestDeals} />
             <Stack.Screen name="ProductList" component={ProductListScreen} />
             <Stack.Screen name="Product" component={ProductScreen} />
             <Stack.Screen name="Reviews" component={ReviewsScreen} />
@@ -86,7 +89,7 @@ function RootNavigator() {
               name="GeoLocationScreen"
               component={MapViewComponent}
             />
-
+            <Stack.Screen name="MyProfileScreen" component={MyProfile} />
             <Stack.Screen name="MyOrdersScreen" component={MyOrdersScreen} />
             <Stack.Screen
               name="NotificationSettings"

@@ -35,7 +35,6 @@ function AddressSelection() {
   );
 
   const handleSelectAddress = (id: number) => {
-    console.log(id, 'clicked');
     setSelectedAddress(id);
   };
 

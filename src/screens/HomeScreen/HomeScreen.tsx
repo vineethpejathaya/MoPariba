@@ -13,17 +13,21 @@ import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SearchBar from '../../components/SearchBar';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {banners, products} from '../../constants/main';
+import {banners} from '../../constants/main';
 import {useAuth} from '../../hooks/UseAuth';
-import {GET_CUSTOMER_CART} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
-
 import {useCartStore} from '../../hooks/UseCartStore';
+import {useCustomerStore} from '../../hooks/UseCustomerStore';
 import {CREATE_CART_MUTATION} from '../../services/GGL-Queries/CustomerCart/Cart.mutation';
+import {GET_CUSTOMER_CART} from '../../services/GGL-Queries/CustomerCart/Cart.queries';
 import {
   GET_CATEGORIES,
   GET_CUSTOMER_DETAILS,
+  GET_DAILY_DEAL_PRODUCTS,
 } from '../../services/GGL-Queries/HomeScreen/Home.queries';
-import {GetHomeScreenDataResponse} from '../../services/GGL-Queries/HomeScreen/Home.type';
+import {
+  GetDailyDealProductsQuery,
+  GetHomeScreenDataResponse,
+} from '../../services/GGL-Queries/HomeScreen/Home.type';
 import {
   HomeScreenProps,
   HomeScreenState,
@@ -37,9 +41,8 @@ function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
-  const {setCart, setCartId, setAddresses, defaultAddress} = useCartStore(
-    state => state,
-  );
+  const {setCart, setCartId} = useCartStore(state => state);
+  const {customer, initializeCustomer} = useCustomerStore();
   const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
     defaultHomeScreenState,
   );
@@ -57,23 +60,24 @@ function HomeScreen({navigation}: HomeScreenProps) {
             fetchPolicy: 'network-only',
           });
         const {categories} = homeScreenDataResponse.data;
-        const customerDetails = await client.query<GetHomeScreenDataResponse>({
+
+        const customerDetails = await client.query<any>({
           query: GET_CUSTOMER_DETAILS,
-          variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
           fetchPolicy: 'network-only',
         });
 
-        const {customer} = customerDetails.data;
+        initializeCustomer(customerDetails?.data?.customer);
 
-        setAddresses(customer.addresses);
-
-        await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
+        const bestDeals = await client.query<GetDailyDealProductsQuery>({
+          query: GET_DAILY_DEAL_PRODUCTS,
+          fetchPolicy: 'network-only',
+        });
 
         setHomeScreenState((prev: any) => ({
           ...prev,
           categories,
-          customer,
           categoryItems: categories.items,
+          dailyDeals: bestDeals?.data?.dailyDealProducts,
         }));
 
         const createCartResponse = await client.mutate({
@@ -92,22 +96,17 @@ function HomeScreen({navigation}: HomeScreenProps) {
         setCart(cart);
         await AsyncStorage.setItem('cart', JSON.stringify(cart));
 
-        // const customer;
-
-        setHomeScreenState((prev: any) => ({
-          ...prev,
-        }));
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        console.error('Error fetching data:', error);
+        console.error('Error fetching customer data:', error);
       }
     };
 
     if (isAuthenticated) fetchData();
   }, [client, isAuthenticated, setCart, setCartId]);
 
-  const {customer, categoryItems} = homeScreenState;
+  const {categoryItems, dailyDeals} = homeScreenState;
 
   if (loading) {
     return <SpinnerComponent />;
@@ -133,7 +132,9 @@ function HomeScreen({navigation}: HomeScreenProps) {
             </Text>
             <Pressable onPress={() => navigation.navigate('AddressScreen')}>
               <HStack alignItems={'center'} space={2}>
-                <Text variant="subTitle2">{defaultAddress?.city ?? '--'}</Text>
+                <Text variant="subTitle2">
+                  {customer?.defaultAddress?.city ?? '--'}
+                </Text>
                 <DropDownIcon />
               </HStack>
             </Pressable>
@@ -184,7 +185,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
           {categoryItems?.length > 0 && (
             <HomeCategoryList navigation={navigation} state={homeScreenState} />
           )}
-          <BestDeals products={products} />
+          {dailyDeals?.length > 0 && <BestDeals products={dailyDeals} />}
         </VStack>
       </ScreenContent>
     </>

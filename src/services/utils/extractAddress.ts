@@ -29,7 +29,7 @@ export function extractFullAddress(addressComponents: AddressComponent[]) {
   const state = findComponent('administrative_area_level_1');
   const country = findComponent('country');
   const postalCode = findComponent('postal_code');
-  console.log(street, 'street');
+
   return {
     street,
     city,

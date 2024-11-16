@@ -81,6 +81,7 @@ export const styles = StyleSheet.create({
     color: theme.colors.white,
     lineHeight: 26,
     fontFamily: 'Sen-Regular',
+    textAlign: 'center',
   },
 
   footer: {

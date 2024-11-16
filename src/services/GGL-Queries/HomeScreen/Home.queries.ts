@@ -34,6 +34,8 @@ export const GET_CUSTOMER_DETAILS = gql`
       lastname
       suffix
       email
+      date_of_birth
+      gender
       addresses {
         id
         region {
@@ -88,6 +90,8 @@ export const GET_HOME_SCREEN_DATA = gql`
       lastname
       suffix
       email
+      gender
+      date_of_birth
       addresses {
         firstname
         lastname
@@ -101,6 +105,24 @@ export const GET_HOME_SCREEN_DATA = gql`
         country_code
         telephone
       }
+    }
+  }
+`;
+
+export const GET_DAILY_DEAL_PRODUCTS = gql`
+  query GetDailyDealProducts {
+    dailyDealProducts {
+      name
+      image
+      sku
+      price
+      discount_type
+      discount_type_label
+      discount
+      final_price
+      you_saved
+      from_date
+      to_date
     }
   }
 `;
