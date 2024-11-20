@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Box, Button, HStack, Text, VStack} from 'native-base';
 import {InterfaceBoxProps} from 'native-base/lib/typescript/components/primitives/Box';
 import {ScrollView, StyleProp, StyleSheet, ViewStyle} from 'react-native';
+import {GroceryBagIcon} from '../assets/icons/Icons';
 import {bottomNavigatorHeight} from '../constants/config';
 import {useCartStore} from '../hooks/UseCartStore';
 import {NavigationProp} from '../navigations/types';
@@ -47,12 +48,15 @@ function ScreenContent({
       {hasCartItems && showCart && (
         <Box style={[styles.cartOverlay, combinedOverLayStyles]}>
           <HStack justifyContent="space-between" alignItems="center">
-            <VStack>
-              <Text style={styles.itemText}>
-                {cartItems.length} {cartItems.length > 1 ? 'Items' : 'Item'} | ₹
-                {cartPrices?.grand_total?.value || 0}
-              </Text>
-            </VStack>
+            <HStack alignItems={'center'}>
+              <GroceryBagIcon />
+              <VStack>
+                <Text style={styles.itemText}>
+                  {cartItems.length} {cartItems.length > 1 ? 'Items' : 'Item'} |
+                  ₹{cartPrices?.grand_total?.value || 0}
+                </Text>
+              </VStack>
+            </HStack>
             <Button
               height={10}
               style={styles.goToCartButton}

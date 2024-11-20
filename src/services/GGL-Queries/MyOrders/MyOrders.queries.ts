@@ -22,8 +22,65 @@ export const GET_CUSTOMER_ORDERS = gql`
           order_date
           status
           shipping_method
+
           total {
+            base_grand_total {
+              value
+              currency
+            }
+            discounts {
+              amount {
+                value
+                currency
+              }
+              label
+            }
             grand_total {
+              value
+              currency
+            }
+            platform_fee {
+              value
+              currency
+            }
+            shipping_handling {
+              amount_excluding_tax {
+                value
+                currency
+              }
+              amount_including_tax {
+                value
+                currency
+              }
+
+              taxes {
+                title
+                amount {
+                  value
+                  currency
+                }
+              }
+              total_amount {
+                currency
+                value
+              }
+            }
+            subtotal {
+              value
+              currency
+            }
+            taxes {
+              title
+              amount {
+                value
+                currency
+              }
+            }
+            total_shipping {
+              value
+              currency
+            }
+            total_tax {
               value
               currency
             }
@@ -44,6 +101,84 @@ export const GET_CUSTOMER_ORDERS = gql`
           total_pages
         }
         total_count
+      }
+    }
+  }
+`;
+
+export const GET_CUSTOMER_ORDER_BY_NUMBER = gql`
+  query GetCustomerOrderByNumber($orderNumber: String!) {
+    customer {
+      firstname
+      lastname
+      email
+      orders(filter: {number: {eq: $orderNumber}}) {
+        items {
+          id
+          number
+          order_date
+          status
+          shipping_address {
+            firstname
+            lastname
+            street
+            city
+            region
+            postcode
+            country_code
+          }
+          billing_address {
+            firstname
+            lastname
+            street
+            city
+            region
+            postcode
+            country_code
+          }
+          payment_methods {
+            name
+            type
+          }
+          shipping_method
+          items {
+            product_name
+            product_sku
+            quantity_ordered
+            product_sale_price {
+              value
+              currency
+            }
+          }
+          total {
+            subtotal {
+              value
+              currency
+            }
+            grand_total {
+              value
+              currency
+            }
+            platform_fee {
+              value
+              currency
+            }
+            total_shipping {
+              value
+              currency
+            }
+            total_tax {
+              value
+              currency
+            }
+            discounts {
+              amount {
+                value
+                currency
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -23,6 +23,7 @@ import SearchScreen from '../screens/SearchScreen';
 import MapViewComponent from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLOcationScreen';
 import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
 import MyOrdersScreen from '../screens/UserProfileAndSettings/MyOrdersScreen';
+import OrderSummaryScreen from '../screens/UserProfileAndSettings/MyOrdersScreen/OrderSummaryScreen';
 import MyProfile from '../screens/UserProfileAndSettings/MyProfile';
 import NotificationSettings from '../screens/UserProfileAndSettings/NotificationSettings';
 import theme from '../themes/theme';
@@ -91,6 +92,11 @@ function RootNavigator() {
             />
             <Stack.Screen name="MyProfileScreen" component={MyProfile} />
             <Stack.Screen name="MyOrdersScreen" component={MyOrdersScreen} />
+            <Stack.Screen
+              name="OrderSummaryScreen"
+              component={OrderSummaryScreen}
+            />
+
             <Stack.Screen
               name="NotificationSettings"
               component={NotificationSettings}

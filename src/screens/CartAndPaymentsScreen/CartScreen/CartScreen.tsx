@@ -155,7 +155,7 @@ const CartSummary = () => {
         )
       : 0;
 
-  const platFormFees = 0;
+  const platFormFees = cartPrices?.platform_fee?.amount?.value;
   const grandTotal = cartPrices?.grand_total?.value ?? 0;
 
   return (

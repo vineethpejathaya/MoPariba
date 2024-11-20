@@ -460,6 +460,25 @@ const MyOrderIcon = () => (
   </Svg>
 );
 
+const GroceryBagIcon = () => (
+  <Svg width="50" height="50" viewBox="0 0 100 100" fill="none">
+    {/* Bag */}
+    <Path d="M30 40 L70 40 L65 80 L35 80 Z" fill="#F5C26B" />
+    <Path d="M35 40 L65 40 L60 75 L40 75 Z" fill="#F7D69A" />
+
+    {/* Produce */}
+    <Circle cx="45" cy="30" r="6" fill="#8FC847" />
+    <Circle cx="55" cy="25" r="7" fill="#D85A4C" />
+    <Circle cx="65" cy="30" r="5" fill="#68B548" />
+    <Rect x="45" y="15" width="6" height="15" rx="2" fill="#88CFFB" />
+
+    {/* Details */}
+    <Path d="M35 80 L36 76 L64 76 L65 80 Z" fill="#DEAC71" />
+    <Path d="M32 42 L68 42 L65 50 L35 50 Z" fill="#EDC891" />
+    <Polygon points="48,25 52,20 58,26 53,29" fill="#FFB02E" />
+  </Svg>
+);
+
 export {
   AddressIcon,
   CameraIcon,
@@ -476,6 +495,7 @@ export {
   FilterIcon,
   Fire,
   GlobeIcon,
+  GroceryBagIcon,
   HalfStarIcon,
   HomeIcon,
   LocationIcon,

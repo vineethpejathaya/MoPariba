@@ -119,6 +119,12 @@ export const GET_CUSTOMER_CART = gql`
           value
           currency
         }
+        platform_fee {
+          amount {
+            value
+            currency
+          }
+        }
         subtotal_including_tax {
           value
           currency

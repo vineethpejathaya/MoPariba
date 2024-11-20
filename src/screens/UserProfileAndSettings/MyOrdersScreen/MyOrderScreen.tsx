@@ -1,21 +1,30 @@
 import {useQuery} from '@apollo/client';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Box, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {MyOrderIcon} from '../../../assets/icons/Icons';
 import Accordion from '../../../components/Accordion';
 import NoDataIllustration from '../../../components/NoDataIllustration';
+import PressableContainer from '../../../components/Pressable/PressableContainer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
+import {RootStackParamList} from '../../../navigations/types';
 import {GET_CUSTOMER_ORDERS} from '../../../services/GGL-Queries/MyOrders/MyOrders.queries';
 import {
   CustomerOrder,
   GetCustomerOrdersResponse,
 } from '../../../services/GGL-Queries/MyOrders/interfaces/MyOrders.type';
 import theme from '../../../themes/theme';
-import ProductOrderedList from './components/ProductItem';
+export type MyOrdersScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MyOrdersScreen'
+>;
 
-function MyOrdersScreen() {
+export type MyOrdersScreenProps = {
+  navigation: MyOrdersScreenNavigationProp;
+};
+function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const {loading, error, data} = useQuery<GetCustomerOrdersResponse>(
     GET_CUSTOMER_ORDERS,
@@ -39,18 +48,25 @@ function MyOrdersScreen() {
     <>
       <ScreenHeader title="My Orders" />
       {orders?.length == 0 ? (
-        <NoDataIllustration message={'No Address found'} />
+        <NoDataIllustration message={'No past orders found'} />
       ) : (
         <Box style={styles.mainContainer}>
           <ScrollView>
             <VStack space={4}>
               {orders?.map((order: CustomerOrder, index: number) => (
-                <Accordion
-                  key={index}
-                  summary={<UserOrder order={order} />}
-                  content={<ProductOrderedList order={order} />}
-                  startIcon={<MyOrderIcon />}
-                />
+                <PressableContainer
+                  onPress={() =>
+                    navigation.navigate('OrderSummaryScreen', {
+                      orderNumber: order.number,
+                    })
+                  }>
+                  <Accordion
+                    key={index}
+                    summary={<UserOrder order={order} />}
+                    content={<OrderSummary />}
+                    startIcon={<MyOrderIcon />}
+                  />
+                </PressableContainer>
               ))}
             </VStack>
           </ScrollView>
@@ -91,6 +107,10 @@ const UserOrder = ({order}: {order: CustomerOrder}) => {
       </VStack>
     </>
   );
+};
+
+const OrderSummary = () => {
+  return <></>;
 };
 
 const styles = StyleSheet.create({

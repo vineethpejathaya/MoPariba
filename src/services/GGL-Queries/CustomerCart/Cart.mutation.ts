@@ -184,6 +184,12 @@ export const ADD_CONFIGURABLE_PRODUCTS_TO_CART = gql`
             value
             currency
           }
+          platform_fee {
+            amount {
+              value
+              currency
+            }
+          }
           subtotal_excluding_tax {
             value
             currency
@@ -297,6 +303,12 @@ export const REMOVE_ITEM_FROM_CART = gql`
           grand_total {
             value
             currency
+          }
+          platform_fee {
+            amount {
+              value
+              currency
+            }
           }
           subtotal_excluding_tax {
             value
@@ -414,6 +426,12 @@ export const UPDATE_CART_ITEMS = gql`
           grand_total {
             value
             currency
+          }
+          platform_fee {
+            amount {
+              value
+              currency
+            }
           }
           subtotal_excluding_tax {
             value

@@ -50,12 +50,9 @@ const getErrorMessage = (error: any): string => {
 
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {cartId, setCart, cartItems, setCartId} = useCartStore();
+  const {cartId, setCart, cartItems, cartPrices, setCartId} = useCartStore();
   const {showErrorToast} = useToast();
-  const total = cartItems?.reduce(
-    (acc, curr) => curr?.prices?.row_total_including_tax?.value + acc,
-    0,
-  );
+  const total = Number(cartPrices?.grand_total ?? 0);
   const navigate = useNavigation<NavigationProp>();
 
   const [setPaymentAddresses] = useMutation(SET_ADDRESSES);
@@ -121,14 +118,6 @@ const usePayment = () => {
             },
           });
 
-          await placeOrder({
-            variables: {
-              input: {
-                cart_id: cartId,
-              },
-            },
-          });
-
           setIsLoading(false);
           const cart = await createCustomerCart();
           const newCartId = cart.data.createEmptyCart;
@@ -153,7 +142,6 @@ const usePayment = () => {
             return;
           }
 
-          console.log(error, 'errorsss');
           setIsLoading(false);
           const errorMessage = getErrorMessage(error);
           showErrorToast('Payment Failed', errorMessage);
@@ -207,6 +195,14 @@ const usePayment = () => {
           input: {
             cart_id: cartId,
             payment_method: {code: 'razorpay'},
+          },
+        },
+      });
+
+      await placeOrder({
+        variables: {
+          input: {
+            cart_id: cartId,
           },
         },
       });
