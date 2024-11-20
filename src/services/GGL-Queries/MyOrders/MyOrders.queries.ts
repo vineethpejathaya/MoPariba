@@ -21,66 +21,8 @@ export const GET_CUSTOMER_ORDERS = gql`
           number
           order_date
           status
-          shipping_method
-
           total {
-            base_grand_total {
-              value
-              currency
-            }
-            discounts {
-              amount {
-                value
-                currency
-              }
-              label
-            }
             grand_total {
-              value
-              currency
-            }
-            platform_fee {
-              value
-              currency
-            }
-            shipping_handling {
-              amount_excluding_tax {
-                value
-                currency
-              }
-              amount_including_tax {
-                value
-                currency
-              }
-
-              taxes {
-                title
-                amount {
-                  value
-                  currency
-                }
-              }
-              total_amount {
-                currency
-                value
-              }
-            }
-            subtotal {
-              value
-              currency
-            }
-            taxes {
-              title
-              amount {
-                value
-                currency
-              }
-            }
-            total_shipping {
-              value
-              currency
-            }
-            total_tax {
               value
               currency
             }

@@ -1,10 +1,9 @@
 import {useQuery} from '@apollo/client';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {Box, HStack, ScrollView, Text, VStack} from 'native-base';
-import {useState} from 'react';
-import {StyleSheet} from 'react-native';
+import {Box, HStack, Text, VStack} from 'native-base';
+import React, {useState} from 'react';
+import {FlatList, StyleSheet} from 'react-native';
 import {MyOrderIcon} from '../../../assets/icons/Icons';
-import Accordion from '../../../components/Accordion';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import PressableContainer from '../../../components/Pressable/PressableContainer';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -24,20 +23,43 @@ export type MyOrdersScreenNavigationProp = NativeStackNavigationProp<
 export type MyOrdersScreenProps = {
   navigation: MyOrdersScreenNavigationProp;
 };
+
 function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
-  const {loading, error, data} = useQuery<GetCustomerOrdersResponse>(
+  const {loading, error, data, fetchMore} = useQuery<GetCustomerOrdersResponse>(
     GET_CUSTOMER_ORDERS,
     {
       variables: {
         currentPage: 1,
-        pageSize: 20,
+        pageSize: 6,
         scope: 'STORE',
       },
       onCompleted: res => {
         setOrders(res.customer.orders.items);
       },
     },
+  );
+
+  const loadMoreOrders = () => {
+    const currentPage = data?.customer?.orders?.page_info?.current_page || 0;
+    const totalPages = data?.customer?.orders?.page_info?.total_pages || 0;
+
+    if (currentPage < totalPages) {
+      fetchMore({
+        variables: {
+          currentPage: currentPage + 1,
+        },
+      });
+    }
+  };
+  const handleOrderPress = (order: CustomerOrder) => {
+    navigation.navigate('OrderSummaryScreen', {orderNumber: order.number});
+  };
+
+  const renderOrder = ({item}: {item: CustomerOrder}) => (
+    <PressableContainer onPress={() => handleOrderPress(item)}>
+      <UserOrder key={item.id} order={item} />
+    </PressableContainer>
   );
 
   if (loading) {
@@ -47,29 +69,21 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
   return (
     <>
       <ScreenHeader title="My Orders" />
-      {orders?.length == 0 ? (
-        <NoDataIllustration message={'No past orders found'} />
+      {orders.length === 0 ? (
+        <NoDataIllustration message="No past orders found" />
       ) : (
         <Box style={styles.mainContainer}>
-          <ScrollView>
-            <VStack space={4}>
-              {orders?.map((order: CustomerOrder, index: number) => (
-                <PressableContainer
-                  onPress={() =>
-                    navigation.navigate('OrderSummaryScreen', {
-                      orderNumber: order.number,
-                    })
-                  }>
-                  <Accordion
-                    key={index}
-                    summary={<UserOrder order={order} />}
-                    content={<OrderSummary />}
-                    startIcon={<MyOrderIcon />}
-                  />
-                </PressableContainer>
-              ))}
-            </VStack>
-          </ScrollView>
+          <FlatList
+            data={orders}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderOrder}
+            onEndReached={loadMoreOrders}
+            onEndReachedThreshold={0.5}
+            ItemSeparatorComponent={() => <Box height={4} />}
+            ListFooterComponent={
+              loading ? <SpinnerComponent onlySpinner /> : null
+            }
+          />
         </Box>
       )}
     </>
@@ -78,14 +92,16 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
 
 export default MyOrdersScreen;
 
-const UserOrder = ({order}: {order: CustomerOrder}) => {
+const UserOrder = React.memo(({order}: {order: CustomerOrder}) => {
   const totalQuantity = order?.items?.reduce(
     (acc, curr) => acc + curr.quantity_ordered,
     0,
   );
+
   return (
-    <>
-      <VStack>
+    <HStack style={styles.userOrderContainer} space={4}>
+      <MyOrderIcon />
+      <VStack space={2}>
         <Text style={styles.userName}>
           Order {'#'}
           {order.number}
@@ -94,10 +110,7 @@ const UserOrder = ({order}: {order: CustomerOrder}) => {
         <HStack space={2} alignItems={'center'}>
           <HStack alignItems={'center'} space={1}>
             <Text style={styles.address}>Total Price:</Text>
-            <Text style={styles.value}>
-              {order.total.grand_total.currency}
-              {order.total.grand_total.value}
-            </Text>
+            <Text style={styles.value}>₹ {order.total.grand_total.value}</Text>
           </HStack>
           <HStack alignItems={'center'} space={1}>
             <Text style={styles.address}>Items:</Text>
@@ -105,18 +118,21 @@ const UserOrder = ({order}: {order: CustomerOrder}) => {
           </HStack>
         </HStack>
       </VStack>
-    </>
+    </HStack>
   );
-};
-
-const OrderSummary = () => {
-  return <></>;
-};
+});
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     padding: 15,
+  },
+
+  userOrderContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 22,
+    backgroundColor: theme.colors.white,
+    alignItems: 'center',
   },
 
   orderCard: {

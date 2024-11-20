@@ -2,6 +2,7 @@ import {useQuery} from '@apollo/client';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Box, Divider, HStack, Text, VStack} from 'native-base';
+import {useMemo} from 'react';
 import {Platform, StyleSheet, UIManager} from 'react-native';
 import ExpandableDetailsCard from '../../../components/ExpandableDetailsCard';
 import ScreenContent from '../../../components/ScreenContent';
@@ -9,6 +10,11 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {RootStackParamList} from '../../../navigations/types';
 import {GET_CUSTOMER_ORDER_BY_NUMBER} from '../../../services/GGL-Queries/MyOrders/MyOrders.queries';
+import {
+  Address,
+  GetCustomerOrderByNumberResponse,
+  OrderItem,
+} from '../../../services/GGL-Queries/MyOrders/interfaces/MyOrders.type';
 
 export type OrderSummaryScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -32,64 +38,55 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+const renderIfExists = (value: any, render: () => JSX.Element) => {
+  return value ? render() : null;
+};
+
 function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
   const {orderNumber} = route.params;
 
-  const {loading, data} = useQuery(GET_CUSTOMER_ORDER_BY_NUMBER, {
-    variables: {orderNumber: orderNumber},
-  });
+  const {loading, data, error} = useQuery<GetCustomerOrderByNumberResponse>(
+    GET_CUSTOMER_ORDER_BY_NUMBER,
+    {
+      variables: {orderNumber: orderNumber},
+    },
+  );
 
-  const prices = data?.customer?.orders?.items[0]?.total;
-  const order = data?.customer?.orders?.items[0];
+  const orderData = data?.customer?.orders?.items?.[0];
+  const prices = orderData?.total;
 
-  const statusColor = order?.status === 'Pending' ? 'black' : 'green.500';
-  const appliedTaxes = prices?.total_tax?.value;
-  const shippingCharges = prices?.total_shipping?.value;
+  const statusColor = orderData?.status === 'Pending' ? 'black' : 'green.500';
+  const totalDiscount = useMemo(() => {
+    return (
+      prices?.discounts?.reduce(
+        (acc: number, curr: any) => acc + Number(curr?.amount?.value ?? 0),
+        0,
+      ) || 0
+    );
+  }, [prices?.discounts]);
 
-  const subTotal = prices?.subtotal?.value;
-  const totalDiscount =
-    Array.isArray(prices?.discounts) && prices?.discounts?.length
-      ? prices?.discounts.reduce(
-          (acc: any, curr: any) => acc + Number(curr?.amount?.value ?? 0),
-          0,
-        )
-      : 0;
-
-  const platFormFees = prices?.platform_fee?.value;
   const grandTotal = prices?.grand_total?.value ?? 0;
 
-  const orderPriceBreakDown = [
-    {
-      label: 'Subtotal',
-      value: subTotal,
-    },
-    {
-      label: 'Shipping charges',
-      value: shippingCharges,
-    },
-    {
-      label: 'Platform Fees',
-      value: platFormFees,
-    },
-
-    {
-      label: 'Applied Taxes',
-      value: appliedTaxes,
-    },
-    ...(totalDiscount > 0
-      ? [
-          {
-            label: 'Discount',
-            value: totalDiscount,
-          },
-        ]
-      : []),
-  ];
-
-  console.log(order?.payment_methods, 'data');
+  const orderPriceBreakDown = useMemo(() => {
+    return [
+      {label: 'Subtotal', value: prices?.subtotal?.value},
+      {label: 'Shipping charges', value: prices?.total_shipping?.value},
+      {label: 'Platform Fees', value: prices?.platform_fee?.value},
+      {label: 'Applied Taxes', value: prices?.total_tax?.value},
+      ...(totalDiscount > 0 ? [{label: 'Discount', value: totalDiscount}] : []),
+    ];
+  }, [prices]);
 
   if (loading) {
     return <SpinnerComponent onlySpinner />;
+  }
+
+  if (error) {
+    return (
+      <Box>
+        <Text>Error fetching order details: {error.message}</Text>
+      </Box>
+    );
   }
 
   return (
@@ -107,19 +104,24 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
             </HStack>
             <HStack alignItems={'center'}>
               <Text style={styles.subTitle}> Ordered on : </Text>
-              <Text style={styles.value}>{order?.order_date}</Text>
+              <Text style={styles.value}>{orderData?.order_date}</Text>
             </HStack>
             <HStack alignItems={'center'}>
               <Text style={styles.subTitle}> Status : </Text>
-              <Text style={styles.deliveryStatus}>{order?.status}</Text>
+              <Text style={[styles.deliveryStatus, {color: statusColor}]}>
+                {orderData?.status}
+              </Text>
             </HStack>
           </VStack>
 
           {/* Order items and price summary */}
           <VStack space={4}>
             <ExpandableDetailsCard title={'Your Order'} keepExpanded>
-              {data?.customer?.orders?.items?.[0]?.items?.map((item: any) => (
-                <HStack justifyContent="space-between" alignItems="center">
+              {orderData?.items?.map((item: OrderItem, index: number) => (
+                <HStack
+                  key={index}
+                  justifyContent="space-between"
+                  alignItems="center">
                   <Text fontSize="sm">
                     {item?.product_name} {item?.product_sku}
                   </Text>
@@ -134,8 +136,12 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
 
               {/* Order Costs */}
               <VStack space={2}>
-                {orderPriceBreakDown?.map(item => (
-                  <PriceSummaryLabelValue
+                {orderPriceBreakDown?.map((item, index) => (
+                  <LabelValuePair
+                    key={index}
+                    disableColon
+                    containerStyles={{justifyContent: 'space-between'}}
+                    labelStyle={{fontWeight: 'normal'}}
                     label={`${item?.label}`}
                     value={`₹ ${item?.value || 0}`}
                   />
@@ -155,30 +161,44 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
           </VStack>
 
           {/* Shipping Details */}
-          <ExpandableDetailsCard title={'Shipping Details'}>
-            <AddressComponent address={order?.shipping_address} />
-          </ExpandableDetailsCard>
+          {renderIfExists(orderData?.shipping_address, () => (
+            <ExpandableDetailsCard title={'Shipping Details'}>
+              <AddressComponent
+                address={orderData?.shipping_address as Address}
+              />
+            </ExpandableDetailsCard>
+          ))}
 
           {/* Billing Details */}
-          <ExpandableDetailsCard title={'Billing Details'}>
-            <AddressComponent address={order?.billing_address} />
-          </ExpandableDetailsCard>
+          {renderIfExists(orderData?.shipping_address, () => (
+            <ExpandableDetailsCard title={'Billing Details'}>
+              <AddressComponent
+                address={orderData?.billing_address as Address}
+              />
+            </ExpandableDetailsCard>
+          ))}
 
           {/* Payment Method */}
-          <Box padding={4} bg="white" borderRadius="md" shadow={1}>
-            <Text fontSize="md" fontWeight="bold">
-              Payment Method
-            </Text>
-            <Divider my={3} />
-            {order?.payment_methods.length > 0 ? (
-              <VStack space={1}>
-                <Text fontSize="sm">{order?.payment_methods[0]?.name}</Text>
-                <Text fontSize="sm">{order?.payment_methods[0]?.type}</Text>
-              </VStack>
-            ) : (
-              <Text fontSize="sm">Not Available</Text>
-            )}
-          </Box>
+          {orderData?.payment_methods.length && (
+            <Box padding={4} bg="white" borderRadius="md" shadow={1}>
+              <Text fontSize="md" fontWeight="bold">
+                Payment Method
+              </Text>
+              <Divider my={3} />
+              {orderData?.payment_methods?.length > 0 ? (
+                <VStack space={1}>
+                  <Text fontSize="sm">
+                    {orderData?.payment_methods[0]?.name}
+                  </Text>
+                  <Text fontSize="sm">
+                    {orderData?.payment_methods[0]?.type}
+                  </Text>
+                </VStack>
+              ) : (
+                <Text fontSize="sm">Not Available</Text>
+              )}
+            </Box>
+          )}
         </VStack>
       </ScreenContent>
     </>
@@ -187,58 +207,69 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
 
 export default OrderSummaryScreen;
 
-const AddressComponent = ({address}: {address: any}) => {
+const AddressComponent = ({address}: {address: Address}) => {
+  if (!address) return null;
   return (
     <>
       <VStack space={2}>
-        <AddressLAbelValue
+        <LabelValuePair
           label={'Name'}
           value={`${address?.firstname} ${address?.lastname}`}
         />
-        <AddressLAbelValue
+        <LabelValuePair
           label={'Address'}
           value={`${address?.street?.join(', ')}\n ${address?.city}, ${
             address?.region
           }`}
         />
-        <Text fontSize="sm"></Text>
-        <AddressLAbelValue label={'Zipcode'} value={`${address?.postcode}`} />
+
+        <LabelValuePair label={'Zipcode'} value={`${address?.postcode}`} />
       </VStack>
     </>
   );
 };
 
-const PriceSummaryLabelValue = ({
+const LabelValuePair = ({
   label,
   value,
+  labelStyle,
+  valueStyle,
+  containerStyles,
+  disableColon = false,
 }: {
   label: string;
-  value: string;
+  value: string | number;
+  labelStyle?: object;
+  valueStyle?: object;
+  containerStyles?: object;
+  disableColon?: boolean;
 }) => {
-  if (value == null || value === '') return null;
+  const defaultContainerStyles = {
+    alignItems: 'flex-start',
+    marginBottom: 1,
+  };
+  const defaultLabelStyles = {
+    fontSize: 12,
+    fontWeight: 'bold',
+  };
 
+  const combinedContainerStyles = StyleSheet.flatten([
+    defaultContainerStyles,
+    containerStyles,
+  ]);
+  const combinedLabelStyles = StyleSheet.flatten([
+    defaultLabelStyles,
+    labelStyle,
+  ]);
   return (
-    <>
-      <HStack justifyContent="space-between" mb="2">
-        <Text variant={'body1'}>{label}</Text>
-        <Text variant={'body1'}>{value}</Text>
-      </HStack>
-    </>
-  );
-};
-
-const AddressLAbelValue = ({label, value}: {label: string; value: string}) => {
-  if (value == null || value === '') return null;
-
-  return (
-    <>
-      <HStack alignItems={'base-line'} mb="1" space={2}>
-        <Text fontSize="sm" fontWeight={'bold'}>
-          {label}:
-        </Text>
-        <Text fontSize="sm">{value}</Text>
-      </HStack>
-    </>
+    <HStack style={combinedContainerStyles} space={2}>
+      <Text style={combinedLabelStyles}>
+        {label} {disableColon ? '' : ':'}
+      </Text>
+      <Text fontSize="sm" style={valueStyle}>
+        {value ?? '--'}
+      </Text>
+    </HStack>
   );
 };
 
