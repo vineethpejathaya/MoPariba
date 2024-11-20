@@ -41,7 +41,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
   const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
-  const {setCart, setCartId, setCartPrice} = useCartStore(state => state);
+  const {setCart, setCartId} = useCartStore(state => state);
   const {customer, initializeCustomer} = useCustomerStore();
   const [homeScreenState, setHomeScreenState] = useState<HomeScreenState>(
     defaultHomeScreenState,
@@ -92,9 +92,9 @@ function HomeScreen({navigation}: HomeScreenProps) {
           variables: {cart_id: cartId},
         });
 
-        const cart = customerCartResponse.data.cart?.items;
+        const cart = customerCartResponse.data.cart;
+
         setCart(cart);
-        setCartPrice(customerCartResponse.data?.cart?.prices);
         await AsyncStorage.setItem('cart', JSON.stringify(cart));
 
         setLoading(false);
@@ -105,7 +105,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
     };
 
     if (isAuthenticated) fetchData();
-  }, [client, isAuthenticated, setCart, setCartId]);
+  }, [client, isAuthenticated, setCart]);
 
   const {categoryItems, dailyDeals} = homeScreenState;
 

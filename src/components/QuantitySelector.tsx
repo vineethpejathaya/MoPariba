@@ -46,7 +46,6 @@ const QuantitySelector = ({
   const productInCart = findProductInCart(productSku, variantSku);
 
   const handleAddToCart = async () => {
-    console.log('adding');
     setLoading(true);
     await addToCart(productSku, variantSku);
     setLoading(false);

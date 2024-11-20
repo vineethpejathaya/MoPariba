@@ -30,63 +30,65 @@ function CouponSection({refetchCart}: {refetchCart: () => void}) {
 
   return (
     <>
-      <VStack style={styles.container}>
-        <HStack justifyContent="flex-start" alignItems="flex-end" space={2}>
-          <TextField
-            label={''}
-            height={45}
-            name={'coupon'}
-            value={couponCode}
-            inputStyles={{
-              backgroundColor: '#F5F8FA',
-              padding: 0,
-              height: 35, // Reduced height
-              paddingHorizontal: 10,
-            }}
-            onChangeText={e => {
-              setCouponCode(e);
-            }}
-            containerProps={{
-              style: {
-                width: '70%',
-              },
-            }}
-            placeholder="Enter coupon code"
-          />
+      <Box bg="white" borderRadius="md" shadow={1}>
+        <VStack style={styles.container}>
+          <HStack justifyContent="flex-start" alignItems="flex-end" space={2}>
+            <TextField
+              label={''}
+              height={45}
+              name={'coupon'}
+              value={couponCode}
+              inputStyles={{
+                backgroundColor: '#F5F8FA',
+                padding: 0,
+                height: 35,
+                paddingHorizontal: 10,
+              }}
+              onChangeText={e => {
+                setCouponCode(e);
+              }}
+              containerProps={{
+                style: {
+                  width: '70%',
+                },
+              }}
+              placeholder="Enter coupon code"
+            />
 
-          <Button
-            style={{minWidth: 100, height: 45, flex: 1}}
-            isDisabled={!couponCode}
-            isLoading={loading}
-            spinnerPlacement="end"
-            onPress={handleApplyCoupon}>
-            Apply
-          </Button>
-        </HStack>
-        <VStack space={2}>
-          {appliedCoupons.length > 0 && (
-            <>
-              <Text style={styles.heading}>Applied Coupons</Text>
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={appliedCoupons}
-                renderItem={({item}: any) => (
-                  <Box style={styles.couponCard}>
-                    <Text
-                      color="red.500"
-                      fontWeight="bold"
-                      textAlign={'center'}>
-                      {item}
-                    </Text>
-                  </Box>
-                )}
-                keyExtractor={(item: any) => item}
-              />
-            </>
-          )}
+            <Button
+              style={{minWidth: 100, height: 45, flex: 1}}
+              isDisabled={!couponCode}
+              isLoading={loading}
+              spinnerPlacement="end"
+              onPress={handleApplyCoupon}>
+              Apply
+            </Button>
+          </HStack>
+          <VStack space={2}>
+            {appliedCoupons.length > 0 && (
+              <>
+                <Text style={styles.heading}>Applied Coupons</Text>
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  data={appliedCoupons}
+                  renderItem={({item}: any) => (
+                    <Box style={styles.couponCard}>
+                      <Text
+                        color="red.500"
+                        fontWeight="bold"
+                        textAlign={'center'}>
+                        {item}
+                      </Text>
+                    </Box>
+                  )}
+                  keyExtractor={(item: any) => item}
+                />
+              </>
+            )}
+          </VStack>
         </VStack>
-      </VStack>
+      </Box>
     </>
   );
 }

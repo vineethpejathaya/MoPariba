@@ -6,6 +6,7 @@ import {FlatList, StyleSheet} from 'react-native';
 import {MyOrderIcon} from '../../../assets/icons/Icons';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import PressableContainer from '../../../components/Pressable/PressableContainer';
+import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {RootStackParamList} from '../../../navigations/types';
@@ -69,23 +70,25 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
   return (
     <>
       <ScreenHeader title="My Orders" />
-      {orders.length === 0 ? (
-        <NoDataIllustration message="No past orders found" />
-      ) : (
-        <Box style={styles.mainContainer}>
-          <FlatList
-            data={orders}
-            keyExtractor={item => item.id.toString()}
-            renderItem={renderOrder}
-            onEndReached={loadMoreOrders}
-            onEndReachedThreshold={0.5}
-            ItemSeparatorComponent={() => <Box height={4} />}
-            ListFooterComponent={
-              loading ? <SpinnerComponent onlySpinner /> : null
-            }
-          />
-        </Box>
-      )}
+      <ScreenContent>
+        {orders.length === 0 ? (
+          <NoDataIllustration message="No past orders found" />
+        ) : (
+          <Box style={styles.mainContainer}>
+            <FlatList
+              data={orders}
+              keyExtractor={item => item.id.toString()}
+              renderItem={renderOrder}
+              onEndReached={loadMoreOrders}
+              onEndReachedThreshold={0.5}
+              ItemSeparatorComponent={() => <Box height={4} />}
+              ListFooterComponent={
+                loading ? <SpinnerComponent onlySpinner /> : null
+              }
+            />
+          </Box>
+        )}
+      </ScreenContent>
     </>
   );
 }

@@ -1,13 +1,11 @@
 import {StyleSheet} from 'react-native';
-import {bottomNavigatorHeight} from '../../../constants/config';
 import theme from '../../../themes/theme';
 
 const CartScreenStyles = StyleSheet.create({
-  mainContainer: {
+  cartItemsContainer: {
     backgroundColor: theme.colors.white,
-    flex: 1,
-    paddingBottom: bottomNavigatorHeight + 10,
-    justifyContent: 'space-between',
+
+    borderRadius: 25,
   },
   cartReviewContainer: {
     justifyContent: 'space-between',

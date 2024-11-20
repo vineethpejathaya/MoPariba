@@ -1,66 +1,40 @@
-import {useMutation, useQuery} from '@apollo/client';
+import {useQuery} from '@apollo/client';
 import {useNavigation} from '@react-navigation/native';
-import {Button, Divider, HStack, ScrollView, Text, VStack} from 'native-base';
+import {Box, Divider, HStack, Text, VStack} from 'native-base';
 import {useEffect} from 'react';
-import {Dimensions} from 'react-native';
+import {Pressable} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {CartBag} from '../../../assets/icons/Icons';
 import NoDataIllustration from '../../../components/NoDataIllustration';
+import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {useCartStore} from '../../../hooks/UseCartStore';
+import {useCustomerStore} from '../../../hooks/UseCustomerStore';
 import {NavigationProp} from '../../../navigations/types';
-import {CLEAR_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart.mutation';
 import {GET_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart.queries';
 import {GetCustomerCartResponse} from '../../../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
 import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
 import theme from '../../../themes/theme';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
-import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const {
-    cartId,
-    setCart,
-    cartItems,
-    setAppliedCoupons,
-    setCartPrice,
-    setShippingAddresses,
-  } = useCartStore(state => state);
+  const {cartId, setCart, cartItems} = useCartStore(state => state);
+  const {customer} = useCustomerStore();
+
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
     {
       variables: {cart_id: cartId},
       onCompleted: res => {
-        const appliedCoupons = res?.cart?.applied_coupons;
-        const addresses = res?.cart?.shipping_addresses;
-        setCart(res?.cart?.items);
-        setCartPrice(res?.cart?.prices);
-        setAppliedCoupons(appliedCoupons ? appliedCoupons : []);
-        setShippingAddresses(addresses);
+        setCart(res?.cart);
       },
     },
   );
 
   const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
-
-  const [clearCustomerCart] = useMutation(CLEAR_CUSTOMER_CART, {
-    onCompleted: res => {
-      setCart([]);
-    },
-    onError: err => {
-      console.log(err, 'err');
-    },
-  });
-
-  const handleClear = () => {
-    clearCustomerCart({
-      variables: {
-        cartId: cartId,
-      },
-    });
-  };
 
   useEffect(() => {
     refetch();
@@ -76,62 +50,75 @@ function CartScreen() {
         hStackProps={{shadow: 3}}
         leftActions={[<Text variant={'subheader1'}>My Cart</Text>]}
       />
-
-      {cartItems.length == 0 ? (
-        <NoDataIllustration
-          message={
-            <VStack alignItems={'center'}>
-              <CartBag />
-              <Text variant={'title1'}>{'No Products in the cart!'}</Text>
-            </VStack>
-          }
-        />
-      ) : (
-        <>
-          <VStack style={CartScreenStyles.mainContainer}>
-            <VStack>
-              <HStack style={CartScreenStyles.cartReviewContainer}>
-                <Text style={CartScreenStyles.cartReviewHeading}>
-                  Review Items
-                </Text>
-                {/* <PressableContainer onPress={() => {}}>
-                  <HStack space={2} alignItems={'center'}>
-                    <Text
-                      style={CartScreenStyles.cartReviewHeading}
-                      fontSize={'sm'}
-                      onPress={handleClear}>
-                      Clear cart
-                    </Text>
-                    <DeleteIcon />
-                  </HStack>
-                </PressableContainer> */}
-              </HStack>
-
-              <VStack height={Dimensions.get('window').height * 0.35}>
-                <ScrollView flex={1}>
-                  <VStack>
-                    {cartItems?.map((cartItem: CartItem, index: number) => (
-                      <ProductInCart key={index} cartItem={cartItem} />
-                    ))}
-                  </VStack>
-                </ScrollView>
+      <ScreenContent containerStyles={{paddingTop: 10}}>
+        {cartItems.length == 0 ? (
+          <NoDataIllustration
+            message={
+              <VStack alignItems={'center'}>
+                <CartBag />
+                <Text variant={'title1'}>{'No Products in the cart!'}</Text>
               </VStack>
+            }
+          />
+        ) : (
+          <>
+            <VStack space={2}>
+              <Box bg="white" borderRadius="md" shadow={1}>
+                {cartItems?.map((cartItem: CartItem, index: number) => (
+                  <ProductInCart key={index} cartItem={cartItem} />
+                ))}
+              </Box>
+
+              <CouponSection refetchCart={refetch} />
+
+              <CartSummary />
+              {customer &&
+                customer?.addresses?.length &&
+                customer.defaultAddress && (
+                  <>
+                    <DeliveryAddress />
+                  </>
+                )}
+
+              {/* <Button
+                style={CartScreenStyles.btn}
+                onPress={() => navigation.navigate('AddressSelection')}
+                _text={{fontSize: 15}}
+                mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button> */}
             </VStack>
-            <CouponSection refetchCart={refetch} />
-            <CartSummary />
-            <Button
-              style={CartScreenStyles.btn}
-              onPress={() => navigation.navigate('AddressSelection')}
-              _text={{fontSize: 15}}
-              mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button>
-          </VStack>
-        </>
-      )}
+          </>
+        )}
+      </ScreenContent>
     </>
   );
 }
 
 export default CartScreen;
+
+const DeliveryAddress = () => {
+  return (
+    <>
+      <Box p="4" bg="white" borderRadius="lg" shadow="1">
+        <VStack justifyContent="space-between">
+          <HStack justifyContent={'space-between'}>
+            <Text fontSize="md" bold>
+              Delivery at
+            </Text>
+            <Pressable onPress={() => {}}>
+              <Icon
+                name="chevron-right"
+                size={25}
+                color={theme.colors.gray[900]}
+                style={{marginLeft: 'auto'}}
+              />
+            </Pressable>
+          </HStack>
+          <Divider />
+        </VStack>
+      </Box>
+    </>
+  );
+};
 
 const CartSummary = () => {
   const {cartPrices, shippingAddresses} = useCartStore(state => state);
@@ -141,10 +128,6 @@ const CartSummary = () => {
       (acc, curr) => acc + curr?.selected_shipping_method?.amount?.value,
       0,
     ) ?? 0;
-  const appliedTaxes = cartPrices?.applied_taxes;
-  const subTotalInclusiveOfTax = cartPrices?.subtotal_including_tax?.value;
-
-  const subTotalExclusiveOfTax = cartPrices?.subtotal_excluding_tax?.value;
 
   const subTotal = cartPrices?.subtotal_excluding_tax?.value;
   const totalDiscount =
@@ -160,26 +143,26 @@ const CartSummary = () => {
 
   return (
     <>
-      <VStack space={1} paddingX={5}>
-        <LabelValue label={'Subtotal'} value={`₹ ${subTotal || 0}`} />
-        <LabelValue
-          label={'Shipping charges'}
-          value={`₹ ${shippingCharges || 0}`}
-        />
+      <Box bg="white" borderRadius="md" shadow={1} padding={4}>
+        <VStack space={1}>
+          <LabelValue label={'Subtotal'} value={`₹ ${subTotal || 0}`} />
+          <LabelValue
+            label={'Shipping charges'}
+            value={`₹ ${shippingCharges || 0}`}
+          />
+          <LabelValue label={'Platform Fees'} value={` ₹ ${platFormFees}`} />
 
-        <LabelValue label={'Platform Fees'} value={` ₹ ${platFormFees}`} />
+          {totalDiscount > 0 && (
+            <LabelValue label={'Discount'} value={`- ₹ ${totalDiscount}`} />
+          )}
 
-        <LabelValue label={'Applied Taxes'} value={`₹ ${0 || 0}`} />
-        {totalDiscount > 0 && (
-          <LabelValue label={'Discount'} value={`- ₹ ${totalDiscount}`} />
-        )}
-
-        <Divider />
-        <HStack justifyContent={'space-between'}>
-          <Text variant={'subheader1'}>Total</Text>
-          <Text variant={'subheader1'}>₹ {grandTotal || 0}</Text>
-        </HStack>
-      </VStack>
+          <Divider />
+          <HStack justifyContent={'space-between'}>
+            <Text variant={'subheader1'}>Total</Text>
+            <Text variant={'subheader1'}>₹ {grandTotal || 0}</Text>
+          </HStack>
+        </VStack>
+      </Box>
     </>
   );
 };

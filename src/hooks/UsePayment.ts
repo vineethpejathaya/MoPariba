@@ -50,7 +50,7 @@ const getErrorMessage = (error: any): string => {
 
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {cartId, setCart, cartItems, cartPrices, setCartId} = useCartStore();
+  const {cartId, setCart, cartItems, cartPrices} = useCartStore();
   const {showErrorToast} = useToast();
   const total = Number(cartPrices?.grand_total ?? 0);
   const navigate = useNavigation<NavigationProp>();
@@ -121,8 +121,8 @@ const usePayment = () => {
           setIsLoading(false);
           const cart = await createCustomerCart();
           const newCartId = cart.data.createEmptyCart;
-          setCartId(newCartId);
-          setCart([]);
+
+          setCart(null);
 
           navigate.navigate('OrderConfirm');
         })

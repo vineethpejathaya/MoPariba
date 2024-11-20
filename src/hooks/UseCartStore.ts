@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
-import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import {ShippingAddress} from '../services/GGL-Queries/CustomerCart/interfaces/BillingAndShippingAddress.type';
+import {Cart} from '../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
 import {CartItem} from '../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
 import {Prices} from '../services/GGL-Queries/CustomerCart/interfaces/Prices.type';
 
@@ -19,23 +20,16 @@ interface CartState {
   cartItems: CartItem[];
   cartPrices: Prices | null;
   appliedCoupons: string[];
-  shippingAddresses: any[];
+  shippingAddresses: ShippingAddress[];
   cartId: string;
   adding: boolean;
   removing: boolean;
   updating: boolean;
   showLoading: boolean;
-
   transformedCartItems: TransformedCartItem[];
-  addresses: CustomerAddress[];
-  defaultAddress: CustomerAddress | null;
   productMap: Map<string, TransformedCartItem[]>;
-  setCartId: (id: string) => void;
-  setCart: (cart: CartItem[]) => void;
-  setCartPrice: (price: Prices) => void;
-  setAppliedCoupons: (coupons: string[]) => void;
-  setShippingAddresses: (addresses: any[]) => void;
-  setAddresses: (address: CustomerAddress[]) => void;
+  setCart: (cart: Cart | null) => void;
+  setCartId: (cartId: string) => void;
   setAdding: (status: boolean) => void;
   setRemoving: (status: boolean) => void;
   setUpdating: (status: boolean) => void;
@@ -56,7 +50,7 @@ export const useCartStore = create<CartState>()(
     cartItems: [] as CartItem[],
     cartPrices: null,
     appliedCoupons: [],
-    shippingAddresses: [] as any,
+    shippingAddresses: [] as ShippingAddress[],
     cartId: '',
     adding: false,
     removing: false,
@@ -65,35 +59,20 @@ export const useCartStore = create<CartState>()(
     transformedCartItems: [] as TransformedCartItem[],
     defaultAddress: null,
     productMap: new Map(),
-    addresses: [],
-    setCart: (cartItems: CartItem[]) => {
-      const transformedData = transformCartItems(cartItems);
+    setCartId: (id: string) => set({cartId: id}),
+    setCart: (cart: Cart | null) => {
+      const transformedData = transformCartItems(cart?.items || []);
       const productMap = mapTransformedDataBySku(transformedData);
       set({
-        cartItems,
+        cartItems: cart?.items || [],
+        cartPrices: cart?.prices || null,
+        appliedCoupons: cart?.applied_coupons || [],
+        shippingAddresses: cart?.shipping_addresses,
         transformedCartItems: transformedData,
         productMap: productMap,
       });
     },
-    setCartPrice: (prices: Prices) => {
-      set({
-        cartPrices: prices,
-      });
-    },
-    setAddresses: (addresses: CustomerAddress[]) => {
-      set({
-        addresses: addresses,
-        defaultAddress:
-          addresses?.find(address => address.default_billing) ?? null,
-      });
-    },
-    setShippingAddresses: (addresses: any) => {
-      set({
-        shippingAddresses: addresses,
-      });
-    },
-    setCartId: (id: string) => set({cartId: id}),
-    setAppliedCoupons: (coupons: string[]) => set({appliedCoupons: coupons}),
+
     setAdding: status => set({adding: status}),
     setRemoving: status => set({removing: status}),
     setUpdating: status => set({updating: status}),
