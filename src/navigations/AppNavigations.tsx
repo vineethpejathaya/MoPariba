@@ -8,6 +8,7 @@ import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
 import BestDeals from '../screens/BestDeals/BestDeals';
 import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
+import PaymentMethodScreen from '../screens/CartAndPaymentsScreen/PaymentMethodScreen';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
@@ -88,6 +89,10 @@ function RootNavigator() {
             <Stack.Screen
               name="GeoLocationScreen"
               component={MapViewComponent}
+            />
+            <Stack.Screen
+              name="PaymentMethodScreen"
+              component={PaymentMethodScreen}
             />
             <Stack.Screen name="MyProfileScreen" component={MyProfile} />
             <Stack.Screen name="MyOrdersScreen" component={MyOrdersScreen} />

@@ -118,6 +118,7 @@ const useCustomerStore = create<CustomerState>()(
     },
 
     setSelectedAddress: (address: CustomerAddress | null) => {
+      console.log(address, 'setAddress');
       set({
         selectedAddress: address,
       });

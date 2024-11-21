@@ -45,6 +45,7 @@ export type RootStackParamList = {
   Cart: undefined;
   OrderConfirm: undefined;
   // Profile
+  PaymentMethodScreen: undefined;
   Profile: undefined;
   NotificationSettings: undefined;
   MyAddress: undefined;

@@ -168,3 +168,18 @@ export interface PlaceRazorpayOrderResponse {
     message: string;
   };
 }
+
+export type SetPaymentAddressPostBody = {
+  id: number;
+  firstname: string;
+  lastname: string;
+  company?: string;
+  street: string[];
+  city: string;
+  region: string;
+  region_id: number;
+  country_code: string;
+  postcode: string;
+  telephone: string;
+  save_in_address_book: boolean;
+};

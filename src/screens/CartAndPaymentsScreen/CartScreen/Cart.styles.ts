@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+import {bottomNavigatorHeight} from '../../../constants/config';
 import theme from '../../../themes/theme';
 
 const CartScreenStyles = StyleSheet.create({
@@ -22,6 +23,19 @@ const CartScreenStyles = StyleSheet.create({
   btn: {
     height: 40,
     borderRadius: 20,
+  },
+
+  cartOverlay: {
+    position: 'absolute',
+    height: bottomNavigatorHeight,
+    left: 0,
+    right: 0,
+    top: Dimensions.get('window').height * 0.1,
+    backgroundColor: 'white',
+    padding: 10,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    elevation: 10,
   },
 });
 

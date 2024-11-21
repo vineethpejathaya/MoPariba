@@ -32,7 +32,7 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
     {
       variables: {
         currentPage: 1,
-        pageSize: 6,
+        pageSize: 10,
         scope: 'STORE',
       },
       onCompleted: res => {
@@ -53,6 +53,7 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
       });
     }
   };
+
   const handleOrderPress = (order: CustomerOrder) => {
     navigation.navigate('OrderSummaryScreen', {orderNumber: order.number});
   };
