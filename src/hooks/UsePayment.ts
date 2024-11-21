@@ -50,7 +50,7 @@ const getErrorMessage = (error: any): string => {
 
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {cartId, setCart, cartItems, cartPrices} = useCartStore();
+  const {cartId, setCart, cartItems, cartPrices, setCartId} = useCartStore();
   const {showErrorToast} = useToast();
   const total = Number(cartPrices?.grand_total ?? 0);
   const navigate = useNavigation<NavigationProp>();
@@ -78,6 +78,18 @@ const usePayment = () => {
   >(PLACE_RAZORPAY_ORDER);
 
   const [createCustomerCart] = useMutation(CREATE_CART_MUTATION);
+
+  const setCustomerPaymentAddress = async (postBody: any) => {
+    const res = await setPaymentAddresses({
+      variables: {
+        cartId: cartId,
+        shippingAddresses: [{address: postBody}],
+        billingAddress: {address: postBody},
+      },
+    });
+
+    console.log(res, 'res');
+  };
 
   const handlePayment = async (address: CustomerAddress) => {
     try {
@@ -171,13 +183,15 @@ const usePayment = () => {
         save_in_address_book: false,
       };
 
-      await setPaymentAddresses({
+      const res = await setPaymentAddresses({
         variables: {
           cartId: cartId,
           shippingAddresses: [{address: postBody}],
           billingAddress: {address: postBody},
         },
       });
+
+      console.log(res, 'res of setting shipping address');
 
       await setShippingMethod({
         variables: {
@@ -216,7 +230,7 @@ const usePayment = () => {
     }
   };
 
-  return {isLoading, handleDeliverToAddress};
+  return {isLoading, handleDeliverToAddress, setCustomerPaymentAddress};
 };
 
 export default usePayment;

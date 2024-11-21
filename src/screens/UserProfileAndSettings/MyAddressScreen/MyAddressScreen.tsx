@@ -1,15 +1,14 @@
-import {useMutation, useQuery} from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import {
   AddIcon,
   Badge,
   Box,
+  FlatList,
   IconButton,
   Menu,
   Pressable,
-  ScrollView,
-  VStack,
 } from 'native-base';
-import React, {useState} from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import {AddressIcon, MoreActions} from '../../../assets/icons/Icons';
 import Accordion from '../../../components/Accordion';
@@ -17,125 +16,114 @@ import AddressForm from '../../../components/AddressForm';
 import LinearProgress from '../../../components/LinearProgress';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
-import SpinnerComponent from '../../../components/SpinnerComponent';
 import UserAddress from '../../../components/UserAddress';
-import {
-  DELETE_CUSTOMER_ADDRESS,
-  GET_CUSTOMER_ADDRESSES,
-} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
-import {
-  CustomerAddress,
-  GetCustomerAddressesResponse,
-} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
+import {useCustomerStore} from '../../../hooks/UseCustomerStore';
+import {DELETE_CUSTOMER_ADDRESS} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.queries';
+import {CustomerAddress} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import theme from '../../../themes/theme';
 import {MyAddressScreenProps} from './MyAddress.type';
 
 function MyAddressScreen({navigation}: MyAddressScreenProps) {
-  const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
-  const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
+  const {customer, deleteAddress: deleteAdd} = useCustomerStore();
 
-  const {loading, refetch} = useQuery<GetCustomerAddressesResponse>(
-    GET_CUSTOMER_ADDRESSES,
-    {
-      onCompleted: res => {
-        setAddresses(res?.customer?.addresses);
-      },
-    },
-  );
-
+  const addresses = customer?.addresses || [];
   const [deleteAddress, {loading: deleting}] = useMutation(
     DELETE_CUSTOMER_ADDRESS,
-    {
-      onCompleted: res => {
-        refetch();
-      },
-    },
   );
 
   const handleDelete = (id: number) => {
     deleteAddress({
-      variables: {
-        id,
-      },
+      variables: {id},
+      onCompleted: () => deleteAdd(id),
+      onError: error => console.error('Error deleting address:', error),
     });
   };
 
-  if (loading) {
-    return <SpinnerComponent onlySpinner />;
-  }
+  const renderAddressItem = ({item}: {item: CustomerAddress}) => {
+    const {id, default_billing} = item;
+
+    return (
+      <Accordion
+        key={id}
+        summary={<UserAddress address={item} />}
+        content={<AddressForm address={item} />}
+        startIcon={
+          <Box style={styles.addressIconContainer}>
+            <AddressIcon />
+          </Box>
+        }
+        leftAction={
+          default_billing && (
+            <Badge style={styles.default} _text={styles.defaultText}>
+              DEFAULT
+            </Badge>
+          )
+        }
+        rightAction={
+          <Menu
+            trigger={triggerProps => (
+              <Pressable
+                accessibilityLabel="More options menu"
+                {...triggerProps}>
+                <MoreActions />
+              </Pressable>
+            )}>
+            <Menu.Item onPress={() => handleDelete(id)}>
+              Delete Address
+            </Menu.Item>
+          </Menu>
+        }
+      />
+    );
+  };
+
+  const addressList = useMemo(
+    () => (
+      <FlatList
+        data={addresses}
+        renderItem={renderAddressItem}
+        keyExtractor={(item: CustomerAddress) => item.id.toString()}
+        ItemSeparatorComponent={() => <Box height={4} />}
+        contentContainerStyle={styles.listContent}
+      />
+    ),
+    [addresses],
+  );
 
   return (
     <>
       <ScreenHeader
-        title={'My Address'}
+        title="My Address"
         rightActions={[
           <IconButton
-            onPress={() => navigation.navigate('GeoLocationScreen')}
+            key="addBtn"
+            onPress={() =>
+              navigation.navigate('GeoLocationScreen', {
+                navigateTo: 'MyAddress',
+              })
+            }
             style={styles.addBtn}
             icon={<AddIcon size={3} color={theme.colors.black} />}
           />,
         ]}
       />
       {deleting && <LinearProgress />}
-      {addresses?.length == 0 ? (
-        <NoDataIllustration message={'No Address found'} />
+      {addresses.length === 0 ? (
+        <NoDataIllustration message="No Address found" />
       ) : (
-        <Box style={styles.mainContainer}>
-          <ScrollView>
-            <VStack space={4}>
-              {addresses?.map((address: CustomerAddress, index: number) => (
-                <Accordion
-                  key={index}
-                  summary={<UserAddress address={address} />}
-                  content={
-                    <AddressForm address={address} onSave={() => refetch()} />
-                  }
-                  startIcon={
-                    <Box style={styles.addressIConContainer}>
-                      <AddressIcon />
-                    </Box>
-                  }
-                  leftAction={
-                    address?.default_billing && (
-                      <Badge style={styles.default} _text={styles.defaultText}>
-                        DEFAULT
-                      </Badge>
-                    )
-                  }
-                  rightAction={
-                    <Menu
-                      trigger={triggerProps => {
-                        return (
-                          <Pressable
-                            accessibilityLabel="More options menu"
-                            {...triggerProps}>
-                            <MoreActions />
-                          </Pressable>
-                        );
-                      }}>
-                      <Menu.Item onPress={() => handleDelete(address.id)}>
-                        Delete Address
-                      </Menu.Item>
-                    </Menu>
-                  }
-                />
-              ))}
-            </VStack>
-          </ScrollView>
-        </Box>
+        <Box style={styles.mainContainer}>{addressList}</Box>
       )}
     </>
   );
 }
 
-export default MyAddressScreen;
+export default React.memo(MyAddressScreen);
 
 const styles = StyleSheet.create({
-  addressIConContainer: {
+  addressIconContainer: {
     width: 60,
     height: 60,
     borderRadius: 50,
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.colors.primary[100],
@@ -144,14 +132,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
   },
-  addressCard: {
-    paddingHorizontal: 10,
-    paddingVertical: 25,
-    backgroundColor: theme.colors.white,
-  },
-  addressItem: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  listContent: {
+    paddingBottom: 20,
   },
   addBtn: {
     width: 25,
@@ -162,7 +144,6 @@ const styles = StyleSheet.create({
   default: {
     backgroundColor: theme.colors.primary[100],
   },
-
   defaultText: {
     fontSize: 10,
     color: theme.colors.primary[900],

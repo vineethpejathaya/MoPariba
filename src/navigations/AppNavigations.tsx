@@ -7,7 +7,6 @@ import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
 import BestDeals from '../screens/BestDeals/BestDeals';
-import AddressSelection from '../screens/CartAndPaymentsScreen/AddressSelection/AddressSelection';
 import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
@@ -101,10 +100,7 @@ function RootNavigator() {
               name="NotificationSettings"
               component={NotificationSettings}
             />
-            <Stack.Screen
-              name="AddressSelection"
-              component={AddressSelection}
-            />
+
             <Stack.Screen name="OrderConfirm" component={OrderConfirm} />
           </>
         ) : (

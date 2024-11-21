@@ -1,4 +1,5 @@
 import {useMutation} from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
 import {Box, Button, HStack, ScrollView, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
 import {
@@ -10,7 +11,9 @@ import {
   ZipCodeIcon,
 } from '../assets/icons/Icons';
 import {countryObj, regionObj} from '../constants/FomConstants';
+import {useCustomerStore} from '../hooks/UseCustomerStore';
 import useToast from '../hooks/UseToast';
+import {NavigationProp} from '../navigations/types';
 import {AddressComponent} from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLocation.interface';
 import {
   CREATE_CUSTOMER_ADDRESS,
@@ -41,13 +44,17 @@ function AddressForm({
   close,
   onSave,
   addressComponent = [],
+  navigateTo,
 }: {
   address?: CustomerAddress;
   close?: () => void;
   onSave?: () => void;
   addressComponent?: AddressComponent[];
+  navigateTo?: string;
 }) {
+  const navigation = useNavigation<NavigationProp>();
   const {showSuccessToast} = useToast();
+  const {customer, addOrUpdateAddress} = useCustomerStore();
   const [userAddress, setUserAddress] = useState<AddressState>({
     firstname: '',
     lastname: '',
@@ -61,7 +68,6 @@ function AddressForm({
   useEffect(() => {
     if (addressComponent.length > 0) {
       const addressData = extractFullAddress(addressComponent);
-
       setUserAddress({
         firstname: '',
         lastname: '',
@@ -89,9 +95,15 @@ function AddressForm({
     UpdateCustomerAddressVariables
   >(UPDATE_CUSTOMER_ADDRESS, {
     onCompleted: res => {
+      const updatedAddress = res.updateCustomerAddress;
+      addOrUpdateAddress(updatedAddress);
       showSuccessToast('Update Address', 'Address updated successfully');
       close && close();
       onSave && onSave();
+
+      if (navigateTo) {
+        navigation.navigate(navigateTo);
+      }
     },
     onError: err => {
       console.log(err, 'error');
@@ -103,9 +115,14 @@ function AddressForm({
     {
       refetchQueries: [{query: GET_CUSTOMER_ADDRESSES}],
       onCompleted: res => {
+        const newAddress = res.createCustomerAddress;
+        addOrUpdateAddress(newAddress);
         showSuccessToast('Add Address', 'Address added successfully');
         close && close();
         onSave && onSave();
+        if (navigateTo) {
+          navigation.navigate(navigateTo);
+        }
       },
     },
   );

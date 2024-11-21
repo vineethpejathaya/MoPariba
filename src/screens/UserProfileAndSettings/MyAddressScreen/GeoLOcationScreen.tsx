@@ -1,4 +1,5 @@
 import Geolocation from '@react-native-community/geolocation';
+import {RouteProp} from '@react-navigation/native';
 import {Button, HStack, VStack, View} from 'native-base';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
@@ -19,9 +20,15 @@ import AddressForm from '../../../components/AddressForm';
 import ModalButton from '../../../components/ModalButton';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {debounce} from '../../../components/SearchBar';
+import {RootStackParamList} from '../../../navigations/types';
 import {GooglePlaceResponse} from './GeoLocation.interface';
 StatusBar.setBarStyle('dark-content');
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDk_I-Pa2fyDziuZqGI5iYQ8Uu1goV_mDY';
+
+export type GeoLocationScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'GeoLocationScreen'
+>;
 
 // Check if region change is significant with custom tolerance
 const isRegionChangeSignificant = (newRegion: any, currentRegion: any) => {
@@ -38,7 +45,13 @@ const isRegionChangeSignificant = (newRegion: any, currentRegion: any) => {
   );
 };
 
-export default function DeliveryLocationScreen() {
+export default function DeliveryLocationScreen({
+  route,
+}: {
+  route: GeoLocationScreenRouteProp;
+}) {
+  const {navigateTo} = route.params || {};
+
   const [mapRegion, setMapRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -190,8 +203,6 @@ export default function DeliveryLocationScreen() {
     fetchAddressFromCoordinates(latitude, longitude);
   };
 
-  const handleSave = () => {};
-
   return (
     <>
       <ScreenHeader title="Delivery location" />
@@ -275,7 +286,7 @@ export default function DeliveryLocationScreen() {
             content={({close}) => (
               <AddressForm
                 close={close}
-                onSave={handleSave}
+                navigateTo={navigateTo}
                 addressComponent={address?.address_components}
               />
             )}

@@ -43,7 +43,6 @@ export type RootStackParamList = {
   Reviews: undefined;
   // Cart and Payments
   Cart: undefined;
-  AddressSelection: undefined;
   OrderConfirm: undefined;
   // Profile
   Profile: undefined;
@@ -54,7 +53,9 @@ export type RootStackParamList = {
     orderNumber: string;
   };
   AddressScreen: undefined;
-  GeoLocationScreen: undefined;
+  GeoLocationScreen: {
+    navigateTo?: keyof RootStackParamList;
+  };
   MyProfileScreen: undefined;
   FavoritesScreen: undefined;
   OrdersScreen: undefined;

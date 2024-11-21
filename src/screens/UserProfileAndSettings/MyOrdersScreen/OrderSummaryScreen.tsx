@@ -229,7 +229,7 @@ const AddressComponent = ({address}: {address: Address}) => {
   );
 };
 
-const LabelValuePair = ({
+export const LabelValuePair = ({
   label,
   value,
   labelStyle,

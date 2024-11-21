@@ -1,29 +1,35 @@
 import {useQuery} from '@apollo/client';
 import {useNavigation} from '@react-navigation/native';
-import {Box, Divider, HStack, Text, VStack} from 'native-base';
+import {Box, Button, Divider, HStack, Text, VStack} from 'native-base';
 import {useEffect} from 'react';
-import {Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {CartBag} from '../../../assets/icons/Icons';
+import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SpinnerComponent from '../../../components/SpinnerComponent';
 import {useCartStore} from '../../../hooks/UseCartStore';
 import {useCustomerStore} from '../../../hooks/UseCustomerStore';
+import usePayment from '../../../hooks/UsePayment';
 import {NavigationProp} from '../../../navigations/types';
+import {CustomerAddress} from '../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import {GET_CUSTOMER_CART} from '../../../services/GGL-Queries/CustomerCart/Cart.queries';
 import {GetCustomerCartResponse} from '../../../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
 import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
 import theme from '../../../themes/theme';
+import {LabelValuePair} from '../../UserProfileAndSettings/MyOrdersScreen/OrderSummaryScreen';
+import AddressSelection from '../AddressSelection';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
+import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
   const navigation = useNavigation<NavigationProp>();
   const {cartId, setCart, cartItems} = useCartStore(state => state);
-  const {customer} = useCustomerStore();
-
+  const {customer, selectedAddress} = useCustomerStore();
+  const {isLoading, setCustomerPaymentAddress} = usePayment();
+  const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
     {
@@ -34,11 +40,31 @@ function CartScreen() {
     },
   );
 
-  const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
+  useEffect(() => {
+    if (selectedAddress) {
+      const postBody = {
+        firstname: selectedAddress.firstname,
+        lastname: selectedAddress.lastname,
+        company: 'Company Name',
+        street: selectedAddress.street,
+        city: selectedAddress.city,
+        region: selectedAddress.region.region_code,
+        region_id: selectedAddress.region.region_id,
+        postcode: selectedAddress.postcode,
+        country_code: selectedAddress?.country_code,
+        telephone: selectedAddress.telephone,
+        save_in_address_book: false,
+      };
+      setCustomerPaymentAddress(postBody);
+    }
+  }, [selectedAddress]);
 
+  console.log(customer?.addresses, 'address');
   useEffect(() => {
     refetch();
   }, []);
+
+  console.log(data?.cart.shipping_addresses, 'shippingAddress');
 
   if (loading) {
     return <SpinnerComponent />;
@@ -72,19 +98,28 @@ function CartScreen() {
               <CouponSection refetchCart={refetch} />
 
               <CartSummary />
-              {customer &&
-                customer?.addresses?.length &&
-                customer.defaultAddress && (
-                  <>
-                    <DeliveryAddress />
-                  </>
-                )}
 
-              {/* <Button
-                style={CartScreenStyles.btn}
-                onPress={() => navigation.navigate('AddressSelection')}
-                _text={{fontSize: 15}}
-                mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button> */}
+              {selectedAddress && (
+                <>
+                  <DeliveryAddress address={selectedAddress} />
+                </>
+              )}
+
+              {selectedAddress ? (
+                <Button
+                  style={CartScreenStyles.btn}
+                  onPress={() => {}}
+                  _text={{fontSize: 15}}
+                  mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button>
+              ) : (
+                <ModalButton
+                  anchor={({open}) => (
+                    <Button onPress={open}>Select Address</Button>
+                  )}
+                  title="Select an address"
+                  content={({close}) => <AddressSelection close={close} />}
+                />
+              )}
             </VStack>
           </>
         )}
@@ -95,7 +130,7 @@ function CartScreen() {
 
 export default CartScreen;
 
-const DeliveryAddress = () => {
+const DeliveryAddress = ({address}: {address: CustomerAddress}) => {
   return (
     <>
       <Box p="4" bg="white" borderRadius="lg" shadow="1">
@@ -104,16 +139,34 @@ const DeliveryAddress = () => {
             <Text fontSize="md" bold>
               Delivery at
             </Text>
-            <Pressable onPress={() => {}}>
-              <Icon
-                name="chevron-right"
-                size={25}
-                color={theme.colors.gray[900]}
-                style={{marginLeft: 'auto'}}
-              />
-            </Pressable>
+            <ModalButton
+              anchor={({open}) => (
+                <Icon
+                  name="chevron-right"
+                  size={25}
+                  color={theme.colors.gray[900]}
+                  style={{marginLeft: 'auto'}}
+                  onPress={open}
+                />
+              )}
+              title="Select an address"
+              content={({close}) => <AddressSelection close={close} />}
+            />
           </HStack>
           <Divider />
+          <VStack space={2}>
+            <LabelValuePair
+              label={'Name'}
+              value={`${address?.firstname} ${address?.lastname}`}
+            />
+            <LabelValuePair
+              label={'Address'}
+              value={`${address?.street?.join(', ')}\n ${address?.city}, ${
+                address?.region
+              }`}
+            />
+            <LabelValuePair label={'Zipcode'} value={`${address?.postcode}`} />
+          </VStack>
         </VStack>
       </Box>
     </>

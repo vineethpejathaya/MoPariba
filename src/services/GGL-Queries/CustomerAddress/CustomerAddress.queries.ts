@@ -49,6 +49,7 @@ export const UPDATE_CUSTOMER_ADDRESS = gql`
     updateCustomerAddress(id: $id, input: $input) {
       id
       region {
+        region_id
         region_code
         region
       }

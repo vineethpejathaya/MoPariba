@@ -1,55 +1,47 @@
-import {Box, Button, Radio} from 'native-base';
+import {HStack, Pressable, Text, VStack} from 'native-base';
 import React from 'react';
-import AddressForm from '../../../../components/AddressForm';
-import ModalButton from '../../../../components/ModalButton';
-import UserAddress from '../../../../components/UserAddress';
+import {AddressIcon} from '../../../../assets/icons/Icons';
 import {CustomerAddress} from '../../../../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
-import AddressSelectionStyles from '../AddressSelection.styles';
 
 type AddressCardProps = {
   address: CustomerAddress;
   isSelected: boolean;
-  onDeliver: (address: CustomerAddress) => void;
+  handleAddressSelect: () => void;
 };
 
 function AddressCard({
   address,
-  isSelected,
-  onDeliver,
+  isSelected = false,
+  handleAddressSelect,
 }: AddressCardProps): JSX.Element {
   return (
     <>
-      <Box style={AddressSelectionStyles.addressCardContainer}>
-        <Box style={isSelected ? AddressSelectionStyles.addressSelected : {}}>
-          <Radio colorScheme="emerald" value={address.id.toString()}>
-            <UserAddress address={address} />
-          </Radio>
-        </Box>
-        {isSelected && (
-          <>
-            <Button
-              style={AddressSelectionStyles.Btn}
-              _text={AddressSelectionStyles.btnTxt}
-              onPress={() => onDeliver(address)}>
-              Deliver to this address
-            </Button>
-            <ModalButton
-              anchor={({open}) => (
-                <Button
-                  style={AddressSelectionStyles.secBtn}
-                  _text={AddressSelectionStyles.secBtnTxt}
-                  onPress={open}>
-                  Edit Address
-                </Button>
-              )}
-              title="Edit Address"
-              content={({close}) => (
-                <AddressForm address={address} countries={[]} />
-              )}
-            />
-          </>
-        )}
-      </Box>
+      <Pressable
+        onPress={handleAddressSelect}
+        p="4"
+        mb="2"
+        borderRadius="md"
+        bg="white"
+        shadow="1">
+        <VStack space={2}>
+          <Text>DELIVER TO </Text>
+          <HStack space={4} alignItems="center">
+            <AddressIcon />
+            <VStack>
+              <Text
+                fontWeight={
+                  'bold'
+                }>{`${address?.firstname} ${address?.lastname}`}</Text>
+              <Text mt="1" fontSize="sm">
+                {`${address?.street?.join(', ')}\n ${address?.city}`}
+              </Text>
+              <Text mt="1" fontSize="xs">
+                Phone: {address.telephone}
+              </Text>
+            </VStack>
+          </HStack>
+        </VStack>
+      </Pressable>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {devtools} from 'zustand/middleware';
+import {CustomerAddress} from '../services/GGL-Queries/CustomerAddress/CustomerAddress.type';
 import {ShippingAddress} from '../services/GGL-Queries/CustomerCart/interfaces/BillingAndShippingAddress.type';
 import {Cart} from '../services/GGL-Queries/CustomerCart/interfaces/Cart.type';
 import {CartItem} from '../services/GGL-Queries/CustomerCart/interfaces/CartItem.type';
@@ -21,6 +22,7 @@ interface CartState {
   cartPrices: Prices | null;
   appliedCoupons: string[];
   shippingAddresses: ShippingAddress[];
+  selectedAddress: CustomerAddress | null;
   cartId: string;
   adding: boolean;
   removing: boolean;
@@ -51,6 +53,7 @@ export const useCartStore = create<CartState>()(
     cartPrices: null,
     appliedCoupons: [],
     shippingAddresses: [] as ShippingAddress[],
+    selectedAddress: null,
     cartId: '',
     adding: false,
     removing: false,
