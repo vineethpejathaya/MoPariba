@@ -24,7 +24,7 @@ function SpinnerComponent({onlySpinner = false}: {onlySpinner?: boolean}) {
           </Text>
         )}
 
-        <Spinner size="lg" color={theme.colors.primary[900]} />
+        <Spinner size="lg" color={theme.colors.primary[400]} />
       </VStack>
     </>
   );

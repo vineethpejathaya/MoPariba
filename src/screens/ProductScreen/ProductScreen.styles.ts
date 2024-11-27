@@ -1,10 +1,9 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import theme from '../../themes/theme';
 
 const ProductStyles = StyleSheet.create({
   container: {
     flex: 1,
-
     justifyContent: 'center',
     flexDirection: 'column',
   },
@@ -44,7 +43,8 @@ const ProductStyles = StyleSheet.create({
 
   imageContainer: {
     width: '100%',
-    height: 500,
+    overflow: 'hidden',
+    height: Dimensions.get('window').height * 0.45,
     margin: 'auto',
     borderRadius: 15,
     backgroundColor: theme.colors.white,
@@ -52,28 +52,13 @@ const ProductStyles = StyleSheet.create({
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.15,
     shadowRadius: 1.5,
+    elevation: 1,
   },
 
   prize: {
     fontWeight: 700,
     fontSize: 16,
     lineHeight: 30,
-  },
-  text: {
-    color: theme.colors.gray[900],
-  },
-
-  quantityContainer: {
-    width: '100%',
-    padding: 5,
-    backgroundColor: theme.colors.white,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  btn: {
-    fontSize: 18,
-    height: 60,
-    width: '100%',
   },
 });
 

@@ -58,7 +58,7 @@ const QuantitySelector = ({
   };
 
   if (isLoading) {
-    return <Spinner />;
+    return <Spinner color={theme.colors.primary[400]} />;
   }
 
   if (productInCart) {
@@ -108,14 +108,26 @@ const NativeQuantityBtn = ({
       <HStack style={styles.qtnContainer}>
         <>
           <IconButton
-            icon={<FontAwesomeIcon name={'minus'} size={10} color={'green'} />}
+            icon={
+              <FontAwesomeIcon
+                name={'minus'}
+                size={10}
+                color={theme.colors.primary[400]}
+              />
+            }
             onPress={removeItem}
           />
           <Center>
             <Text style={styles.addPlainBtnText}>{quantity}</Text>
           </Center>
           <IconButton
-            icon={<FontAwesomeIcon name={'plus'} size={10} color={'green'} />}
+            icon={
+              <FontAwesomeIcon
+                name={'plus'}
+                size={10}
+                color={theme.colors.primary[400]}
+              />
+            }
             onPress={addItem}
           />
         </>
@@ -199,14 +211,14 @@ const styles = StyleSheet.create({
   },
 
   addBtn: {
-    backgroundColor: theme.colors.primary[900],
+    backgroundColor: theme.colors.primary[400],
   },
 
   addPlainBtnText: {
     fontSize: 14,
     fontFamily: 'DMSans-Bold',
     fontWeight: 900,
-    color: theme.colors.primary[900],
+    color: theme.colors.primary[400],
   },
 
   btn: {
@@ -221,10 +233,10 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 1,
   },
-  btnText: {
-    fontSize: 14,
-    lineHeight: 14,
-    fontFamily: 'DMSans-Bold',
-    color: theme.colors.primary[900],
-  },
+  // btnText: {
+  //   fontSize: 14,
+  //   lineHeight: 14,
+  //   fontFamily: 'DMSans-Bold',
+  //   color: theme.colors.primary[900],
+  // },
 });

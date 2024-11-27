@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {TransitionSpecs, createStackNavigator} from '@react-navigation/stack';
 import {NativeBaseProvider} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
@@ -20,7 +20,7 @@ import ProductListScreen from '../screens/ProductListScreen';
 import ReviewsScreen from '../screens/ProductReviews/ProductReviews';
 import ProductScreen from '../screens/ProductScreen/ProductScreen';
 import SearchScreen from '../screens/SearchScreen';
-import MapViewComponent from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLOcationScreen';
+import GeoLocationScreen from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLocationScreen';
 import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
 import MyOrdersScreen from '../screens/UserProfileAndSettings/MyOrdersScreen';
 import OrderSummaryScreen from '../screens/UserProfileAndSettings/MyOrdersScreen/OrderSummaryScreen';
@@ -74,7 +74,14 @@ function RootNavigator() {
   return (
     <>
       <Stack.Navigator
-        screenOptions={{headerShown: false}}
+        screenOptions={{
+          headerShown: false,
+          gestureEnabled: true,
+          transitionSpec: {
+            open: TransitionSpecs.TransitionIOSSpec,
+            close: TransitionSpecs.TransitionIOSSpec,
+          },
+        }}
         initialRouteName={initialPage}>
         {isAuthenticated ? (
           <>
@@ -88,7 +95,7 @@ function RootNavigator() {
             <Stack.Screen name="AddressScreen" component={MyAddressScreen} />
             <Stack.Screen
               name="GeoLocationScreen"
-              component={MapViewComponent}
+              component={GeoLocationScreen}
             />
             <Stack.Screen
               name="PaymentMethodScreen"

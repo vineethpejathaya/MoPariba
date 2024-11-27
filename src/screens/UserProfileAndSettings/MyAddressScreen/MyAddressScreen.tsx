@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.primary[100],
+    backgroundColor: theme.colors.primary[50],
   },
   mainContainer: {
     flex: 1,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   default: {
-    backgroundColor: theme.colors.primary[100],
+    backgroundColor: theme.colors.primary[50],
   },
   defaultText: {
     fontSize: 10,

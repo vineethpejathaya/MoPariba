@@ -41,16 +41,26 @@ function ProductOptions({product}: {product: Product}) {
         anchor={({open}) => (
           <>
             {isProductInCart ? (
+              // Button if one of the configurable variant of the product is in the cart
               <PressableContainer onPress={open}>
                 <HStack style={styles.qtnContainer}>
-                  <FontAwesomeIcon name={'minus'} size={10} color={'green'} />
+                  <FontAwesomeIcon
+                    name={'minus'}
+                    size={10}
+                    color={theme.colors.primary[400]}
+                  />
                   <Center>
                     <Text style={styles.qtnText}>{quantity}</Text>
                   </Center>
-                  <FontAwesomeIcon name={'plus'} size={10} color={'green'} />
+                  <FontAwesomeIcon
+                    name={'plus'}
+                    size={10}
+                    color={theme.colors.primary[400]}
+                  />
                 </HStack>
               </PressableContainer>
             ) : (
+              // Button if none of the configurable variant of the product is not in the cart
               <PressableContainer onPress={open}>
                 <Button
                   variant={'outline'}
@@ -67,6 +77,7 @@ function ProductOptions({product}: {product: Product}) {
         title={product.name ?? ''}
         content={({close}) => (
           <>
+            {/* List of variants shown in the modal if the above button is clicked */}
             <VStack space={2}>
               <Box maxHeight={350}>
                 <FlatList
@@ -112,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 14,
     fontFamily: 'DMSans-Bold',
-    color: theme.colors.primary[900],
+    color: theme.colors.primary[400],
   },
 
   qtnContainer: {
@@ -136,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'DMSans-Bold',
     fontWeight: 900,
-    color: theme.colors.primary[900],
+    color: theme.colors.primary[400],
   },
 
   confirmContainer: {

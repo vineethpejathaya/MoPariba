@@ -37,13 +37,13 @@ const fontWeight = {
 const theme = extendTheme({
   colors: {
     primary: {
-      50: '#CFEA80',
-      100: '#EBFFD7',
+      50: '#EBFFD7',
+      100: '#CFEA80',
       200: '#A3D862',
-      400: '#47A9DA',
-      500: '#28B446',
-      700: '#6CC51D',
-      800: '#23AA49',
+      400: '#94da4c',
+      500: '#6CC51D',
+      700: '#47A9DA',
+      800: '#28B446',
       900: '#019543',
     },
     gray: {

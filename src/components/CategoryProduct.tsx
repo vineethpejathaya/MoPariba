@@ -25,7 +25,7 @@ function CategoryProduct({product}: {product: Product}) {
         styles={{width: '50%'}}>
         <Box style={styles.container}>
           <VStack justifyContent={'space-between'} style={{flex: 1}}>
-            <VStack space={2}>
+            <VStack space={4}>
               <ProductImageComponent productImage={product.image} />
               <Text style={styles.productText}>{product?.name}</Text>
             </VStack>
@@ -77,7 +77,7 @@ const ProductImageComponent = ({
 
 export const styles = StyleSheet.create({
   container: {
-    height: 350,
+    height: 290,
     backgroundColor: theme.colors.white,
     borderWidth: 1,
     borderColor: theme.colors.gray[200],

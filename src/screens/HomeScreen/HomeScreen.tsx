@@ -1,6 +1,6 @@
 import {useApolloClient} from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Box, HStack, Pressable, Text, VStack, useTheme} from 'native-base';
+import {Box, HStack, Pressable, Text, VStack} from 'native-base';
 import {useEffect, useState} from 'react';
 import {
   CameraIcon,
@@ -28,6 +28,7 @@ import {
   GetDailyDealProductsQuery,
   GetHomeScreenDataResponse,
 } from '../../services/GGL-Queries/HomeScreen/Home.type';
+import theme from '../../themes/theme';
 import {
   HomeScreenProps,
   HomeScreenState,
@@ -38,7 +39,6 @@ import HomeCategoryList from './components/CategoryList';
 import HomeBanner from './components/HomeBanner';
 
 function HomeScreen({navigation}: HomeScreenProps) {
-  const theme = useTheme();
   const {isAuthenticated} = useAuth();
   const [loading, setLoading] = useState(false);
   const {setCart, setCartId} = useCartStore(state => state);
@@ -128,7 +128,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
           <VStack>
             <Text
               variant={'subheader2'}
-              style={{color: theme.colors.primary[200], fontSize: 12}}>
+              style={{color: theme.colors.primary[400], fontSize: 12}}>
               DELIVER TO
             </Text>
             <Pressable onPress={() => navigation.navigate('AddressScreen')}>
