@@ -14,7 +14,7 @@ function BestDeals({
 }) {
   return (
     <>
-      <VStack>
+      <VStack paddingBottom={5}>
         <TitleActions
           title={' Best deals'}
           titleIcon={<Fire />}

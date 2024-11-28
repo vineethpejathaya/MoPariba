@@ -49,8 +49,11 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
 
   return (
     <>
+      {/*Category Screen Header */}
       <ScreenHeader title={categoryName} />
+      {/* Category Screen content */}
       <ScreenContent containerStyles={categoryScreenStyles.mainContainer}>
+        {/* If category id is passed then the sub category list of the respective category is listed or else all the categories along with subcategory of each category is listed */}
         {categoryUid ? (
           <CategoryList
             categoryItems={categoryState?.items[0].children}
@@ -59,6 +62,7 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
           />
         ) : (
           <>
+            {/* all the categories along with subcategory of each category */}
             <AllCategories
               categories={categoryState?.items ?? []}
               navigation={navigation}
@@ -80,7 +84,7 @@ export const AllCategories = ({
 }) => {
   return (
     <>
-      <VStack space={3} mt={4}>
+      <VStack space={3}>
         {categories?.map((category: CategoryItemInterface, index: number) => (
           <Box key={index}>
             <HStack space={2} alignItems={'center'} mb={3}>
@@ -128,6 +132,7 @@ export const CategoryList = ({
   };
   return (
     <>
+      {/* If there are no sub categories then no data illustration is show else the list is shown */}
       {categoryItems?.length ? (
         <Box style={categoryScreenStyles.categoryListContainer}>
           {categoryItems?.map((item: CategoryItemInterface, index: number) => (
@@ -163,6 +168,7 @@ const categoryScreenStyles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 5,
     alignItems: 'flex-start',
+    paddingBottom: 10,
     marginTop: 10,
   },
 });

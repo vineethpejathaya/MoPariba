@@ -1,4 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
+import {bottomNavigatorHeight} from '../../constants/config';
 import theme from '../../themes/theme';
 
 const {width} = Dimensions.get('window');
@@ -7,6 +8,7 @@ const HomeScreenStyles = StyleSheet.create({
   // Home screen main container
   mainContainer: {
     backgroundColor: theme.colors.white,
+    paddingBottom: bottomNavigatorHeight,
   },
 
   // User greetings styles
