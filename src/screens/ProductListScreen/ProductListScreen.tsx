@@ -21,7 +21,7 @@ import {ProductListScreenProps} from './ProductList.type';
 function ProductListScreen({route, navigation}: ProductListScreenProps) {
   const {categoryName, categoryId, categoryImageUrl} = route.params;
   const [products, setProducts] = useState<any[] | []>([]);
-  const {loading, error, data, refetch} = useQuery<GetProductsResponse>(
+  const {loading, data} = useQuery<GetProductsResponse>(
     GET_PRODUCTS_BY_CATEGORY_ID,
     {
       variables: {
@@ -41,6 +41,7 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
 
   return (
     <>
+      {/* Screen header */}
       <ScreenHeader
         leftActions={[
           <CategoryHeader
@@ -58,6 +59,8 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
           />,
         ]}
       />
+
+      {/* Screen content  if no data is present then No products illustration is rendered if not then products list is rendered*/}
       <ScreenContent showCart containerStyles={productListStyles.mainContainer}>
         {products.length == 0 ? (
           <NoDataIllustration

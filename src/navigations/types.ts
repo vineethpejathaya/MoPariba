@@ -8,7 +8,6 @@ export type RootStackParamList = {
 
   // Screens
   // Authentication Screens
-  Splash: undefined;
   Onboarding: undefined;
   Login: undefined;
   OtpScreen: {
@@ -41,9 +40,11 @@ export type RootStackParamList = {
     productSku: string;
   };
   Reviews: undefined;
+
   // Cart and Payments
   Cart: undefined;
   OrderConfirm: undefined;
+
   // Profile
   PaymentMethodScreen: undefined;
   Profile: undefined;
@@ -58,9 +59,6 @@ export type RootStackParamList = {
     navigateTo?: keyof RootStackParamList;
   };
   MyProfileScreen: undefined;
-  FavoritesScreen: undefined;
-  OrdersScreen: undefined;
-  Dummy: undefined;
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;

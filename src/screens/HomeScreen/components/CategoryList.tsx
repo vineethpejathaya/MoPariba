@@ -3,6 +3,7 @@ import {FaceSavoringFood} from '../../../assets/icons/Icons';
 import CategoryItem from '../../../components/CategoryItem';
 import TitleActions from '../../../components/TitleActions';
 import {CategoryItemInterface} from '../../../services/GGL-Queries/HomeScreen/Home.type';
+import HomeScreenStyles from '../Home.styles';
 import {HomeScreenNavigationProp, HomeScreenState} from '../Home.type';
 
 function HomeCategoryList({
@@ -42,7 +43,7 @@ function HomeCategoryList({
           }}
         />
 
-        <Box style={{flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 5}}>
+        <Box style={HomeScreenStyles.categoriesContainer}>
           {categoryItems?.map(
             (category: CategoryItemInterface, index: number) => (
               <CategoryItem

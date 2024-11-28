@@ -129,7 +129,7 @@ const UserOrder = React.memo(({order}: {order: CustomerOrder}) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    padding: 15,
+    padding: 5,
   },
 
   userOrderContainer: {

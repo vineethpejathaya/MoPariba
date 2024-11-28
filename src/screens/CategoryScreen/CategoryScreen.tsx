@@ -7,7 +7,7 @@ import NoDataIllustration from '../../components/NoDataIllustration';
 import ScreenContent from '../../components/ScreenContent';
 import ScreenHeader from '../../components/ScreenHeader';
 import SpinnerComponent from '../../components/SpinnerComponent';
-import {baseUrl} from '../../constants/config';
+import {baseUrl, bottomNavigatorHeight} from '../../constants/config';
 import {GET_CATEGORIES_LIST} from '../../services/GGL-Queries/Categories/Categories.queries';
 import {
   CategoryItemInterface,
@@ -50,7 +50,7 @@ function CategoryScreen({route, navigation}: CategoryScreenProps) {
   return (
     <>
       <ScreenHeader title={categoryName} />
-      <ScreenContent containerStyles={{backgroundColor: theme.colors.white}}>
+      <ScreenContent containerStyles={categoryScreenStyles.mainContainer}>
         {categoryUid ? (
           <CategoryList
             categoryItems={categoryState?.items[0].children}
@@ -80,11 +80,13 @@ export const AllCategories = ({
 }) => {
   return (
     <>
-      <VStack space={3}>
+      <VStack space={3} mt={4}>
         {categories?.map((category: CategoryItemInterface, index: number) => (
           <Box key={index}>
             <HStack space={2} alignItems={'center'} mb={3}>
-              <Text style={styles.categoryTitle}>{category?.name}</Text>
+              <Text style={categoryScreenStyles.categoryTitle}>
+                {category?.name}
+              </Text>
               <Divider />
             </HStack>
             <CategoryList
@@ -127,7 +129,7 @@ export const CategoryList = ({
   return (
     <>
       {categoryItems?.length ? (
-        <Box style={styles.categoryListContainer}>
+        <Box style={categoryScreenStyles.categoryListContainer}>
           {categoryItems?.map((item: CategoryItemInterface, index: number) => (
             <CategoryCard
               key={index}
@@ -144,7 +146,11 @@ export const CategoryList = ({
   );
 };
 
-const styles = StyleSheet.create({
+const categoryScreenStyles = StyleSheet.create({
+  mainContainer: {
+    backgroundColor: theme.colors.white,
+    paddingBottom: bottomNavigatorHeight,
+  },
   categoryTitle: {
     fontWeight: 700,
     fontSize: 12,
@@ -157,5 +163,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 5,
     alignItems: 'flex-start',
+    marginTop: 10,
   },
 });

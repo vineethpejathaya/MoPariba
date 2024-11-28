@@ -1,6 +1,7 @@
 import {Box, Divider, HStack, Pressable, Text, VStack} from 'native-base';
 import React, {ReactNode, useEffect, useState} from 'react';
-import {LayoutAnimation, Platform, UIManager} from 'react-native';
+import {LayoutAnimation, Platform, StyleSheet, UIManager} from 'react-native';
+import theme from '../themes/theme';
 
 interface ExpandableDetailsCardProps {
   title: string;
@@ -32,7 +33,7 @@ function ExpandableDetailsCard({
   }, [keepExpanded]);
 
   return (
-    <Box padding={4} bg="white" borderRadius="md" shadow={1} marginBottom={4}>
+    <Box style={styles.container}>
       <HStack justifyContent="space-between" alignItems="center">
         <Text fontSize="md" fontWeight="bold">
           {title}
@@ -50,3 +51,17 @@ function ExpandableDetailsCard({
 }
 
 export default ExpandableDetailsCard;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+});

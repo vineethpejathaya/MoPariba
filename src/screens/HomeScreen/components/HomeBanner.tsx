@@ -4,7 +4,7 @@ import HomeScreenStyles from '../Home.styles';
 
 function HomeBanner({banners}: {banners: any}) {
   return (
-    <Box style={HomeScreenStyles.container}>
+    <Box style={HomeScreenStyles.bannerContainer}>
       <Swiper autoplay={true} loop={true}>
         {banners.map((banner: any, index: number) => (
           <Box key={index} style={HomeScreenStyles.slide}>

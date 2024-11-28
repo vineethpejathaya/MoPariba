@@ -6,7 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
-import BestDeals from '../screens/BestDeals/BestDeals';
+import BestDeals from '../screens/BestDeals';
 import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
 import PaymentMethodScreen from '../screens/CartAndPaymentsScreen/PaymentMethodScreen';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
@@ -15,13 +15,13 @@ import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
 import OtpScreen from '../screens/LoginAndRegistrations/OtpScreen';
 import SignUpScreen from '../screens/LoginAndRegistrations/SignUpScreen';
 import NoNetworkScreen from '../screens/NoNetworkScreen';
-import OnboardingScreen from '../screens/OnBoardingScreens/OnBoardingScreen';
+import OnboardingScreen from '../screens/OnBoardingScreens';
 import ProductListScreen from '../screens/ProductListScreen';
-import ReviewsScreen from '../screens/ProductReviews/ProductReviews';
-import ProductScreen from '../screens/ProductScreen/ProductScreen';
+import ReviewsScreen from '../screens/ProductReviews';
+import ProductScreen from '../screens/ProductScreen';
 import SearchScreen from '../screens/SearchScreen';
+import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen';
 import GeoLocationScreen from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLocationScreen';
-import MyAddressScreen from '../screens/UserProfileAndSettings/MyAddressScreen/MyAddressScreen';
 import MyOrdersScreen from '../screens/UserProfileAndSettings/MyOrdersScreen';
 import OrderSummaryScreen from '../screens/UserProfileAndSettings/MyOrdersScreen/OrderSummaryScreen';
 import MyProfile from '../screens/UserProfileAndSettings/MyProfile';
@@ -107,7 +107,6 @@ function RootNavigator() {
               name="OrderSummaryScreen"
               component={OrderSummaryScreen}
             />
-
             <Stack.Screen
               name="NotificationSettings"
               component={NotificationSettings}

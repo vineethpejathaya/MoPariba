@@ -12,6 +12,7 @@ import {
 import {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {CartBag} from '../../../assets/icons/Icons';
+import Card from '../../../components/Card';
 import ModalButton from '../../../components/ModalButton';
 import NoDataIllustration from '../../../components/NoDataIllustration';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -48,10 +49,6 @@ function CartScreen() {
       },
     },
   );
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   const shippingAddress = data?.cart.shipping_addresses[0] || null;
 
@@ -102,16 +99,21 @@ function CartScreen() {
                   ))}
                 </Box>
 
+                {/* Cart coupon */}
                 <CouponSection refetchCart={refetch} />
 
+                {/* Cart payment summary */}
                 <CartSummary />
 
+                {/* Delivery address of the customer */}
                 {selectedAddress && (
                   <>
                     <DeliveryAddress address={shippingAddress} />
                   </>
                 )}
-                <Box p="4" bg="white" borderRadius="lg" shadow="1">
+
+                {/* Showing selected payment details */}
+                <Card>
                   <VStack justifyContent="space-between">
                     <HStack
                       justifyContent={'space-between'}
@@ -135,12 +137,14 @@ function CartScreen() {
                       <Text>Razorpay</Text>
                     </VStack>
                   </VStack>
-                </Box>
+                </Card>
               </VStack>
             </>
           )}
         </ScrollView>
       </VStack>
+
+      {/* Proceed to pay button is rendered only If address is selected  if not then select address button is rendered */}
       {totalItems > 0 && (
         <Box
           position="absolute"
@@ -179,7 +183,7 @@ const DeliveryAddress = ({address}: {address: ShippingAddress | null}) => {
   if (!address) return null;
   return (
     <>
-      <Box p="4" bg="white" borderRadius="lg" shadow="1">
+      <Card>
         <VStack justifyContent="space-between">
           <HStack justifyContent={'space-between'} alignItems={'center'}>
             <Text fontSize="md" bold>
@@ -209,10 +213,9 @@ const DeliveryAddress = ({address}: {address: ShippingAddress | null}) => {
               label={'Address'}
               value={`${address?.street?.join(', ')}\n ${address?.city}`}
             />
-            <LabelValuePair label={'Zipcode'} value={`${address?.postcode}`} />
           </VStack>
         </VStack>
-      </Box>
+      </Card>
     </>
   );
 };
@@ -239,7 +242,7 @@ const CartSummary = () => {
 
   return (
     <>
-      <Box bg="white" borderRadius="md" shadow={1} padding={4}>
+      <Card>
         <VStack space={1}>
           <LabelValue label={'Subtotal'} value={`₹ ${subTotal || 0}`} />
           <LabelValue
@@ -258,7 +261,7 @@ const CartSummary = () => {
             <Text variant={'subheader1'}>₹ {grandTotal || 0}</Text>
           </HStack>
         </VStack>
-      </Box>
+      </Card>
     </>
   );
 };

@@ -1,9 +1,10 @@
 import {useMutation} from '@apollo/client';
-import {Button, ScrollView, VStack, theme} from 'native-base';
+import {Box, Button, VStack, theme} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {KeyboardType, StyleSheet} from 'react-native';
 import SingleSelect from '../../../components/Forms/SingleSelect';
 import TextField from '../../../components/Forms/TextInput';
+import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {useCustomerStore} from '../../../hooks/UseCustomerStore';
 import useToast from '../../../hooks/UseToast';
@@ -91,10 +92,9 @@ function MyProfile() {
   return (
     <>
       <ScreenHeader title={'My Profile'} />
-
-      <VStack p={4} style={styles.container}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
-          <VStack space={5} w="100%">
+      <VStack style={styles.container}>
+        <ScreenContent containerStyles={styles.content}>
+          <VStack space={5} padding={2}>
             {fields.map(field => (
               <TextField
                 key={field.name}
@@ -116,6 +116,7 @@ function MyProfile() {
               />
             ))}
             <SingleSelect
+              name={'gender'}
               label={'Gender'}
               onValueChange={e =>
                 setFormData(s => ({
@@ -130,15 +131,16 @@ function MyProfile() {
               ]}
             />
           </VStack>
-        </ScrollView>
+        </ScreenContent>
 
-        <Button
-          mt={4}
-          onPress={handleSaveChanges}
-          isLoading={updating}
-          spinnerPlacement="end">
-          Update profile
-        </Button>
+        <Box style={styles.buttonContainer}>
+          <Button
+            onPress={handleSaveChanges}
+            isLoading={updating}
+            spinnerPlacement="end">
+            Update profile
+          </Button>
+        </Box>
       </VStack>
     </>
   );
@@ -149,7 +151,18 @@ export default MyProfile;
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     backgroundColor: theme.colors.white,
-    justifyContent: 'space-between',
+    marginTop: 3,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  buttonContainer: {
+    backgroundColor: theme.colors.white,
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
   },
 });

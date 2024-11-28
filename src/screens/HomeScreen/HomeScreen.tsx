@@ -29,6 +29,7 @@ import {
   GetHomeScreenDataResponse,
 } from '../../services/GGL-Queries/HomeScreen/Home.type';
 import theme from '../../themes/theme';
+import HomeScreenStyles from './Home.styles';
 import {
   HomeScreenProps,
   HomeScreenState,
@@ -53,14 +54,16 @@ function HomeScreen({navigation}: HomeScreenProps) {
       try {
         setLoading(true);
 
+        // fetching categories for home page with max category items up to 6
         const homeScreenDataResponse =
           await client.query<GetHomeScreenDataResponse>({
             query: GET_CATEGORIES,
-            variables: {parentId: ['2'], pageSize: 8, currentPage: 1},
+            variables: {parentId: ['2'], pageSize: 6, currentPage: 1},
             fetchPolicy: 'network-only',
           });
         const {categories} = homeScreenDataResponse.data;
 
+        // fetching customer details
         const customerDetails = await client.query<any>({
           query: GET_CUSTOMER_DETAILS,
           fetchPolicy: 'network-only',
@@ -68,6 +71,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
 
         initializeCustomer(customerDetails?.data?.customer);
 
+        // fetching best deals for the home page
         const bestDeals = await client.query<GetDailyDealProductsQuery>({
           query: GET_DAILY_DEAL_PRODUCTS,
           fetchPolicy: 'network-only',
@@ -87,6 +91,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
         const cartId = createCartResponse.data.createEmptyCart;
         setCartId(cartId);
 
+        // fetching customer cart data
         const customerCartResponse = await client.query({
           query: GET_CUSTOMER_CART,
           variables: {cart_id: cartId},
@@ -115,6 +120,7 @@ function HomeScreen({navigation}: HomeScreenProps) {
 
   return (
     <>
+      {/* Home screen header */}
       <ScreenHeader
         disableNavigateBack
         leftActions={[
@@ -152,21 +158,18 @@ function HomeScreen({navigation}: HomeScreenProps) {
           />,
         ]}
       />
-      <ScreenContent
-        flex={1}
-        containerStyles={{backgroundColor: theme.colors.white}}>
+
+      {/* Home screen  container*/}
+
+      <ScreenContent flex={1} containerStyles={HomeScreenStyles.mainContainer}>
         <VStack space={2} px={2} justifyContent={'space-between'}>
-          <Text
-            variant={'subTitle2'}
-            fontFamily={'Sen-Regular'}
-            fontSize={'xl'}
-            style={{textTransform: 'capitalize'}}>
+          {/*Home screen User Greetings */}
+          <Text style={HomeScreenStyles.greetings}>
             Hey {customer?.firstname ?? '--'} {customer?.lastname ?? '--'},{' '}
-            <Text fontFamily={'Sen-Bold'} fontWeight={'bold'}>
-              How are you!
-            </Text>
+            <Text style={HomeScreenStyles.greetings2}>How are you!</Text>
           </Text>
 
+          {/* Home screen search bar */}
           <SearchBar
             inputProps={{
               onPress: () => {
@@ -181,11 +184,15 @@ function HomeScreen({navigation}: HomeScreenProps) {
             onSearch={() => {}}
           />
 
+          {/* Home page banner */}
           <HomeBanner banners={banners} />
 
+          {/* Home page category list shows only max of 6 categories */}
           {categoryItems?.length > 0 && (
             <HomeCategoryList navigation={navigation} state={homeScreenState} />
           )}
+
+          {/* Home screen best deals list */}
           {dailyDeals?.length > 0 && (
             <BestDeals products={dailyDeals} navigation={navigation} />
           )}
