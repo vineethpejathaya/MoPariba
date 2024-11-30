@@ -15,7 +15,6 @@ export const createRazorpayOrder = async (
   showErrorToast: (title: string, message: string) => void,
 ): Promise<any> => {
   try {
-    console.log('aaaaa');
     const response = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: {
@@ -31,10 +30,9 @@ export const createRazorpayOrder = async (
         payment_capture: 1,
       }),
     });
-    console.log('aaaa ddd');
-    console.log(response, 'response');
+
     const data = await response.json();
-    console.log(data, 'data');
+
     return data;
   } catch (error) {
     showErrorToast(

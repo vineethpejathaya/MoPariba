@@ -27,7 +27,6 @@ function ProductScreen({route, navigation}: ProductScreenProps) {
       currentPage: 1,
     },
     onCompleted: res => {
-      console.log(res.products.items[0]?.variants, 'data');
       setProduct(res.products.items[0]);
     },
   });

@@ -3,7 +3,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Box, Divider, HStack, Text, VStack} from 'native-base';
 import {useMemo} from 'react';
-import {Platform, StyleSheet, UIManager} from 'react-native';
+import {Platform, StyleSheet, UIManager, View} from 'react-native';
 import ExpandableDetailsCard from '../../../components/ExpandableDetailsCard';
 import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -245,12 +245,20 @@ export const LabelValuePair = ({
   disableColon?: boolean;
 }) => {
   const defaultContainerStyles = {
+    flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 1,
+    marginBottom: 8,
   };
   const defaultLabelStyles = {
     fontSize: 12,
     fontWeight: 'bold',
+    width: 60,
+    textAlign: 'left',
+  };
+  const defaultValueStyles = {
+    fontSize: 12,
+    flex: 1,
+    textAlign: 'left',
   };
 
   const combinedContainerStyles = StyleSheet.flatten([
@@ -261,15 +269,18 @@ export const LabelValuePair = ({
     defaultLabelStyles,
     labelStyle,
   ]);
+  const combinedValueStyles = StyleSheet.flatten([
+    defaultValueStyles,
+    valueStyle,
+  ]);
+
   return (
-    <HStack style={combinedContainerStyles} space={2}>
+    <View style={combinedContainerStyles}>
       <Text style={combinedLabelStyles}>
         {label} {disableColon ? '' : ':'}
       </Text>
-      <Text fontSize="sm" style={valueStyle}>
-        {value ?? '--'}
-      </Text>
-    </HStack>
+      <Text style={combinedValueStyles}>{value ?? '--'}</Text>
+    </View>
   );
 };
 

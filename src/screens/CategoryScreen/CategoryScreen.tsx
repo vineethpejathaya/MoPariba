@@ -87,12 +87,14 @@ export const AllCategories = ({
       <VStack space={3}>
         {categories?.map((category: CategoryItemInterface, index: number) => (
           <Box key={index}>
+            {/* Category name */}
             <HStack space={2} alignItems={'center'} mb={3}>
               <Text style={categoryScreenStyles.categoryTitle}>
                 {category?.name}
               </Text>
               <Divider />
             </HStack>
+            {/* Subcategories */}
             <CategoryList
               categoryItems={
                 category.children_count == 0 ? [category] : category.children

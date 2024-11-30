@@ -20,7 +20,7 @@ interface TransformedCartItem {
 interface CartState {
   cartItems: CartItem[];
   cartPrices: Prices | null;
-  appliedCoupons: string[];
+  appliedCoupons: Array<{code: string}>;
   shippingAddresses: ShippingAddress[];
   selectedAddress: CustomerAddress | null;
   cartId: string;

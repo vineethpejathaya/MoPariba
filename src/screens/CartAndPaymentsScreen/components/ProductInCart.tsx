@@ -9,6 +9,10 @@ function ProductInCart({cartItem}: {cartItem: CartItem}) {
   const productSku = cartItem?.product?.sku;
   const variantSku = cartItem?.configured_variant?.sku ?? '';
 
+  const productName =
+    cartItem?.product?.__typename == 'ConfigurableProduct'
+      ? cartItem?.configured_variant?.name
+      : cartItem?.product?.name;
   return (
     <HStack style={styles.container}>
       <HStack alignItems="center" space={4}>
@@ -24,7 +28,7 @@ function ProductInCart({cartItem}: {cartItem: CartItem}) {
             bold
             numberOfLines={1}
             ellipsizeMode="tail">
-            {cartItem?.product?.name ?? '--'}
+            {productName ?? '--'}
           </Text>
           <Text variant={'title2'} fontSize="sm">
             ₹{price ?? 0}

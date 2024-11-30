@@ -72,6 +72,8 @@ export const GET_PRODUCTS_BY_CATEGORY_ID = gql`
                 discount_type_label
                 from_date
                 to_date
+                final_price
+                you_saved
               }
               price_range {
                 minimum_price {
@@ -130,6 +132,8 @@ export const GET_PRODUCT_DETAILS = gql`
           discount_type_label
           from_date
           to_date
+          final_price
+          you_saved
         }
         sku
         only_x_left_in_stock

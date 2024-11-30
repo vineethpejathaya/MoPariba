@@ -14,6 +14,7 @@ import QuantitySelector from './QuantitySelector';
 function CategoryProduct({product}: {product: Product}) {
   const navigation = useNavigation<NavigationProp>();
   const price = product?.price_range?.maximum_price?.final_price?.value;
+  console.log(product, 'product');
   return (
     <>
       <PressableContainer

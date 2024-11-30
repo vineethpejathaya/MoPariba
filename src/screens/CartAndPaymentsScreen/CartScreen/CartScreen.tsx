@@ -34,7 +34,6 @@ import ProductInCart from '../components/ProductInCart';
 import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
-  const navigation = useNavigation<NavigationProp>();
   const {cartId, setCart, cartItems} = useCartStore(state => state);
   const {customer, selectedAddress} = useCustomerStore();
   const {isLoading, setCustomerPaymentAddress, handleDeliverToAddress} =
@@ -45,7 +44,7 @@ function CartScreen() {
     {
       variables: {cart_id: cartId},
       onCompleted: res => {
-        setCart(res?.cart);
+        console.log(res.cart?.applied_coupons, 'coupons');
       },
     },
   );
@@ -113,31 +112,7 @@ function CartScreen() {
                 )}
 
                 {/* Showing selected payment details */}
-                <Card>
-                  <VStack justifyContent="space-between">
-                    <HStack
-                      justifyContent={'space-between'}
-                      alignItems={'center'}>
-                      <Text fontSize="md" bold>
-                        Select payment method
-                      </Text>
-
-                      <Icon
-                        name="chevron-right"
-                        size={25}
-                        color={theme.colors.gray[900]}
-                        style={{marginLeft: 'auto'}}
-                        onPress={() =>
-                          navigation.navigate('PaymentMethodScreen')
-                        }
-                      />
-                    </HStack>
-                    <Divider />
-                    <VStack>
-                      <Text>Razorpay</Text>
-                    </VStack>
-                  </VStack>
-                </Card>
+                <SelectedPaymentMethod />
               </VStack>
             </>
           )}
@@ -279,6 +254,35 @@ const LabelValue = ({label, value}: {label: string; value: string}) => {
           {value}
         </Text>
       </HStack>
+    </>
+  );
+};
+
+const SelectedPaymentMethod = () => {
+  const navigation = useNavigation<NavigationProp>();
+  return (
+    <>
+      <Card>
+        <VStack justifyContent="space-between">
+          <HStack justifyContent={'space-between'} alignItems={'center'}>
+            <Text fontSize="md" bold>
+              Select payment method
+            </Text>
+
+            <Icon
+              name="chevron-right"
+              size={25}
+              color={theme.colors.gray[900]}
+              style={{marginLeft: 'auto'}}
+              onPress={() => navigation.navigate('PaymentMethodScreen')}
+            />
+          </HStack>
+          <Divider />
+          <VStack mt={2}>
+            <Text>Razorpay</Text>
+          </VStack>
+        </VStack>
+      </Card>
     </>
   );
 };

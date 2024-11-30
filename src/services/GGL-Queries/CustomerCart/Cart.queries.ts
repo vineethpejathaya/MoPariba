@@ -46,6 +46,19 @@ export const GET_CUSTOMER_CART = gql`
             url
             label
           }
+          ... on ConfigurableProduct {
+            variants {
+              product {
+                uid
+                sku
+                name
+                image {
+                  url
+                  label
+                }
+              }
+            }
+          }
         }
         prices {
           row_total_including_tax {

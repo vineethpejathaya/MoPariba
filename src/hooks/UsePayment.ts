@@ -86,7 +86,6 @@ const usePayment = () => {
     const address =
       customer?.addresses?.find(address => address.id == addressId) || null;
 
-    console.log(address, 'address in selecte set');
     const postBody = {
       firstname: address?.firstname,
       lastname: address?.lastname,
@@ -111,8 +110,6 @@ const usePayment = () => {
         setSelectedAddress(address);
       },
     });
-
-    console.log(res, 'res');
   };
 
   const handlePayment = async (address: ShippingAddress | null) => {

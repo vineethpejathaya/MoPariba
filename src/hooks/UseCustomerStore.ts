@@ -53,7 +53,7 @@ const useCustomerStore = create<CustomerState>()(
           : null,
         selectedAddress:
           addresses.length > 0
-            ? addresses.find(address => address.default_billing) ?? null
+            ? addresses.find(address => address.default_billing) ?? addresses[0]
             : null,
       }));
     },
@@ -75,7 +75,7 @@ const useCustomerStore = create<CustomerState>()(
 
         // Determine the default address based on the updated list
         const defaultAddress =
-          updatedAddresses?.find(a => a.default_billing) ?? null;
+          updatedAddresses?.find(a => a.default_billing) ?? updatedAddresses[0];
 
         return {
           customer: {
@@ -102,7 +102,8 @@ const useCustomerStore = create<CustomerState>()(
         if (defaultAddress && defaultAddress.id === addressId) {
           // If the deleted address was the default, find a new default address (if any)
           defaultAddress =
-            updatedAddresses?.find(a => a.default_billing) ?? null;
+            updatedAddresses?.find(a => a.default_billing) ??
+            updatedAddresses[0];
         }
 
         // Update the state with the new addresses and defaultAddress
@@ -118,7 +119,6 @@ const useCustomerStore = create<CustomerState>()(
     },
 
     setSelectedAddress: (address: CustomerAddress | null) => {
-      console.log(address, 'setAddress');
       set({
         selectedAddress: address,
       });

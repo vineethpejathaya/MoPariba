@@ -52,7 +52,7 @@ const useCartActions = () => {
 
   const addToCart = async (productSku: string, variantSku: string) => {
     setAdding(true);
-    console.log(cartId, 'cartId');
+
     await addToCartFn({
       variables: {
         cartId,
