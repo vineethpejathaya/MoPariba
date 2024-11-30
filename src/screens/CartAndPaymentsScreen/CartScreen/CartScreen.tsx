@@ -51,6 +51,8 @@ function CartScreen() {
 
   const shippingAddress = shippingAddresses?.[0] || null;
 
+  console.log(shippingAddress, 'shippingAddress');
+
   if (loading) {
     return <SpinnerComponent />;
   }
@@ -120,7 +122,7 @@ function CartScreen() {
           shadow={5}
           borderTopWidth={1}
           borderTopColor="gray.200">
-          {selectedAddress ? (
+          {shippingAddress ? (
             <Button
               style={CartScreenStyles.btn}
               onPress={() => navigation.navigate('PaymentLoadingScreen')}
