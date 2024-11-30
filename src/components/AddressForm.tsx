@@ -12,6 +12,7 @@ import {
 } from '../assets/icons/Icons';
 import {countryObj, regionObj} from '../constants/FomConstants';
 import {useCustomerStore} from '../hooks/UseCustomerStore';
+import usePayment from '../hooks/UsePayment';
 import useToast from '../hooks/UseToast';
 import {NavigationProp} from '../navigations/types';
 import {AddressComponent} from '../screens/UserProfileAndSettings/MyAddressScreen/GeoLocation.interface';
@@ -54,6 +55,7 @@ function AddressForm({
 }) {
   const navigation = useNavigation<NavigationProp>();
   const {showSuccessToast} = useToast();
+  const {isAddressSelectionLoading, setCustomerPaymentAddress} = usePayment();
   const {customer, addOrUpdateAddress} = useCustomerStore();
   const [userAddress, setUserAddress] = useState<AddressState>({
     firstname: '',
@@ -94,13 +96,15 @@ function AddressForm({
     UpdateCustomerAddressResponse,
     UpdateCustomerAddressVariables
   >(UPDATE_CUSTOMER_ADDRESS, {
-    onCompleted: res => {
+    onCompleted: async res => {
       const updatedAddress = res.updateCustomerAddress;
       addOrUpdateAddress(updatedAddress);
       showSuccessToast('Update Address', 'Address updated successfully');
       close && close();
       onSave && onSave();
-
+      if (updatedAddress?.default_billing) {
+        await setCustomerPaymentAddress(updatedAddress);
+      }
       if (navigateTo) {
         navigation.navigate(navigateTo);
       }
@@ -114,12 +118,16 @@ function AddressForm({
     CREATE_CUSTOMER_ADDRESS,
     {
       refetchQueries: [{query: GET_CUSTOMER_ADDRESSES}],
-      onCompleted: res => {
+      onCompleted: async res => {
         const newAddress = res.createCustomerAddress;
         addOrUpdateAddress(newAddress);
         showSuccessToast('Add Address', 'Address added successfully');
         close && close();
         onSave && onSave();
+        if (newAddress.default_billing) {
+          await setCustomerPaymentAddress(newAddress);
+        }
+
         if (navigateTo) {
           navigation.navigate(navigateTo);
         }

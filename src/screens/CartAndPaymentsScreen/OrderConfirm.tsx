@@ -1,10 +1,19 @@
+import {RouteProp, useNavigation} from '@react-navigation/native';
 import {Button, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import {ShoppingBagIcon} from '../../assets/icons/Icons';
 import ScreenHeader from '../../components/ScreenHeader';
+import {NavigationProp, RootStackParamList} from '../../navigations/types';
 import theme from '../../themes/theme';
 
-function OrderConfirm() {
+export type OrderConfirmRouteProp = RouteProp<
+  RootStackParamList,
+  'OrderConfirm'
+>;
+
+function OrderConfirm({route}: {route: OrderConfirmRouteProp}) {
+  const {orderNumber} = route.params;
+  const navigation = useNavigation<NavigationProp>();
   return (
     <>
       <ScreenHeader title={'Order Confirm'} disableNavigateBack />
@@ -16,7 +25,15 @@ function OrderConfirm() {
           You will get a response within a few minutes.
         </Text>
       </VStack>
-      <Button m={7}>Track Order</Button>
+      <Button
+        m={7}
+        onPress={() => {
+          navigation.navigate('OrderSummaryScreen', {
+            orderNumber: orderNumber,
+          });
+        }}>
+        Track Order
+      </Button>
     </>
   );
 }

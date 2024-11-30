@@ -39,26 +39,27 @@ const useCustomerStore = create<CustomerState>()(
       });
     },
 
-    setAddresses: addresses => {
-      set(state => ({
-        customer: state.customer
-          ? {
-              ...state.customer,
-              addresses,
-              defaultAddress:
-                addresses.length > 0
-                  ? addresses.find(address => address.default_billing) ?? null
-                  : null,
-            }
-          : null,
-        selectedAddress:
+    setAddresses: async addresses => {
+      set(state => {
+        const defaultAddress =
           addresses.length > 0
             ? addresses.find(address => address.default_billing) ?? addresses[0]
+            : null;
+
+        return {
+          customer: state.customer
+            ? {
+                ...state.customer,
+                addresses,
+                defaultAddress,
+              }
             : null,
-      }));
+          selectedAddress: defaultAddress,
+        };
+      });
     },
 
-    addOrUpdateAddress: (address: CustomerAddress) => {
+    addOrUpdateAddress: async (address: CustomerAddress) => {
       set(state => {
         const currentAddresses = state?.customer?.addresses ?? [];
         const addressIndex = currentAddresses?.findIndex(
@@ -68,14 +69,14 @@ const useCustomerStore = create<CustomerState>()(
         // If the address exists, update it; otherwise, add it to the list
         const updatedAddresses =
           addressIndex > -1
-            ? currentAddresses?.map((a, index) =>
+            ? currentAddresses.map((a, index) =>
                 index === addressIndex ? address : a,
               )
             : [...currentAddresses, address];
 
         // Determine the default address based on the updated list
         const defaultAddress =
-          updatedAddresses?.find(a => a.default_billing) ?? updatedAddresses[0];
+          updatedAddresses.find(a => a.default_billing) ?? updatedAddresses[0];
 
         return {
           customer: {

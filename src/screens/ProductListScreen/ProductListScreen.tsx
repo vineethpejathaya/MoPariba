@@ -1,8 +1,7 @@
 import {useQuery} from '@apollo/client';
 import {Box, Text, VStack} from 'native-base';
 import React, {useState} from 'react';
-import {FilterIcon, NoItemFound} from '../../assets/icons/Icons';
-import CustomIconButton from '../../components/Buttons/IconButton';
+import {NoItemFound} from '../../assets/icons/Icons';
 import {CategoryHeader} from '../../components/CategoryHeader';
 import CategoryProduct from '../../components/CategoryProduct';
 import NoDataIllustration from '../../components/NoDataIllustration';
@@ -26,7 +25,7 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
     {
       variables: {
         categoryUid: categoryId || null,
-        pageSize: 10,
+        pageSize: 20,
         currentPage: 1,
       },
       onCompleted: res => {
@@ -50,14 +49,14 @@ function ProductListScreen({route, navigation}: ProductListScreenProps) {
             categoryImageUrl={categoryImageUrl}
           />,
         ]}
-        rightActions={[
-          <CustomIconButton
-            svgIcon={<FilterIcon />}
-            BtnStyles={{backgroundColor: 'white'}}
-            iconSize={15}
-            onPress={() => {}}
-          />,
-        ]}
+        // rightActions={[
+        //   <CustomIconButton
+        //     svgIcon={<FilterIcon />}
+        //     BtnStyles={{backgroundColor: 'white'}}
+        //     iconSize={15}
+        //     onPress={() => {}}
+        //   />,
+        // ]}
       />
 
       {/* Screen content  if no data is present then No products illustration is rendered if not then products list is rendered*/}

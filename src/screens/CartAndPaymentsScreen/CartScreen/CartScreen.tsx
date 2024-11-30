@@ -9,7 +9,6 @@ import {
   Text,
   VStack,
 } from 'native-base';
-import {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {CartBag} from '../../../assets/icons/Icons';
 import Card from '../../../components/Card';
@@ -29,40 +28,30 @@ import {CartItem} from '../../../services/GGL-Queries/CustomerCart/interfaces/Ca
 import theme from '../../../themes/theme';
 import {LabelValuePair} from '../../UserProfileAndSettings/MyOrdersScreen/OrderSummaryScreen';
 import AddressSelection from '../AddressSelection';
+import PaymentMethodSelection from '../PaymentMethodScreen/PaymentMethodScreen';
 import CouponSection from '../components/CouponSection';
 import ProductInCart from '../components/ProductInCart';
 import CartScreenStyles from './Cart.styles';
 
 function CartScreen() {
-  const {cartId, setCart, cartItems} = useCartStore(state => state);
+  const {cartId, setCart, cartItems, shippingAddresses} = useCartStore(
+    state => state,
+  );
   const {customer, selectedAddress} = useCustomerStore();
-  const {isLoading, setCustomerPaymentAddress, handleDeliverToAddress} =
-    usePayment();
+  const navigation = useNavigation<NavigationProp>();
+  const {setCustomerPaymentAddress, handleDeliverToAddress} = usePayment();
   const totalItems = cartItems?.reduce((acc, curr) => curr.quantity + acc, 0);
   const {loading, error, data, refetch} = useQuery<GetCustomerCartResponse>(
     GET_CUSTOMER_CART,
     {
       variables: {cart_id: cartId},
-      onCompleted: res => {
-        console.log(res.cart?.applied_coupons, 'coupons');
-      },
+      onCompleted: res => {},
     },
   );
 
-  const shippingAddress = data?.cart.shipping_addresses[0] || null;
+  const shippingAddress = shippingAddresses?.[0] || null;
 
-  useEffect(() => {
-    if (customer?.addresses?.length) {
-      const defaultAddress = customer?.addresses?.find(
-        item => item.default_shipping,
-      );
-      if (defaultAddress) {
-        setCustomerPaymentAddress(defaultAddress?.id);
-      }
-    }
-  }, [shippingAddress, customer?.addresses, data]);
-
-  if (loading || isLoading) {
+  if (loading) {
     return <SpinnerComponent />;
   }
 
@@ -105,7 +94,7 @@ function CartScreen() {
                 <CartSummary />
 
                 {/* Delivery address of the customer */}
-                {selectedAddress && (
+                {shippingAddress && (
                   <>
                     <DeliveryAddress address={shippingAddress} />
                   </>
@@ -134,7 +123,7 @@ function CartScreen() {
           {selectedAddress ? (
             <Button
               style={CartScreenStyles.btn}
-              onPress={() => handleDeliverToAddress(shippingAddress)}
+              onPress={() => navigation.navigate('PaymentLoadingScreen')}
               _text={{fontSize: 15}}
               mx={5}>{`Proceed to Buy ( ${totalItems} items)`}</Button>
           ) : (
@@ -259,7 +248,6 @@ const LabelValue = ({label, value}: {label: string; value: string}) => {
 };
 
 const SelectedPaymentMethod = () => {
-  const navigation = useNavigation<NavigationProp>();
   return (
     <>
       <Card>
@@ -268,13 +256,18 @@ const SelectedPaymentMethod = () => {
             <Text fontSize="md" bold>
               Select payment method
             </Text>
-
-            <Icon
-              name="chevron-right"
-              size={25}
-              color={theme.colors.gray[900]}
-              style={{marginLeft: 'auto'}}
-              onPress={() => navigation.navigate('PaymentMethodScreen')}
+            <ModalButton
+              anchor={({open}) => (
+                <Icon
+                  name="chevron-right"
+                  size={25}
+                  color={theme.colors.gray[900]}
+                  style={{marginLeft: 'auto'}}
+                  onPress={open}
+                />
+              )}
+              title="Select payment method"
+              content={({close}) => <PaymentMethodSelection close={close} />}
             />
           </HStack>
           <Divider />

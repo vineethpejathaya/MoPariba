@@ -43,7 +43,10 @@ export type RootStackParamList = {
 
   // Cart and Payments
   Cart: undefined;
-  OrderConfirm: undefined;
+  PaymentLoadingScreen: undefined;
+  OrderConfirm: {
+    orderNumber: string;
+  };
 
   // Profile
   PaymentMethodScreen: undefined;

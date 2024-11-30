@@ -1,5 +1,5 @@
 import {useQuery} from '@apollo/client';
-import {Badge, Box, Button, HStack, Image, Text, VStack} from 'native-base';
+import {Box, Button, HStack, Image, Text, VStack} from 'native-base';
 import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import ExpandableDetailsCard from '../../components/ExpandableDetailsCard';
@@ -46,11 +46,11 @@ function ProductScreen({route, navigation}: ProductScreenProps) {
         <VStack space={3}>
           <Box style={[ProductStyles.container, ProductStyles.card]}>
             <Box style={ProductStyles.imageContainer}>
-              <Badge
+              {/* <Badge
                 style={ProductStyles.discount}
                 _text={ProductStyles.discText}>
                 {'16% off'}
-              </Badge>
+              </Badge> */}
               {product?.image?.url && (
                 <Image
                   style={ProductStyles.image}

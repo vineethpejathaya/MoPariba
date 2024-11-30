@@ -32,7 +32,7 @@ function MyOrdersScreen({navigation}: MyOrdersScreenProps) {
     {
       variables: {
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 20,
         scope: 'STORE',
       },
       onCompleted: res => {

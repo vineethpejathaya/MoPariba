@@ -1,6 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import {VStack} from 'native-base';
+import {useState} from 'react';
 import {Dimensions, FlatList} from 'react-native';
+import SpinnerComponent from '../../../components/SpinnerComponent';
 import {useCustomerStore} from '../../../hooks/UseCustomerStore';
 import usePayment from '../../../hooks/UsePayment';
 import {NavigationProp} from '../../../navigations/types';
@@ -10,14 +12,19 @@ import AddressCard from './components/AddressCard';
 function AddressSelection({close}: {close: () => void}) {
   const navigation = useNavigation<NavigationProp>();
   const {customer, selectedAddress} = useCustomerStore();
-
-  const {isLoading, setCustomerPaymentAddress} = usePayment();
+  const [isLoading, setIsLoading] = useState(false);
+  const {isAddressSelectionLoading, setCustomerPaymentAddress} = usePayment();
 
   const handleSelectAddress = async (address: CustomerAddress) => {
-    await setCustomerPaymentAddress(address?.id);
+    setIsLoading(true);
+    await setCustomerPaymentAddress(address);
+    setIsLoading(false);
     close();
   };
 
+  if (isLoading) {
+    <SpinnerComponent onlySpinner />;
+  }
   return (
     <>
       <VStack space={2} height={Dimensions.get('window').height * 0.4}>

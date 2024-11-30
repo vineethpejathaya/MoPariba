@@ -20,7 +20,6 @@ const useCartActions = () => {
 
   const [addToCartFn] = useMutation(ADD_CONFIGURABLE_PRODUCTS_TO_CART, {
     onCompleted: res => {
-      console.log(res?.addConfigurableProductsToCart?.cart, 'cart on add');
       setCart(res?.addConfigurableProductsToCart?.cart);
       setAdding(false);
     },

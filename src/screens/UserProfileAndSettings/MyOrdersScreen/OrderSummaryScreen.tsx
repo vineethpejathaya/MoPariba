@@ -4,6 +4,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {Box, Divider, HStack, Text, VStack} from 'native-base';
 import {useMemo} from 'react';
 import {Platform, StyleSheet, UIManager, View} from 'react-native';
+import Card from '../../../components/Card';
 import ExpandableDetailsCard from '../../../components/ExpandableDetailsCard';
 import ScreenContent from '../../../components/ScreenContent';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -92,7 +93,12 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
   return (
     <>
       <ScreenHeader title={''} />
-      <ScreenContent containerStyles={{paddingTop: 20, paddingHorizontal: 15}}>
+      <ScreenContent
+        containerStyles={{
+          paddingTop: 20,
+          paddingHorizontal: 15,
+          paddingBottom: 20,
+        }}>
         <VStack space={2}>
           <Text style={styles.title}>Order Summary</Text>
 
@@ -180,24 +186,24 @@ function OrderSummaryScreen({route, navigation}: OrderSummaryScreenProps) {
 
           {/* Payment Method */}
           {orderData?.payment_methods.length && (
-            <Box padding={4} bg="white" borderRadius="md" shadow={1}>
+            <Card>
               <Text fontSize="md" fontWeight="bold">
                 Payment Method
               </Text>
               <Divider my={3} />
               {orderData?.payment_methods?.length > 0 ? (
                 <VStack space={1}>
-                  <Text fontSize="sm">
+                  {/* <Text fontSize="sm">
                     {orderData?.payment_methods[0]?.name}
-                  </Text>
-                  <Text fontSize="sm">
+                  </Text> */}
+                  <Text fontSize="sm" textTransform={'capitalize'}>
                     {orderData?.payment_methods[0]?.type}
                   </Text>
                 </VStack>
               ) : (
                 <Text fontSize="sm">Not Available</Text>
               )}
-            </Box>
+            </Card>
           )}
         </VStack>
       </ScreenContent>

@@ -8,7 +8,7 @@ import {ApolloWrapper} from '../../ApolloProvider';
 import {AuthProvider, useAuth} from '../hooks/UseAuth';
 import BestDeals from '../screens/BestDeals';
 import OrderConfirm from '../screens/CartAndPaymentsScreen/OrderConfirm';
-import PaymentMethodScreen from '../screens/CartAndPaymentsScreen/PaymentMethodScreen';
+import PaymentLoadingScreen from '../screens/CartAndPaymentsScreen/PaymentLoadingScreen';
 import EmailVerificationScreen from '../screens/LoginAndRegistrations/EmailVerificationScreen';
 import ForgotPasswordScreen from '../screens/LoginAndRegistrations/ForgotPasswordScreen';
 import LoginScreen from '../screens/LoginAndRegistrations/LoginScreen';
@@ -97,10 +97,7 @@ function RootNavigator() {
               name="GeoLocationScreen"
               component={GeoLocationScreen}
             />
-            <Stack.Screen
-              name="PaymentMethodScreen"
-              component={PaymentMethodScreen}
-            />
+
             <Stack.Screen name="MyProfileScreen" component={MyProfile} />
             <Stack.Screen name="MyOrdersScreen" component={MyOrdersScreen} />
             <Stack.Screen
@@ -111,7 +108,10 @@ function RootNavigator() {
               name="NotificationSettings"
               component={NotificationSettings}
             />
-
+            <Stack.Screen
+              name="PaymentLoadingScreen"
+              component={PaymentLoadingScreen}
+            />
             <Stack.Screen name="OrderConfirm" component={OrderConfirm} />
           </>
         ) : (

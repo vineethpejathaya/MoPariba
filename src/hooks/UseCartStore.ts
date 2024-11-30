@@ -30,6 +30,7 @@ interface CartState {
   showLoading: boolean;
   transformedCartItems: TransformedCartItem[];
   productMap: Map<string, TransformedCartItem[]>;
+  setShippingAddress: (address: any) => void;
   setCart: (cart: Cart | null) => void;
   setCartId: (cartId: string) => void;
   setAdding: (status: boolean) => void;
@@ -75,7 +76,11 @@ export const useCartStore = create<CartState>()(
         productMap: productMap,
       });
     },
-
+    setShippingAddress: (address: any) => {
+      set({
+        shippingAddresses: address,
+      });
+    },
     setAdding: status => set({adding: status}),
     setRemoving: status => set({removing: status}),
     setUpdating: status => set({updating: status}),

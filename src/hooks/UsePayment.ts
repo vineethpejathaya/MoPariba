@@ -51,7 +51,16 @@ const getErrorMessage = (error: any): string => {
 
 const usePayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {cartId, setCart, cartItems, cartPrices, setCartId} = useCartStore();
+  const [isAddressSelectionLoading, setIsAddressSelectionLoading] =
+    useState(false);
+  const {
+    cartId,
+    setCart,
+    cartItems,
+    cartPrices,
+    setCartId,
+    setShippingAddress,
+  } = useCartStore();
   const {setSelectedAddress, customer} = useCustomerStore();
   const {showErrorToast} = useToast();
 
@@ -82,9 +91,8 @@ const usePayment = () => {
 
   const [createCustomerCart] = useMutation(CREATE_CART_MUTATION);
 
-  const setCustomerPaymentAddress = async (addressId: number) => {
-    const address =
-      customer?.addresses?.find(address => address.id == addressId) || null;
+  const setCustomerPaymentAddress = async (address: any) => {
+    setIsAddressSelectionLoading(true);
 
     const postBody = {
       firstname: address?.firstname,
@@ -107,12 +115,23 @@ const usePayment = () => {
         billingAddress: {address: postBody},
       },
       onCompleted: res => {
+        setShippingAddress(
+          res?.setShippingAddressesOnCart?.cart?.shipping_addresses,
+        );
         setSelectedAddress(address);
+        setIsAddressSelectionLoading(false);
+      },
+      onError: err => {
+        setIsAddressSelectionLoading(false);
       },
     });
   };
 
-  const handlePayment = async (address: ShippingAddress | null) => {
+  const handlePayment = async (params: {
+    address: ShippingAddress | null;
+    orderNumber: string;
+  }) => {
+    const {address, orderNumber} = params;
     try {
       const orderData = await createRazorpayOrder(total, showErrorToast);
 
@@ -152,14 +171,15 @@ const usePayment = () => {
             },
           });
 
-          setIsLoading(false);
           const cart = await createCustomerCart();
           const newCartId = cart.data.createEmptyCart;
 
           setCart(null);
           setCartId(newCartId);
 
-          navigate.navigate('OrderConfirm');
+          navigate.navigate('OrderConfirm', {
+            orderNumber,
+          });
         })
         .catch((error: any) => {
           if (
@@ -177,13 +197,12 @@ const usePayment = () => {
             return;
           }
 
-          setIsLoading(false);
           const errorMessage = getErrorMessage(error);
           showErrorToast('Payment Failed', errorMessage);
         });
     } catch (error) {
       console.log(error, 'error');
-      setIsLoading(false);
+
       const errorMessage = getErrorMessage(error);
       showErrorToast('Payment Failed', errorMessage);
     }
@@ -192,7 +211,6 @@ const usePayment = () => {
   const handleDeliverToAddress = async (
     shippingAddress: ShippingAddress | null,
   ) => {
-    setIsLoading(true);
     try {
       // const postBody = {
       //   firstname: address.firstname,
@@ -246,16 +264,23 @@ const usePayment = () => {
         },
       });
 
-      await handlePayment(shippingAddress);
+      const orderNumber = res?.data?.placeOrder?.order?.order_number || '';
+
+      await handlePayment({address: shippingAddress, orderNumber});
     } catch (err) {
       console.log(err, 'err');
-      setIsLoading(false);
+
       const errorMessage = getErrorMessage(err);
-      showErrorToast('Payment Failed', errorMessage);
+      // showErrorToast('Payment Failed', errorMessage);
     }
   };
 
-  return {isLoading, handleDeliverToAddress, setCustomerPaymentAddress};
+  return {
+    isLoading,
+    handleDeliverToAddress,
+    setCustomerPaymentAddress,
+    isAddressSelectionLoading,
+  };
 };
 
 export default usePayment;

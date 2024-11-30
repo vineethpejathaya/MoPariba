@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Badge, Box, HStack, Image, Text, VStack} from 'native-base';
+import {Box, HStack, Image, Text, VStack} from 'native-base';
 import {StyleSheet} from 'react-native';
 import {NavigationProp} from '../navigations/types';
 import {
@@ -14,7 +14,7 @@ import QuantitySelector from './QuantitySelector';
 function CategoryProduct({product}: {product: Product}) {
   const navigation = useNavigation<NavigationProp>();
   const price = product?.price_range?.maximum_price?.final_price?.value;
-  console.log(product, 'product');
+
   return (
     <>
       <PressableContainer
@@ -60,9 +60,9 @@ const ProductImageComponent = ({
 }) => {
   return (
     <Box style={styles.imageContainer}>
-      <Badge style={styles.discount} _text={styles.discText}>
+      {/* <Badge style={styles.discount} _text={styles.discText}>
         {'16% off'}
-      </Badge>
+      </Badge> */}
       {productImage?.url && (
         <>
           <Image
